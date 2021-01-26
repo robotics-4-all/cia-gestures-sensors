@@ -15,30 +15,60 @@ GesturesData_DatabaseName = 'my_data'
 ScreenName = 'Mathisis'
 #--------------------------------------------------
 ## Find users with valid sensors data
-valUsers_Mathisis_S, valUsers_Mathisis_S_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, syncSensorsData=False, minSensorsData=1, maxSensorsData=float('inf'))
-valUsers_Mathisis_S_Synced, valUsers_Mathisis_S_Synced_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, syncSensorsData=True, minSensorsData=1, maxSensorsData=float('inf'))
+valUsers_Mathisis_S, valUsers_Mathisis_S_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, 
+                                                                          syncSensorsData=False, 
+                                                                          minSensorsData=1, maxSensorsData=float('inf'))
+
+valUsers_Mathisis_S_Synced, valUsers_Mathisis_S_Synced_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, 
+                                                                                        syncSensorsData=True, 
+                                                                                        minSensorsData=1, maxSensorsData=float('inf'))
 
 ## Find users with valid gestures (swipes) data 
-valUsers_Mathisis_G = findUsers_GesturesData(GesturesData_DatabaseName, GesturesType='swipe', ScreenName=ScreenName, minGestureData=4, maxGestureData=10, minGestures=1, maxGestures=float('inf'))
+valUsers_Mathisis_G = findUsers_GesturesData(GesturesData_DatabaseName, GesturesType='swipe', ScreenName=ScreenName, 
+                                             maxDeviceWidth=600, maxDeviceHeight=1000, 
+                                             minGestureData=4, maxGestureData=10, 
+                                             minGestures=1, maxGestures=float('inf'))
 
 ## Find valid common users
-valUsers_Mathisis_SG, valUsers_Mathisis_SG_isSynced = findUsers_SGdata(valUsers_Mathisis_S, valUsers_Mathisis_S_isSynced, valUsers_Mathisis_G, syncSensorsGesturesData=False, minSensorsData=3000, maxSensorsData=float('inf'), minGestures=10, maxGestures=float('inf'))
-valUsers_Mathisis_SG_Synced, valUsers_Mathisis_SG_Synced_isSynced = findUsers_SGdata(valUsers_Mathisis_S_Synced, valUsers_Mathisis_S_Synced_isSynced, valUsers_Mathisis_G, syncSensorsGesturesData=True, minSensorsData=3000, maxSensorsData=float('inf'), minGestures=10, maxGestures=float('inf'))
+valUsers_Mathisis_SG, valUsers_Mathisis_SG_isSynced = findUsers_SGdata(valUsers_Mathisis_S, valUsers_Mathisis_S_isSynced, 
+                                                                       valUsers_Mathisis_G, syncSensorsGesturesData=False, 
+                                                                       minSensorsData=3000, maxSensorsData=float('inf'), 
+                                                                       minGestures=10, maxGestures=float('inf'))
+
+valUsers_Mathisis_SG_Synced, valUsers_Mathisis_SG_Synced_isSynced = findUsers_SGdata(valUsers_Mathisis_S_Synced, valUsers_Mathisis_S_Synced_isSynced, 
+                                                                                     valUsers_Mathisis_G, syncSensorsGesturesData=True, 
+                                                                                     minSensorsData=3000, maxSensorsData=float('inf'), 
+                                                                                     minGestures=10, maxGestures=float('inf'))
 
 #--------------------------------------------------
 # Find valid users for Focus
 ScreenName = 'Focus'
 #--------------------------------------------------
 ## Find users with valid sensors data
-valUsers_Focus_S, valUsers_Focus_S_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, syncSensorsData=False, minSensorsData=1, maxSensorsData=float('inf'))
-valUsers_Focus_S_Synced, valUsers_Focus_S_Synced_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, syncSensorsData=True, minSensorsData=1, maxSensorsData=float('inf'))
+valUsers_Focus_S, valUsers_Focus_S_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, 
+                                                                    syncSensorsData=False, 
+                                                                    minSensorsData=1, maxSensorsData=float('inf'))
+
+valUsers_Focus_S_Synced, valUsers_Focus_S_Synced_isSynced = findUsers_SensorsData(SensorsData_Path, ScreenName=ScreenName, 
+                                                                                  syncSensorsData=True, 
+                                                                                  minSensorsData=1, maxSensorsData=float('inf'))
 
 ## Find users with valid gestures (swipes) data 
-valUsers_Focus_G = findUsers_GesturesData(GesturesData_DatabaseName, GesturesType='swipe', ScreenName=ScreenName, minGestureData=4, maxGestureData=10, minGestures=1, maxGestures=float('inf'))
+valUsers_Focus_G = findUsers_GesturesData(GesturesData_DatabaseName, GesturesType='swipe', ScreenName=ScreenName,
+                                          maxDeviceWidth=600, maxDeviceHeight=1000,
+                                          minGestureData=4, maxGestureData=10, 
+                                          minGestures=1, maxGestures=float('inf'))
 
 ## Find valid common users
-valUsers_Focus_SG, valUsers_Focus_SG_isSynced = findUsers_SGdata(valUsers_Focus_S, valUsers_Focus_S_isSynced, valUsers_Focus_G, syncSensorsGesturesData=False, minSensorsData=3000, maxSensorsData=float('inf'), minGestures=10, maxGestures=float('inf'))
-valUsers_Focus_SG_Synced, valUsers_Focus_SG_Synced_isSynced = findUsers_SGdata(valUsers_Focus_S_Synced, valUsers_Focus_S_Synced_isSynced, valUsers_Focus_G, syncSensorsGesturesData=True, minSensorsData=3000, maxSensorsData=float('inf'), minGestures=10, maxGestures=float('inf'))
+valUsers_Focus_SG, valUsers_Focus_SG_isSynced = findUsers_SGdata(valUsers_Focus_S, valUsers_Focus_S_isSynced, 
+                                                                 valUsers_Focus_G, syncSensorsGesturesData=False, 
+                                                                 minSensorsData=3000, maxSensorsData=float('inf'), 
+                                                                 minGestures=10, maxGestures=float('inf'))
+
+valUsers_Focus_SG_Synced, valUsers_Focus_SG_Synced_isSynced = findUsers_SGdata(valUsers_Focus_S_Synced, valUsers_Focus_S_Synced_isSynced, 
+                                                                               valUsers_Focus_G, syncSensorsGesturesData=True, 
+                                                                               minSensorsData=3000, maxSensorsData=float('inf'), 
+                                                                               minGestures=10, maxGestures=float('inf'))
 
 """
 #--------------------------------------------------

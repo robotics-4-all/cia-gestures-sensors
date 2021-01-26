@@ -100,10 +100,12 @@ def findUsers_SensorsData(SensorsData_Path, ScreenName, syncSensorsData, minSens
 # GesturesData_DatabaseName - The dabase name in the mongoDB localhost:27017
 # GesturesType - swipe | tap
 # ScreenName - The type of screen
+# maxDeviceWidth
+# maxDeviceHeight
 # Select gestures with minGestureData <= len(gesture["data"]) <= maxGestureData
 # Select users with minGestures <= Gestures_size <= maxGestures
 #--------------------------------------------------
-def findUsers_GesturesData(GesturesData_DatabaseName, GesturesType, ScreenName, minGestureData, maxGestureData, minGestures, maxGestures):
+def findUsers_GesturesData(GesturesData_DatabaseName, GesturesType, ScreenName, maxDeviceWidth, maxDeviceHeight, minGestureData, maxGestureData, minGestures, maxGestures):
     # Get data
     m = MongoDBHandler('mongodb://localhost:27017/', GesturesData_DatabaseName)
     d = DBDataHandler(m)
@@ -125,15 +127,17 @@ def findUsers_GesturesData(GesturesData_DatabaseName, GesturesType, ScreenName, 
                 devices = d.get_devices({'user_id':ObjectId(user_id)})               
                 for device in devices:
                     # Remove kiosk device and devices with big dimensions (not mobile phones)
-                    if(("TouchScreen" not in device["device_id"])and(device["width"]<600)and(device["height"]<1000)):
+                    if(("TouchScreen" not in device["device_id"])and(device["width"]<maxDeviceWidth)and(device["height"]<maxDeviceHeight)):
                         device_id = device["device_id"]
                         gestures = d.get_gestures_from_device(device_id)
                         for gesture in gestures:
-                            if((gesture["type"] == GesturesType)and(ScreenName in gesture["screen"])and(minGestureData <= len(gesture["data"]) <= maxGestureData)):
-                                Num_Of_Gestures = Num_Of_Gestures + 1
-                                Gestures_IDs.append(gesture["_id"])
-                                NumData_Of_Gestures.append(len(gesture["data"]))
-                                tStartStop_Of_Gestures.append([gesture["t_start"], gesture["t_stop"]])
+                            if (gesture["type"] == GesturesType):
+                                if (ScreenName in gesture["screen"]):
+                                   if (minGestureData <= len(gesture["data"]) <= maxGestureData):
+                                       Num_Of_Gestures = Num_Of_Gestures + 1
+                                       Gestures_IDs.append(gesture["_id"])
+                                       NumData_Of_Gestures.append(len(gesture["data"]))
+                                       tStartStop_Of_Gestures.append([gesture["t_start"], gesture["t_stop"]])
                                     
                 if (minGestures <= Num_Of_Gestures <= maxGestures):
                     valUser = {'User': user["player_id"], 'Num_Of_Gestures': Num_Of_Gestures, 'Gestures_IDs': Gestures_IDs, 'NumData_Of_Gestures': NumData_Of_Gestures, 'tStartStop_Of_Gestures': tStartStop_Of_Gestures}
