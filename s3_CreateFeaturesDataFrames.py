@@ -262,5 +262,3 @@ def Create_FDF_Sensors(DF_Users, DF_Acc, DF_Gyr, Feature):
     FDF_Gyr['MeanFrequency'] = F_Gyr.getMeanFrequency()
     
     return FDF_Acc, FDF_Gyr
-
-    

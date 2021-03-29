@@ -216,4 +216,3 @@ def CreateTrnTst(FDF_Swipes, FDF_Acc, FDF_Gyr, Original_User, Split_Rate):
     FDFs_Tst = [FDFs_Org_Tst, FDFs_Org_Tst_Syn, FDFs_Att, FDFs_Att_Syn]
     
     return FDFs_Trn, FDFs_Tst
-

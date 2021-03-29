@@ -197,4 +197,3 @@ class Features_Sensors:
 
     def getVy(self):
         return self.Vy
-

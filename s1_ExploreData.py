@@ -266,4 +266,3 @@ def findUsers_Common(Users_Sensors, Users_Swipes, Synced_Sensors_Gestures, minSe
             valUsers = valUsers.append(valUser, ignore_index=True)
         
     return valUsers, Synced_Sensors_Gestures
-

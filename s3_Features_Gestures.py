@@ -163,4 +163,3 @@ class Features_Swipes:
     
     def getMean_Y(self):
         return self.Mean_Y
-   

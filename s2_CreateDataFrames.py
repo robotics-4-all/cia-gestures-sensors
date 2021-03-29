@@ -103,4 +103,3 @@ def Create_DF_Gestures(GestData_DBName, DF_Users):
             DF_Gest = DF_Gest.append(df, ignore_index=True)
             
     return DF_Gest      
-
