@@ -38,7 +38,7 @@ def SplitFDF_OrgAtt(FDF, Original_User):
             FDF_Attackers = FDF_Attackers.append(row, ignore_index = True)
             
     FDF_Original['Output'] = 1
-    FDF_Attackers['Output'] = 0
+    FDF_Attackers['Output'] = -1
             
     return FDF_Original, FDF_Attackers            
 
@@ -212,7 +212,12 @@ def CreateTrnTst(FDF_Swipes, FDF_Acc, FDF_Gyr, Original_User, Split_Rate):
     FDFs_Org_Trn, FDFs_Org_Tst = SplitFDF_TrnTst_UnSynced(FDFs_Org, Split_Rate)
     FDFs_Org_Trn_Syn, FDFs_Org_Tst_Syn = SplitFDF_TrnTst_Synced(FDFs_Org_Syn, Split_Rate)
     
-    FDFs_Trn = [FDFs_Org_Trn, FDFs_Org_Trn_Syn]
-    FDFs_Tst = [FDFs_Org_Tst, FDFs_Org_Tst_Syn, FDFs_Att, FDFs_Att_Syn]
+    #FDFs_Trn = [FDFs_Org_Trn, FDFs_Org_Trn_Syn]
+    #FDFs_Tst = [FDFs_Org_Tst, FDFs_Org_Tst_Syn, FDFs_Att, FDFs_Att_Syn]
     
-    return FDFs_Trn, FDFs_Tst
+    #return FDFs_Trn, FDFs_Tst
+    
+    FDFs_Original = [FDFs_Org_Trn, FDFs_Org_Tst, FDFs_Org_Trn_Syn, FDFs_Org_Tst_Syn]
+    FDFs_Attackers = [FDFs_Att, FDFs_Att_Syn]
+    
+    return FDFs_Original, FDFs_Attackers

@@ -128,16 +128,11 @@ Split_Rate = 0.25
     #print('Original_User: ', Original_User)
     
 Original_User = 'x89587l'
-FDFs_Trn, FDFs_Tst = CreateTrnTst(FDF_Swipes, FDF_Acc, FDF_Gyr, Original_User, Split_Rate)
+FDFs_Original, FDFs_Attackers = CreateTrnTst(FDF_Swipes, FDF_Acc, FDF_Gyr, Original_User, Split_Rate)
 
 """
-FDFs_Trn = [FDFs_Org_Trn, FDFs_Org_Trn_Syn]
-FDFs_Tst = [FDFs_Org_Tst, FDFs_Org_Tst_Syn, FDFs_Att, FDFs_Att_Syn]
+FDFs_Original = [FDFs_Org_Trn, FDFs_Org_Tst, FDFs_Org_Trn_Syn, FDFs_Org_Tst_Syn]
+FDFs_Attackers = [FDFs_Att, FDFs_Att_Syn]
 
 FDFs = [Swipes, Acc, Gyr]
-
-e.x.
-FDFs_Trn[1][0] -> Original User Synced Swipe Datas used for training
-FDFs_Trn[2][1] -> Attackers Unsynced Acc datas
 """
-
