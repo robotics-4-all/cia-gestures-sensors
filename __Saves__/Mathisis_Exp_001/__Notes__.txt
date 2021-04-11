@@ -1,0 +1,21 @@
+#---------------------------------------
+# Choose Window and Overlap για Mathisis
+#---------------------------------------
+-> Δεν υπάρχουν αρκετοί χρήστες με πάνω απο 500 δεδομένα ανά screen-timestamp και για Acc και για Gyr.
+-> Άρα μέγιστο window είναι το 500.
+-> Δοκιμάστηκαν Windows = [100, 200, 400, 500], Overlaps = [0.1, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9].
+
+-> Δοκιμάστηκαν 7 χρήστες με σύνολο δεδομένων ~ [5000, 12000].
+
+-> Feature = 'Magnitude'
+-> Synced_Sensors = True
+
+-> Classifier = 'LocalOutlierFactor', Parameters = [3] και για Acc και για Gyr.
+-> MinMaxScalar Normilized Sets
+
+-> Και για Acc και για Gyr : Window: 200, Overlap: 0.9
+
+
+
+
+

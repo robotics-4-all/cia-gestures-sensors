@@ -1,0 +1,24 @@
+#---------------------------------------
+# Choose Window and Overlap για Focus
+#---------------------------------------
+-> Δεν υπάρχουν αρκετοί χρήστες με πάνω απο 500 δεδομένα ανά screen-timestamp και για Acc και για Gyr.
+-> Άρα μέγιστο window είναι το 500.
+-> Δοκιμάστηκαν Windows = [100, 200, 400, 500], Overlaps = [0.1, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9].
+
+-> Δοκιμάστηκαν 8 χρήστες με σύνολο δεδομένων ~ [3000, 6000].
+
+-> Feature = 'Magnitude'
+-> Synced_Sensors = True
+
+-> Classifier = 'LocalOutlierFactor', Parameters = [3] και για Acc και για Gyr.
+-> MinMaxScalar Normilized Sets
+
+-> Και για Acc και για Gyr : Window: 200, Overlap: 0.9
+
+
+#---------------------------------------
+-> Classifier = 'OneClassSVM', for nu in frange(0.01, 0.3, 0.01), for gamma in frange(0.00005, 0.001, 0.00005)
+
+
+
+

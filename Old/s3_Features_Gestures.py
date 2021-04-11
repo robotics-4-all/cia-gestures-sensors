@@ -1,7 +1,18 @@
+"""
+Aristotle University of Thessaloniki
+Intelligent Systems & Software Engineering Labgroup
+
+Author : Christos Emmanouil
+
+Thesis : Continuous implicit authentication of mobile phone users with a combination of navigation and behavior data.
+
+Features_Swipes Class
+"""
+
 class Features_Swipes:
     
     User = []
-    ScreenName = []
+    Screen = []
     
     Type = []
     
@@ -25,12 +36,10 @@ class Features_Swipes:
     Acceleration_Horizontal = []
     Acceleration_Vertical = []
     
-    Output = []
-    
     
     def __init__(self):
         self.User = []
-        self.ScreenName = []
+        self.Screen = []
         
         self.Type = []
         
@@ -54,15 +63,13 @@ class Features_Swipes:
         self.Acceleration_Horizontal = []
         self.Acceleration_Vertical = []
         
-        self.Output = []
-        
     
     # Set Methods
     def setUser(self, value):
         self.User.append(value)
         
-    def setScreenName(self, value):
-        self.ScreenName.append(value)
+    def setScreen(self, value):
+        self.Screen.append(value)
     
     def setType(self, value):
         self.Type.append(value)
@@ -111,17 +118,14 @@ class Features_Swipes:
     
     def setMean_Y(self, value):
         self.Mean_Y.append(value)
-    
-    def setOutput(self, value):
-        self.Output.append(value)
         
         
     # Get Methods
     def getUser(self):
         return self.User
     
-    def getScreenName(self):
-        return self.ScreenName
+    def getScreen(self):
+        return self.Screen
     
     def getType(self):
         return self.Type
@@ -170,11 +174,3 @@ class Features_Swipes:
     
     def getMean_Y(self):
         return self.Mean_Y
-    
-    def getOutput(self):
-        return self.Output
-    
-    
-    
-    
-    

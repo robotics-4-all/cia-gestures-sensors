@@ -1,9 +1,19 @@
+"""
+Aristotle University of Thessaloniki
+Intelligent Systems & Software Engineering Labgroup
+
+Author : Christos Emmanouil
+
+Thesis : Continuous implicit authentication of mobile phone users with a combination of navigation and behavior data.
+
+Features_Sensors Class
+"""
+
 class Features_Sensors:
     
     User = []
-    ScreenName = []
-    
     TimeStamp = []
+    Screen = []
     Num_Of_Samples = []
   
     Μean = []
@@ -28,13 +38,11 @@ class Features_Sensors:
     Vx = []
     Vy = []
 
-    Output = []
 
     def __init__(self):
-        self.User = []
-        self.ScreenName = []
-        
+        self.User = []        
         self.TimeStamp = []
+        self.Screen = []
         self.Num_Of_Samples = []
         
         self.Μean = []
@@ -59,17 +67,16 @@ class Features_Sensors:
         self.Vx = []
         self.Vy = []
         
-        self.Output = []
 
     # Set Methods
     def setUser(self, value):
         self.User.append(value)
         
-    def setScreenName(self, value):
-        self.ScreenName.append(value)
-        
     def setTimeStamp(self, value):
         self.TimeStamp.append(value)
+        
+    def setScreen(self, value):
+        self.Screen.append(value)
         
     def setNum_Of_Samples(self, value):
         self.Num_Of_Samples.append(value)
@@ -131,18 +138,16 @@ class Features_Sensors:
     def setVy(self, value):
         self.Vy.append(value)
         
-    def setOutput(self, value):
-        self.Output.append(value)
 
     # Get Methods
     def getUser(self):
-        return self.User
-    
-    def getScreenName(self):
-        return self.ScreenName    
+        return self.User  
     
     def getTimeStamp(self):
         return self.TimeStamp
+    
+    def getScreen(self):
+        return self.Screen  
     
     def getNum_Of_Samples(self):
         return self.Num_Of_Samples
@@ -203,6 +208,3 @@ class Features_Sensors:
 
     def getVy(self):
         return self.Vy
-    
-    def getOutput(self):
-        return self.Output

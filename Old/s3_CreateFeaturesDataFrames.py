@@ -12,13 +12,14 @@ CreateFeaturesDataFrames : This script contains functions in order to create fea
 ########################################
 # Imports
 ########################################
-from s3_Features_Sensors import Features_Sensors
-from s3_Features_Gestures import Features_Swipes
-from utils.help_functions import linear_regression as lr
 import numpy as np
-from scipy.stats import skew, kurtosis, entropy
-from scipy.fftpack import fft,fft2, fftshift
 import pandas as pd
+from tqdm import tqdm
+from scipy.fftpack import fft,fft2, fftshift
+from scipy.stats import skew, kurtosis, entropy
+from s3_Features_Gestures import Features_Swipes
+from s3_Features_Sensors import Features_Sensors
+from s0_HelpFunctions import linear_regression as lr
 
 
 ########################################
@@ -27,17 +28,16 @@ import pandas as pd
 #--------------------------------------------------
 # FeatureExtraction_Swipes : Add a swipes features in the FeautureObject
 # Gesture - A swipe
-# Output - The desired output of the spesific swipe
 # Normalize - If True normalize gestures data in a spesific screen size
 # FeautureObject - The object that contains the features of the swipes, must have the shape of Features_Swipes class in s3_Features_Gestures
 #--------------------------------------------------
-def FeatureExtraction_Swipes(Gesture, Output, Normalize, FeautureObject):
+def FeatureExtraction_Swipes(Gesture, Normalize, FeautureObject):
     
     scalar_width = 400
     scalar_height = 700
     
     FeautureObject.setUser(Gesture['User'])
-    FeautureObject.setScreenName(Gesture['Screen'])
+    FeautureObject.setScreen(Gesture['Screen'])
     
     FeautureObject.setType(Gesture['G_Type'])
     
@@ -104,36 +104,29 @@ def FeatureExtraction_Swipes(Gesture, Output, Normalize, FeautureObject):
     FeautureObject.setMean_X(mean_x)
     FeautureObject.setMean_Y(mean_y)
     
-    FeautureObject.setOutput(Output)
-    
     return  FeautureObject
         
         
 #--------------------------------------------------
 # Create_FDF_Gest : Return data frame of swipes features
-# Original_User - The name of the original user
 # DF_Gest - A data frame that must have the shape of Create_DF_Gestures function result in s2_CreateDataFrames
 # Normalize - If True normalize gestures data in a spesific screen size
 #--------------------------------------------------
-def Create_FDF_Swipes(Original_User, DF_Gest, Normalize):
+def Create_FDF_Swipes(DF_Gest, Normalize):
 
     F_Swipes = Features_Swipes()
     
-    for idx in range(len(DF_Gest)):
+    print(flush=True)
+    for idx in tqdm(range(len(DF_Gest)), desc = '-> Extracting Swipes Features'):
         G = DF_Gest.loc[idx]
         
         if (G['G_Type'] == 'swipe'):
-            User = G['User']
-            
-            if User == Original_User:
-                F_Swipes = FeatureExtraction_Swipes(G, 1, Normalize, F_Swipes)
-            else:
-                F_Swipes = FeatureExtraction_Swipes(G, 0, Normalize, F_Swipes)
+            F_Swipes = FeatureExtraction_Swipes(G, Normalize, F_Swipes)
                 
     FDF_Swipes = pd.DataFrame()
     
     FDF_Swipes['User'] = F_Swipes.getUser()
-    FDF_Swipes['ScreenName'] = F_Swipes.getScreenName()
+    FDF_Swipes['Screen'] = F_Swipes.getScreen()
     FDF_Swipes['Type'] = F_Swipes.getType()
     FDF_Swipes['Time_Start'] = F_Swipes.getTime_Start()
     FDF_Swipes['Time_Stop'] = F_Swipes.getTime_Stop()
@@ -150,7 +143,9 @@ def Create_FDF_Swipes(Original_User, DF_Gest, Normalize):
     FDF_Swipes['Mean_Y'] = F_Swipes.getMean_Y()
     FDF_Swipes['Acceleration_Horizontal'] = F_Swipes.getAcceleration_Horizontal()
     FDF_Swipes['Acceleration_Vertical'] = F_Swipes.getAcceleration_Vertical()
-    FDF_Swipes['Output'] = F_Swipes.getOutput()
+    
+    print(flush=True)
+    print('-> Extracting Swipes Features Finished', end = '')
     
     return FDF_Swipes
 
@@ -158,32 +153,20 @@ def Create_FDF_Swipes(Original_User, DF_Gest, Normalize):
 #--------------------------------------------------
 # FeatureExtraction_Sensors :
 #--------------------------------------------------
-def FeatureExtraction_Sensors(user, timestamp, dataset, samples, overlap, output, feautureObject):
+def FeatureExtraction_Sensors(User, TimeStamp, Screen, Dataset, FeautureObject):
     
-    dataset_size = dataset.shape[0]
-    i = 0
-    flag = False
-    
-    while (dataset_size > 1):
-        
-        if (dataset_size <= samples):
-            samples = dataset_size
-            flag = True
+    Dataset_Size = Dataset.shape[0]
 
-        w = i * overlap
-        end = w + samples    
-            
-        feautureObject.setUser(user)
-        #feautureObject.setScreenName(screen)
-              
-        feautureObject.setTimeStamp(timestamp)
-        feautureObject.setNum_Of_Samples(end - w)
+    if Dataset_Size > 1:
+        FeautureObject.setUser(User)
+        FeautureObject.setTimeStamp(TimeStamp)
+        FeautureObject.setScreen(Screen)
+        FeautureObject.setNum_Of_Samples(Dataset_Size)
            
         #DFT
-        temp = dataset[w:end] # I add this line
-        discreteFourier = fft(temp)
+        discreteFourier = fft(Dataset)
         # Frequencies
-        freq = np.fft.fftfreq(samples)
+        freq = np.fft.fftfreq(Dataset_Size)
     
         # Amplitudes
         idx = (np.absolute(discreteFourier)).argsort()[-2:][::-1]
@@ -193,69 +176,60 @@ def FeatureExtraction_Sensors(user, timestamp, dataset, samples, overlap, output
     
         # Frequency features
         mean_frequency = np.mean(freq)
-        feautureObject.setAmplitude1(amplitude1)
-        feautureObject.setAmplitude2(amplitude2)
-        feautureObject.setFrequency2(frequency2)
-        feautureObject.setMeanFrequency(mean_frequency)
+        FeautureObject.setAmplitude1(amplitude1)
+        FeautureObject.setAmplitude2(amplitude2)
+        FeautureObject.setFrequency2(frequency2)
+        FeautureObject.setMeanFrequency(mean_frequency)
     
         # Time Based Feautures
-        feautureObject.setΜean(np.mean(dataset[w:end]))
-        feautureObject.setSTD(np.std(dataset[w:end]))
-        feautureObject.setMax(np.max(dataset[w:end]))
-        feautureObject.setMin(np.min(dataset[w:end]))
-        feautureObject.setRange(np.ptp(dataset[w:end]))
+        FeautureObject.setΜean(np.mean(Dataset))
+        FeautureObject.setSTD(np.std(Dataset))
+        FeautureObject.setMax(np.max(Dataset))
+        FeautureObject.setMin(np.min(Dataset))
+        FeautureObject.setRange(np.ptp(Dataset))
     
-        percentile = np.percentile(dataset[w:end], [25, 50, 75])
-        feautureObject.setPercentile25(percentile[0])
-        feautureObject.setPercentile50(percentile[1])
-        feautureObject.setPercentile75(percentile[2])
-        feautureObject.setEntropy(entropy(dataset[w:end], base = 2))
+        percentile = np.percentile(Dataset, [25, 50, 75])
+        FeautureObject.setPercentile25(percentile[0])
+        FeautureObject.setPercentile50(percentile[1])
+        FeautureObject.setPercentile75(percentile[2])
+        FeautureObject.setEntropy(entropy(Dataset, base = 2))
     
-        feautureObject.setKurtosis(kurtosis(dataset[w:end]))
-        feautureObject.setSkewness(skew(dataset[w:end]))
-    
-        # Output Label
-        feautureObject.setOutput(output)
-        
-        i = i + 1
-        if flag:
-            dataset_size = 0
-        else:
-            dataset_size = dataset_size - overlap        
+        FeautureObject.setKurtosis(kurtosis(Dataset))
+        FeautureObject.setSkewness(skew(Dataset))
 
-    return  feautureObject
+    return  FeautureObject
 
 
 #--------------------------------------------------
 # Create_FDF_Sensors : Return data frames of sensors features
-# Original_User - The name of the original user
 # DF_Users - A data frame that must have the shape same to that of findUsers_Common function result in s1_ExploreData
 # DF_Acc, DF_Gyr - Data frames that must have the shape same to that of Create_DF_Sensors function result in s2_CreateDataFrames
 #--------------------------------------------------
-def Create_FDF_Sensors(Original_User, DF_Users, DF_Acc, DF_Gyr, Feature, WindowSize, Overlap):
+def Create_FDF_Sensors(DF_Users, DF_Acc, DF_Gyr, Feature):
     F_Acc = Features_Sensors()
     F_Gyr = Features_Sensors()
     
-    for User in DF_Users['User'].values:
-        List_Of_TimeStamps = DF_Users.loc[DF_Users['User'] == User]["List_Of_TimeStamps"].values[0]
+    print(flush=True)
+    for User in tqdm(DF_Users['User'].values, desc = '-> Extracting Sensors Features'):
+        List_Of_TimeStamps = DF_Users.loc[DF_Users['User'] == User]['List_Of_TimeStamps'].values[0]
+        Screens_Of_TimeStamps = DF_Users.loc[DF_Users['User'] == User]['Screens_Of_TimeStamps'].values[0]
         
         for i in range(len(List_Of_TimeStamps)):
-            Data_Acc = DF_Acc.loc[(DF_Acc['TimeStamp'] == List_Of_TimeStamps[i]) & (DF_Acc['User'] == User)][Feature].values
-            Data_Gyr = DF_Gyr.loc[(DF_Gyr['TimeStamp'] == List_Of_TimeStamps[i]) & (DF_Gyr['User'] == User)][Feature].values     
-            
-            if User == Original_User:
-                F_Acc = FeatureExtraction_Sensors(User, List_Of_TimeStamps[i], Data_Acc, WindowSize, Overlap, 1, F_Acc)
-                F_Gyr = FeatureExtraction_Sensors(User, List_Of_TimeStamps[i], Data_Gyr, WindowSize, Overlap, 1, F_Gyr)
-            else:
-                F_Acc = FeatureExtraction_Sensors(User, List_Of_TimeStamps[i], Data_Acc, WindowSize, Overlap, 0, F_Acc)
-                F_Gyr = FeatureExtraction_Sensors(User, List_Of_TimeStamps[i], Data_Gyr, WindowSize, Overlap, 0, F_Gyr)
+            TimeStamp = List_Of_TimeStamps[i]
+            for j in range(len(Screens_Of_TimeStamps[i])):
+                Screen = Screens_Of_TimeStamps[i][j]
+                Data_Acc = DF_Acc.loc[(DF_Acc['User'] == User) & (DF_Acc['TimeStamp'] == TimeStamp) & (DF_Acc['Screen'] == Screen)][Feature].values
+                Data_Gyr = DF_Gyr.loc[(DF_Gyr['User'] == User) & (DF_Gyr['TimeStamp'] == TimeStamp) & (DF_Gyr['Screen'] == Screen)][Feature].values     
+                
+                F_Acc = FeatureExtraction_Sensors(User, TimeStamp, Screen, Data_Acc, F_Acc)
+                F_Gyr = FeatureExtraction_Sensors(User, TimeStamp, Screen, Data_Gyr, F_Gyr)
                 
     FDF_Acc = pd.DataFrame()
     FDF_Gyr = pd.DataFrame()
     
     FDF_Acc['User'] = F_Acc.getUser()
-    #FDF_Acc['ScreenName'] = F_Acc.getScreenName()
     FDF_Acc['TimeStamp'] = F_Acc.getTimeStamp()
+    FDF_Acc['Screen'] = F_Acc.getScreen()
     FDF_Acc['Num_Of_Samples'] = F_Acc.getNum_Of_Samples()
     FDF_Acc['Mean'] = F_Acc.getMean()
     FDF_Acc['STD'] = F_Acc.getSTD()
@@ -272,11 +246,10 @@ def Create_FDF_Sensors(Original_User, DF_Users, DF_Acc, DF_Gyr, Feature, WindowS
     FDF_Acc['Amplitude2'] = F_Acc.getAmplitude2()
     FDF_Acc['Frequency2'] = F_Acc.getFrequency2()
     FDF_Acc['MeanFrequency'] = F_Acc.getMeanFrequency()
-    FDF_Acc['Output'] = F_Acc.getOutput()
     
     FDF_Gyr['User'] = F_Gyr.getUser()
-    #FDF_Gyr['ScreenName'] = F_Gyr.getScreenName()
     FDF_Gyr['TimeStamp'] = F_Gyr.getTimeStamp()
+    FDF_Gyr['Screen'] = F_Gyr.getScreen()
     FDF_Gyr['Num_Of_Samples'] = F_Gyr.getNum_Of_Samples()
     FDF_Gyr['Mean'] = F_Gyr.getMean()
     FDF_Gyr['STD'] = F_Gyr.getSTD()
@@ -293,8 +266,8 @@ def Create_FDF_Sensors(Original_User, DF_Users, DF_Acc, DF_Gyr, Feature, WindowS
     FDF_Gyr['Amplitude2'] = F_Gyr.getAmplitude2()
     FDF_Gyr['Frequency2'] = F_Gyr.getFrequency2()
     FDF_Gyr['MeanFrequency'] = F_Gyr.getMeanFrequency()
-    FDF_Gyr['Output'] = F_Gyr.getOutput() 
+    
+    print(flush=True)
+    print('-> Extracting Sensors Features Finished', end = '')
     
     return FDF_Acc, FDF_Gyr
-
-    
