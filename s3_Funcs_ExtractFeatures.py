@@ -109,45 +109,45 @@ def FeatureExtraction_Swipes(Gesture, Normalize, FeautureObject):
         
         
 #--------------------------------------------------
-# Create_FDF_Gest : Return data frame of swipes features
+# Create_DFF_Gest : Return data frame of swipes features
 # DF_Gest - A data frame that must have the shape of Create_DF_Gestures function result in s2_CreateDataFrames
 # Normalize - If True normalize gestures data in a spesific screen size
 #--------------------------------------------------
-def Create_FDF_Swipes(DF_Gest, Normalize):
+def Create_DFF_Swipes(DF_Gest, Normalize):
 
     F_Swipes = Features_Swipes()
     
     #for idx in tqdm(range(len(DF_Gest)), desc = '-> Extracting Swipes Features'):
-    for idx in range(len(DF_Gest)):
+    for idx in tqdm(range(len(DF_Gest))):
         G = DF_Gest.loc[idx]
         
         if (G['G_Type'] == 'swipe'):
             F_Swipes = FeatureExtraction_Swipes(G, Normalize, F_Swipes)
                 
-    FDF_Swipes = pd.DataFrame()
+    DFF_Swipes = pd.DataFrame()
     
-    FDF_Swipes['User'] = F_Swipes.getUser()
-    FDF_Swipes['Screen'] = F_Swipes.getScreen()
-    FDF_Swipes['Type'] = F_Swipes.getType()
-    FDF_Swipes['Time_Start'] = F_Swipes.getTime_Start()
-    FDF_Swipes['Time_Stop'] = F_Swipes.getTime_Stop()
-    FDF_Swipes['Duration'] = F_Swipes.getDuration()
-    FDF_Swipes['Trace_Length_Horizontal'] = F_Swipes.getTrace_Length_Horizontal()
-    FDF_Swipes['Trace_Length_Vertical'] = F_Swipes.getTrace_Length_Vertical()
-    FDF_Swipes['Direction'] = F_Swipes.getDirection()
-    FDF_Swipes['Slope'] = F_Swipes.getSlope()
-    FDF_Swipes['Mean_Square_Error'] = F_Swipes.getMean_Square_Error()
-    FDF_Swipes['Mean_Abs_Error'] = F_Swipes.getMean_Abs_Error()
-    FDF_Swipes['Median_Abs_Error'] = F_Swipes.getMedian_Abs_Error()
-    FDF_Swipes['Coef_Determination'] = F_Swipes.getCoef_Determination()
-    FDF_Swipes['Mean_X'] = F_Swipes.getMean_X()
-    FDF_Swipes['Mean_Y'] = F_Swipes.getMean_Y()
-    FDF_Swipes['Acceleration_Horizontal'] = F_Swipes.getAcceleration_Horizontal()
-    FDF_Swipes['Acceleration_Vertical'] = F_Swipes.getAcceleration_Vertical()
+    DFF_Swipes['User'] = F_Swipes.getUser()
+    DFF_Swipes['Screen'] = F_Swipes.getScreen()
+    DFF_Swipes['Type'] = F_Swipes.getType()
+    DFF_Swipes['Time_Start'] = F_Swipes.getTime_Start()
+    DFF_Swipes['Time_Stop'] = F_Swipes.getTime_Stop()
+    DFF_Swipes['Duration'] = F_Swipes.getDuration()
+    DFF_Swipes['Trace_Length_Horizontal'] = F_Swipes.getTrace_Length_Horizontal()
+    DFF_Swipes['Trace_Length_Vertical'] = F_Swipes.getTrace_Length_Vertical()
+    DFF_Swipes['Direction'] = F_Swipes.getDirection()
+    DFF_Swipes['Slope'] = F_Swipes.getSlope()
+    DFF_Swipes['Mean_Square_Error'] = F_Swipes.getMean_Square_Error()
+    DFF_Swipes['Mean_Abs_Error'] = F_Swipes.getMean_Abs_Error()
+    DFF_Swipes['Median_Abs_Error'] = F_Swipes.getMedian_Abs_Error()
+    DFF_Swipes['Coef_Determination'] = F_Swipes.getCoef_Determination()
+    DFF_Swipes['Mean_X'] = F_Swipes.getMean_X()
+    DFF_Swipes['Mean_Y'] = F_Swipes.getMean_Y()
+    DFF_Swipes['Acceleration_Horizontal'] = F_Swipes.getAcceleration_Horizontal()
+    DFF_Swipes['Acceleration_Vertical'] = F_Swipes.getAcceleration_Vertical()
     
     print('-> Extracting Swipes Features Finished')
     
-    return FDF_Swipes
+    return DFF_Swipes
 
 
 #--------------------------------------------------
@@ -221,7 +221,7 @@ def FeatureExtraction_Sensors(User, TimeStamp, Screen, Dataset, Window, Overlap,
 
 
 #--------------------------------------------------
-# Create_FDF_Sensors : Return data frames of sensors features
+# Create_DFF_Sensors : Return data frames of sensors features
 # DF_Users - A data frame that must have the shape same to that of findUsers_Common function result in s1_ExploreData
 # DF_Acc, DF_Gyr - Data frames that must have the shape same to that of Create_DF_Sensors function result in s2_CreateDataFrames
 # Feature
@@ -229,12 +229,12 @@ def FeatureExtraction_Sensors(User, TimeStamp, Screen, Dataset, Window, Overlap,
 # Window
 # Overlap
 #--------------------------------------------------
-def Create_FDF_Sensors(DF_Users, DF_Acc, DF_Gyr, Feature, Synced_Sensors, Window, Overlap):
+def Create_DFF_Sensors(DF_Users, DF_Acc, DF_Gyr, Feature, Synced_Sensors, Window, Overlap):
     F_Acc = Features_Sensors()
     F_Gyr = Features_Sensors()
     
     #for User in tqdm(DF_Users['User'].values, desc = '-> Extracting Sensors Features'):
-    for User in DF_Users['User'].values:
+    for User in tqdm(DF_Users['User'].values):
         List_Of_TimeStamps = DF_Users.loc[DF_Users['User'] == User]['List_Of_TimeStamps'].values[0]
         Screens_Of_TimeStamps = DF_Users.loc[DF_Users['User'] == User]['Screens_Of_TimeStamps'].values[0]
         
@@ -248,61 +248,61 @@ def Create_FDF_Sensors(DF_Users, DF_Acc, DF_Gyr, Feature, Synced_Sensors, Window
                 if Synced_Sensors:
                     if len(Data_Acc) > len(Data_Gyr):
                         Surplus = len(Data_Acc) - len(Data_Gyr)
-                        for i in range(Surplus):
+                        for k in range(Surplus):
                             rnd = randint(0, len(Data_Acc) - 1)
                             Data_Acc = np.delete(Data_Acc, rnd)
                     if len(Data_Gyr) > len(Data_Acc):
                         Surplus = len(Data_Gyr) - len(Data_Acc)
-                        for i in range(Surplus):
+                        for k in range(Surplus):
                             rnd = randint(0, len(Data_Gyr) - 1)
                             Data_Gyr = np.delete(Data_Gyr, rnd)
                             
                 F_Acc = FeatureExtraction_Sensors(User, TimeStamp, Screen, Data_Acc, Window, Overlap, F_Acc)
                 F_Gyr = FeatureExtraction_Sensors(User, TimeStamp, Screen, Data_Gyr, Window, Overlap, F_Gyr)
                 
-    FDF_Acc = pd.DataFrame()
-    FDF_Gyr = pd.DataFrame()
+    DFF_Acc = pd.DataFrame()
+    DFF_Gyr = pd.DataFrame()
     
-    FDF_Acc['User'] = F_Acc.getUser()
-    FDF_Acc['TimeStamp'] = F_Acc.getTimeStamp()
-    FDF_Acc['Screen'] = F_Acc.getScreen()
-    FDF_Acc['Num_Of_Samples'] = F_Acc.getNum_Of_Samples()
-    FDF_Acc['Mean'] = F_Acc.getMean()
-    FDF_Acc['STD'] = F_Acc.getSTD()
-    FDF_Acc['Max'] = F_Acc.getMax()
-    FDF_Acc['Min'] = F_Acc.getMin()
-    FDF_Acc['Range'] = F_Acc.getRange()
-    FDF_Acc['Percentile25'] = F_Acc.getPercentile25()
-    FDF_Acc['Percentile50'] = F_Acc.getPercentile50()
-    FDF_Acc['Percentile75'] = F_Acc.getPercentile75()
-    FDF_Acc['Kurtosis'] = F_Acc.getKurtosis()
-    FDF_Acc['Skewness'] = F_Acc.getSkewness()
-    FDF_Acc['Entropy'] = F_Acc.getEntropy()
-    FDF_Acc['Amplitude1'] = F_Acc.getAmplitude1()
-    FDF_Acc['Amplitude2'] = F_Acc.getAmplitude2()
-    FDF_Acc['Frequency2'] = F_Acc.getFrequency2()
-    FDF_Acc['MeanFrequency'] = F_Acc.getMeanFrequency()
+    DFF_Acc['User'] = F_Acc.getUser()
+    DFF_Acc['TimeStamp'] = F_Acc.getTimeStamp()
+    DFF_Acc['Screen'] = F_Acc.getScreen()
+    DFF_Acc['Num_Of_Samples'] = F_Acc.getNum_Of_Samples()
+    DFF_Acc['Mean'] = F_Acc.getMean()
+    DFF_Acc['STD'] = F_Acc.getSTD()
+    DFF_Acc['Max'] = F_Acc.getMax()
+    DFF_Acc['Min'] = F_Acc.getMin()
+    DFF_Acc['Range'] = F_Acc.getRange()
+    DFF_Acc['Percentile25'] = F_Acc.getPercentile25()
+    DFF_Acc['Percentile50'] = F_Acc.getPercentile50()
+    DFF_Acc['Percentile75'] = F_Acc.getPercentile75()
+    DFF_Acc['Kurtosis'] = F_Acc.getKurtosis()
+    DFF_Acc['Skewness'] = F_Acc.getSkewness()
+    DFF_Acc['Entropy'] = F_Acc.getEntropy()
+    DFF_Acc['Amplitude1'] = F_Acc.getAmplitude1()
+    DFF_Acc['Amplitude2'] = F_Acc.getAmplitude2()
+    DFF_Acc['Frequency2'] = F_Acc.getFrequency2()
+    DFF_Acc['MeanFrequency'] = F_Acc.getMeanFrequency()
     
-    FDF_Gyr['User'] = F_Gyr.getUser()
-    FDF_Gyr['TimeStamp'] = F_Gyr.getTimeStamp()
-    FDF_Gyr['Screen'] = F_Gyr.getScreen()
-    FDF_Gyr['Num_Of_Samples'] = F_Gyr.getNum_Of_Samples()
-    FDF_Gyr['Mean'] = F_Gyr.getMean()
-    FDF_Gyr['STD'] = F_Gyr.getSTD()
-    FDF_Gyr['Max'] = F_Gyr.getMax()
-    FDF_Gyr['Min'] = F_Gyr.getMin()
-    FDF_Gyr['Range'] = F_Gyr.getRange()
-    FDF_Gyr['Percentile25'] = F_Gyr.getPercentile25()
-    FDF_Gyr['Percentile50'] = F_Gyr.getPercentile50()
-    FDF_Gyr['Percentile75'] = F_Gyr.getPercentile75()
-    FDF_Gyr['Kurtosis'] = F_Gyr.getKurtosis()
-    FDF_Gyr['Skewness'] = F_Gyr.getSkewness()
-    FDF_Gyr['Entropy'] = F_Gyr.getEntropy()
-    FDF_Gyr['Amplitude1'] = F_Gyr.getAmplitude1()
-    FDF_Gyr['Amplitude2'] = F_Gyr.getAmplitude2()
-    FDF_Gyr['Frequency2'] = F_Gyr.getFrequency2()
-    FDF_Gyr['MeanFrequency'] = F_Gyr.getMeanFrequency()
+    DFF_Gyr['User'] = F_Gyr.getUser()
+    DFF_Gyr['TimeStamp'] = F_Gyr.getTimeStamp()
+    DFF_Gyr['Screen'] = F_Gyr.getScreen()
+    DFF_Gyr['Num_Of_Samples'] = F_Gyr.getNum_Of_Samples()
+    DFF_Gyr['Mean'] = F_Gyr.getMean()
+    DFF_Gyr['STD'] = F_Gyr.getSTD()
+    DFF_Gyr['Max'] = F_Gyr.getMax()
+    DFF_Gyr['Min'] = F_Gyr.getMin()
+    DFF_Gyr['Range'] = F_Gyr.getRange()
+    DFF_Gyr['Percentile25'] = F_Gyr.getPercentile25()
+    DFF_Gyr['Percentile50'] = F_Gyr.getPercentile50()
+    DFF_Gyr['Percentile75'] = F_Gyr.getPercentile75()
+    DFF_Gyr['Kurtosis'] = F_Gyr.getKurtosis()
+    DFF_Gyr['Skewness'] = F_Gyr.getSkewness()
+    DFF_Gyr['Entropy'] = F_Gyr.getEntropy()
+    DFF_Gyr['Amplitude1'] = F_Gyr.getAmplitude1()
+    DFF_Gyr['Amplitude2'] = F_Gyr.getAmplitude2()
+    DFF_Gyr['Frequency2'] = F_Gyr.getFrequency2()
+    DFF_Gyr['MeanFrequency'] = F_Gyr.getMeanFrequency()
     
     print('-> Extracting Sensors Features Finished')
     
-    return FDF_Acc, FDF_Gyr
+    return DFF_Acc, DFF_Gyr

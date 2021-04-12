@@ -54,7 +54,7 @@ def Clf_Train(Classifier, Parameters, TrnSet_X):
         Clf = IsolationForest(n_jobs = -1, n_estimators = Parameters[0], contamination = Parameters[1], bootstrap = False).fit(TrnSet_X)
     elif (Classifier == 'OneClassSVM'):
         # parameters = [0.001, 01]
-        Clf = svm.OneClassSVM(gamma = Parameters[0], kernel = 'rbf', nu = Parameters[1], cache_size = 500)
+        Clf = svm.OneClassSVM(gamma = Parameters[0], kernel = 'rbf', nu = Parameters[1])
         Clf.fit(TrnSet_X)
     else:
         raise ValueError('No such Algorithm found !!!')
@@ -63,6 +63,45 @@ def Clf_Train(Classifier, Parameters, TrnSet_X):
     maxDistance = max(Decision)
     
     return Clf, maxDistance
+
+
+#--------------------------------------------------
+# SwipesMultClassifier :
+#--------------------------------------------------
+def SwipesMultClassifier(Decisions_Swipes):
+    
+    Predictions_Swipes = []
+    
+    for j in range(len(Decisions_Swipes[0])):
+        Desisions_Sum = 0 
+        for i in range(len(Decisions_Swipes)):
+            Desisions_Sum = Desisions_Sum + Decisions_Swipes[i][j]
+            
+        if Desisions_Sum >= 0:
+            Predictions_Swipes.append(1)
+        else:
+            Predictions_Swipes.append(-1)  
+            
+    return Predictions_Swipes
+    
+
+
+#--------------------------------------------------
+# SensorsClassifier :
+#--------------------------------------------------
+def SensorsClassifier(Decisions_Acc, Decisions_Gyr):
+    
+    Predictions_Sensors = []
+    
+    for i in range(len(Decisions_Acc)):
+        Decision_Sensors = Decisions_Acc[i] + Decisions_Gyr[i]
+        
+        if Decision_Sensors >= 0:
+            Predictions_Sensors.append(1)
+        else:
+            Predictions_Sensors.append(-1)
+    
+    return Predictions_Sensors
 
 
 #--------------------------------------------------
@@ -120,7 +159,6 @@ def Clf_Evaluate(TrnSet_Y, TstSet_Y, Prediction, EvaluationMetrics):
 #--------------------------------------------------
 # CalculateMeanMetrics : 
 # EvaluationMetrics_Folds
-# Folds
 # EvaluationMetrics
 #--------------------------------------------------
 def CalculateMeanMetrics(EvaluationMetrics_Folds, EvaluationMetrics):
@@ -153,6 +191,51 @@ def CalculateMeanMetrics(EvaluationMetrics_Folds, EvaluationMetrics):
 
 
 #--------------------------------------------------
+# AppendUserMetrics : 
+# EvaluationMetrics_User
+# EvaluationMetrics_All
+#--------------------------------------------------
+def AppendUserMetrics(EvaluationMetrics_User, EvaluationMetrics_All):
+    
+    Accuracy = EvaluationMetrics_User.getAccuracy()[0]
+    F1Score = EvaluationMetrics_User.getF1Score()[0]
+    ROC = EvaluationMetrics_User.getROC()[0]
+    FAR = EvaluationMetrics_User.getFAR()[0]
+    FRR = EvaluationMetrics_User.getFRR()[0]
+    FalseAccept = EvaluationMetrics_User.getFalseAccept()[0]
+    FalseReject = EvaluationMetrics_User.getFalseReject()[0]
+    TrueAccept = EvaluationMetrics_User.getTrueAccept()[0]
+    TrueReject = EvaluationMetrics_User.getTrueReject()[0]
+    TrnSize = EvaluationMetrics_User.getTrnSize()[0]
+    TstSize = EvaluationMetrics_User.getTstSize()[0]
+    
+    EvaluationMetrics_All.setAccuracy(Accuracy)
+    EvaluationMetrics_All.setF1Score(F1Score)
+    EvaluationMetrics_All.setROC(ROC)
+    EvaluationMetrics_All.setFAR(FAR)
+    EvaluationMetrics_All.setFRR(FRR)
+    EvaluationMetrics_All.setFalseAccept(FalseAccept)
+    EvaluationMetrics_All.setFalseReject(FalseReject)
+    EvaluationMetrics_All.setTrueAccept(TrueAccept)
+    EvaluationMetrics_All.setTrueReject(TrueReject)
+    EvaluationMetrics_All.setTrnSize(TrnSize)
+    EvaluationMetrics_All.setTstSize(TstSize)
+    
+    return EvaluationMetrics_All
+
+
+#--------------------------------------------------
+# frange
+#--------------------------------------------------
+def frange(start, stop, step):
+	
+	i = start
+	while(i<stop):
+		yield i
+		i += step
+        
+        
+#--------------------------------------------------
 # RunML : 
 # ScreenName - 
 # DF_Users_Final - 
@@ -163,208 +246,134 @@ def CalculateMeanMetrics(EvaluationMetrics_Folds, EvaluationMetrics):
 # Final_Features_Sensors - 
 # Split_Rate - 
 # Folds - 
-#--------------------------------------------------
-def frange(start, stop, step):
-	
-	i = start
-	while(i<stop):
-		yield i
-		i += step
-
-def RunML(ScreenName, DF_Users_Final, DFF_Swipes, DFF_Acc, DFF_Gyr, Final_Features_Swipes, Final_Features_Sensors, Split_Rate, Folds):
-    
-    F_Swipes = False
-    F_Acc = True
-    F_Gyr = True
+#--------------------------------------------------      
+def RunML(OriginalUser, DFF_Swipes, DFF_Acc, DFF_Gyr, Final_Features_Swipes, Final_Features_Sensors, Split_Rate, Folds):
     
     PrintUserStats = False
-    
-    nus = []
-    gammas = []
-    for nu in frange(0.01, 0.3, 0.01):
-        nus.append(nu)
-    for gamma in frange(0.00005, 0.001, 0.00005):
-        gammas.append(gamma)
-    
-    # Initializing FINAL Evaluation Metrics
+       
+    # Initializing FOLD Evaluation Metrics
     #--------------------------------------
-    if F_Swipes: EvaluationMetrics_Swipes = EvaluationMetrics()
-    if F_Acc: EvaluationMetrics_Acc = EvaluationMetrics()
-    if F_Gyr: EvaluationMetrics_Gyr = EvaluationMetrics()
-    
-    for i in tqdm(range(len(DF_Users_Final)), desc = '-> User'):
+    EvaluationMetrics_Swipes_Folds = EvaluationMetrics()
+    EvaluationMetrics_Acc_Folds = EvaluationMetrics()
+    EvaluationMetrics_Gyr_Folds = EvaluationMetrics()
+    EvaluationMetrics_Sensors_Folds = EvaluationMetrics()
         
-        OriginalUser = DF_Users_Final['User'].values[i]
-    
-        # Initializing FOLD Evaluation Metrics
-        #--------------------------------------
-        if F_Swipes: EvaluationMetrics_Swipes_Folds = EvaluationMetrics()
-        if F_Acc: EvaluationMetrics_Acc_Folds = EvaluationMetrics()
-        if F_Gyr: EvaluationMetrics_Gyr_Folds = EvaluationMetrics()
-        
-        for j in tqdm(range(Folds), desc = '-> Fold'):
-            
-            # Creating Original User's & Attackers Sets
-            #------------------------------------------
-            # FDFs_Original = [FDFs_Org_Trn, FDFs_Org_Tst]
-            # FDFs_Attackers = FDFs_Attackers = [FDF_Att_Swipes, FDF_Att_Acc, FDF_Att_Gyr]
-            Synced_Sensors = True
-            Set_Original, Set_Attackers = CreateFinalSets(DFF_Swipes, DFF_Acc, DFF_Gyr, OriginalUser, Synced_Sensors, Split_Rate)
-        
-        
-            # Creating Train & Test Sets
-            #---------------------------
-            # Train Set
-            if F_Swipes: 
-                TrnSet_Swipes_X = Set_Original[0][0].loc[:, Final_Features_Swipes]
-                TrnSet_Swipes_Y = Set_Original[0][0].loc[:, ['Output']].values
-            if F_Acc: 
-                TrnSet_Acc_X = Set_Original[0][1].loc[:, Final_Features_Sensors]
-                TrnSet_Acc_Y = Set_Original[0][1].loc[:, ['Output']].values
-            if F_Gyr: 
-                TrnSet_Gyr_X = Set_Original[0][2].loc[:, Final_Features_Sensors]
-                TrnSet_Gyr_Y = Set_Original[0][2].loc[:, ['Output']].values
-            
-            # Test Set
-            if F_Swipes:
-                TstSet_Swipes_X = pd.concat([Set_Attackers[0].loc[:, Final_Features_Swipes], Set_Original[1][0].loc[:, Final_Features_Swipes]], ignore_index=True, sort=False)
-                TstSet_Swipes_Y = pd.concat([Set_Attackers[0].loc[:, ['Output']], Set_Original[1][0].loc[:, ['Output']]], ignore_index=True, sort=False).values    
-            if F_Acc:
-                TstSet_Acc_X = pd.concat([Set_Attackers[1].loc[:, Final_Features_Sensors], Set_Original[1][1].loc[:, Final_Features_Sensors]], ignore_index=True, sort=False)
-                TstSet_Acc_Y = pd.concat([Set_Attackers[1].loc[:, ['Output']], Set_Original[1][1].loc[:, ['Output']]], ignore_index=True, sort=False).values
-            if F_Gyr:
-                TstSet_Gyr_X = pd.concat([Set_Attackers[2].loc[:, Final_Features_Sensors], Set_Original[1][2].loc[:, Final_Features_Sensors]], ignore_index=True, sort=False)
-                TstSet_Gyr_Y = pd.concat([Set_Attackers[2].loc[:, ['Output']], Set_Original[1][2].loc[:, ['Output']]], ignore_index=True, sort=False).values
-        
-    
-            # Normilizing Sets (MinMaxScalar)
-            #--------------------------------
-            if F_Swipes:
-                Scalar_Swipes = MinMaxScaler().fit(TrnSet_Swipes_X)
-                TrnSet_Swipes_X_Norm = Scalar_Swipes.transform(TrnSet_Swipes_X)
-                TstSet_Swipes_X_Norm = Scalar_Swipes.transform(TstSet_Swipes_X)
-            if F_Acc:
-                Scalar_Acc = MinMaxScaler().fit(TrnSet_Acc_X)
-                TrnSet_Acc_X_Norm = Scalar_Acc.transform(TrnSet_Acc_X)
-                TstSet_Acc_X_Norm = Scalar_Acc.transform(TstSet_Acc_X)
-            if F_Gyr:
-                Scalar_Gyr = MinMaxScaler().fit(TrnSet_Gyr_X)
-                TrnSet_Gyr_X_Norm = Scalar_Gyr.transform(TrnSet_Gyr_X)
-                TstSet_Gyr_X_Norm = Scalar_Gyr.transform(TstSet_Gyr_X)
-        
-        
-            # Training Classifiers
-            #---------------------
-            Classifier = 'OneClassSVM'
+    for j in tqdm(range(Folds), desc = '-> Fold'):
 
-            if F_Swipes:
-                Clfs_Swipes = []
-                maxDistances_Swipes = []
-            if F_Acc:
-                Clfs_Acc = []
-                maxDistances_Acc = []   
-            if F_Gyr:
-                Clfs_Gyr = []
-                maxDistances_Gyr = []   
-                
-            for nu in nus:
-                for gamma in gammas:
-                    Parameters = [gamma, nu]
-                    if F_Swipes:
-                        Clf_Swipes, maxDistance_Swipes = Clf_Train(Classifier, Parameters, TrnSet_Swipes_X_Norm)
-                        Clfs_Swipes.append(Clf_Swipes)
-                        maxDistances_Swipes.append(maxDistance_Swipes)
-                    if F_Acc:
-                        Clf_Acc, maxDistance_Acc = Clf_Train(Classifier, Parameters, TrnSet_Acc_X_Norm)
-                        Clfs_Acc.append(Clf_Acc)
-                        maxDistances_Acc.append(maxDistance_Acc)
-                    if F_Gyr:
-                        Clf_Gyr, maxDistance_Gyr = Clf_Train(Classifier, Parameters, TrnSet_Gyr_X_Norm)
-                        Clfs_Gyr.append(Clf_Gyr)
-                        maxDistances_Gyr.append(maxDistance_Gyr)
+        # Creating Original User's & Attackers Sets
+        #------------------------------------------
+        # FDFs_Original = [FDFs_Org_Trn, FDFs_Org_Tst]
+        # FDFs_Attackers = FDFs_Attackers = [FDF_Att_Swipes, FDF_Att_Acc, FDF_Att_Gyr]
+        Synced_Sensors = True
+        Set_Original, Set_Attackers = CreateFinalSets(DFF_Swipes, DFF_Acc, DFF_Gyr, OriginalUser, Synced_Sensors, Split_Rate)
+    
+    
+        # Creating Train & Test Sets
+        #---------------------------
+        # Train Set 
+        TrnSet_Swipes_X = Set_Original[0][0].loc[:, Final_Features_Swipes]
+        TrnSet_Swipes_Y = Set_Original[0][0].loc[:, ['Output']].values
+        TrnSet_Acc_X = Set_Original[0][1].loc[:, Final_Features_Sensors]
+        TrnSet_Acc_Y = Set_Original[0][1].loc[:, ['Output']].values
+        TrnSet_Gyr_X = Set_Original[0][2].loc[:, Final_Features_Sensors]
+        TrnSet_Gyr_Y = Set_Original[0][2].loc[:, ['Output']].values
+        
+        # Test Set
+        TstSet_Swipes_X = pd.concat([Set_Attackers[0].loc[:, Final_Features_Swipes], Set_Original[1][0].loc[:, Final_Features_Swipes]], ignore_index=True, sort=False)
+        TstSet_Swipes_Y = pd.concat([Set_Attackers[0].loc[:, ['Output']], Set_Original[1][0].loc[:, ['Output']]], ignore_index=True, sort=False).values 
+        TstSet_Acc_X = pd.concat([Set_Attackers[1].loc[:, Final_Features_Sensors], Set_Original[1][1].loc[:, Final_Features_Sensors]], ignore_index=True, sort=False)
+        TstSet_Acc_Y = pd.concat([Set_Attackers[1].loc[:, ['Output']], Set_Original[1][1].loc[:, ['Output']]], ignore_index=True, sort=False).values
+        TstSet_Gyr_X = pd.concat([Set_Attackers[2].loc[:, Final_Features_Sensors], Set_Original[1][2].loc[:, Final_Features_Sensors]], ignore_index=True, sort=False)
+        TstSet_Gyr_Y = pd.concat([Set_Attackers[2].loc[:, ['Output']], Set_Original[1][2].loc[:, ['Output']]], ignore_index=True, sort=False).values
+  
 
-                        
-            # Testing Classifiers
-            #--------------------
-            if F_Swipes:
-                Decisions_Swipes = []
-                Predictions_Swipes = []
-            if F_Acc:
-                Decisions_Acc = []
-                Predictions_Acc = []   
-            if F_Gyr:
-                Decisions_Gyr = []
-                Predictions_Gyr = []
-                
-            for k in range(len(nus) * len(gammas)):               
-                if F_Swipes: 
-                    Decision_Swipes, Prediction_Swipes = Clf_Predict(Clfs_Swipes[k], TstSet_Swipes_X_Norm, maxDistances_Swipes[k])
-                    Decisions_Swipes.append(Decision_Swipes)
-                    Predictions_Swipes.append(Prediction_Swipes)                        
-                if F_Acc: 
-                    Decision_Acc, Prediction_Acc = Clf_Predict(Clfs_Acc[k], TstSet_Acc_X_Norm, maxDistances_Acc[k])
-                    Decisions_Acc.append(Decision_Acc)
-                    Predictions_Acc.append(Prediction_Acc)                        
-                if F_Gyr: 
-                    Decision_Gyr, Prediction_Gyr = Clf_Predict(Clfs_Gyr[k], TstSet_Gyr_X_Norm, maxDistances_Gyr[k])
-                    Decisions_Gyr.append(Decision_Gyr)
-                    Predictions_Gyr.append(Prediction_Gyr)                        
+        # Normilizing Sets (MinMaxScalar)
+        #--------------------------------
+        Scalar_Swipes = MinMaxScaler().fit(TrnSet_Swipes_X)
+        TrnSet_Swipes_X_Norm = Scalar_Swipes.transform(TrnSet_Swipes_X)
+        TstSet_Swipes_X_Norm = Scalar_Swipes.transform(TstSet_Swipes_X)
+        Scalar_Acc = MinMaxScaler().fit(TrnSet_Acc_X)
+        TrnSet_Acc_X_Norm = Scalar_Acc.transform(TrnSet_Acc_X)
+        TstSet_Acc_X_Norm = Scalar_Acc.transform(TstSet_Acc_X)
+        Scalar_Gyr = MinMaxScaler().fit(TrnSet_Gyr_X)
+        TrnSet_Gyr_X_Norm = Scalar_Gyr.transform(TrnSet_Gyr_X)
+        TstSet_Gyr_X_Norm = Scalar_Gyr.transform(TstSet_Gyr_X)
+    
+    
+        # Training Classifiers
+        #---------------------
+        Classifier = 'OneClassSVM'
+        nus = []
+        gammas = []
+        for nu in frange(0.01, 0.3, 0.01):
+            nus.append(nu)
+        for gamma in frange(0.00005, 0.001, 0.00005):
+            gammas.append(gamma)
+        Clfs_Swipes = []
+        maxDistances_Swipes = []
+        for nu in nus:
+            for gamma in gammas:
+                Parameters = [gamma, nu]
+                Clf_Swipes, maxDistance_Swipes = Clf_Train(Classifier, Parameters, TrnSet_Swipes_X_Norm)
+                Clfs_Swipes.append(Clf_Swipes)
+                maxDistances_Swipes.append(maxDistance_Swipes)
+            
+        Classifier = 'LocalOutlierFactor'
+        n_neighbors = 3
+        Parameters = [n_neighbors]
+        Clf_Acc, maxDistance_Acc = Clf_Train(Classifier, Parameters, TrnSet_Acc_X_Norm)
+            
+        Classifier = 'LocalOutlierFactor'
+        n_neighbors = 5
+        Parameters = [n_neighbors]
+        Clf_Gyr, maxDistance_Gyr = Clf_Train(Classifier, Parameters, TrnSet_Gyr_X_Norm)
+
+                    
+        # Testing Classifiers
+        #--------------------
+        Decisions_Swipes = []
+        for k in range(len(Clfs_Swipes)):
+            Decision_Swipes, Prediction_Swipes = Clf_Predict(Clfs_Swipes[k], TstSet_Swipes_X_Norm, maxDistances_Swipes[k])
+            Decisions_Swipes.append(Decision_Swipes)
+            
+        Predictions_Swipes = SwipesMultClassifier(Decisions_Swipes)
+        Decisions_Acc, Predictions_Acc = Clf_Predict(Clf_Acc, TstSet_Acc_X_Norm, maxDistance_Acc)
+        Decisions_Gyr, Predictions_Gyr = Clf_Predict(Clf_Gyr, TstSet_Gyr_X_Norm, maxDistance_Gyr)
+        Predictions_Sensors = SensorsClassifier(Decisions_Acc, Decisions_Gyr)
+
+    
+        # Evaluating Classifiers
+        #-----------------------
+        EvaluationMetrics_Swipes_Folds = Clf_Evaluate(TrnSet_Swipes_Y, TstSet_Swipes_Y, Predictions_Swipes, EvaluationMetrics_Swipes_Folds)
+        EvaluationMetrics_Acc_Folds = Clf_Evaluate(TrnSet_Acc_Y, TstSet_Acc_Y, Predictions_Acc, EvaluationMetrics_Acc_Folds)
+        EvaluationMetrics_Gyr_Folds = Clf_Evaluate(TrnSet_Gyr_Y, TstSet_Gyr_Y, Predictions_Gyr, EvaluationMetrics_Gyr_Folds)
+        EvaluationMetrics_Sensors_Folds = Clf_Evaluate(TrnSet_Acc_Y, TstSet_Acc_Y, Predictions_Sensors, EvaluationMetrics_Sensors_Folds)
         
-        
-            # Evaluating Classifiers
-            #-----------------------
-            for k in range(len(nus) * len(gammas)):
-                if F_Swipes: EvaluationMetrics_Swipes_Folds = Clf_Evaluate(TrnSet_Swipes_Y, TstSet_Swipes_Y, Predictions_Swipes[k], EvaluationMetrics_Swipes_Folds)
-                if F_Acc: EvaluationMetrics_Acc_Folds = Clf_Evaluate(TrnSet_Acc_Y, TstSet_Acc_Y, Predictions_Acc[k], EvaluationMetrics_Acc_Folds)
-                if F_Gyr: EvaluationMetrics_Gyr_Folds = Clf_Evaluate(TrnSet_Gyr_Y, TstSet_Gyr_Y, Predictions_Gyr[k], EvaluationMetrics_Gyr_Folds)
+
+    # Calculating Mean of Folds Metrics
+    #----------------------------------
+    EvaluationMetrics_Swipes = EvaluationMetrics()
+    EvaluationMetrics_Swipes = CalculateMeanMetrics(EvaluationMetrics_Swipes_Folds, EvaluationMetrics_Swipes)
+    EvaluationMetrics_Acc = EvaluationMetrics()
+    EvaluationMetrics_Acc = CalculateMeanMetrics(EvaluationMetrics_Acc_Folds, EvaluationMetrics_Acc)
+    EvaluationMetrics_Gyr = EvaluationMetrics()
+    EvaluationMetrics_Gyr = CalculateMeanMetrics(EvaluationMetrics_Gyr_Folds, EvaluationMetrics_Gyr)   
+    EvaluationMetrics_Sensors = EvaluationMetrics()
+    EvaluationMetrics_Sensors = CalculateMeanMetrics(EvaluationMetrics_Sensors_Folds, EvaluationMetrics_Sensors)
+
     
-    
-        # Calculating Mean of Folds Metrics
-        #----------------------------------
-        if F_Swipes: EvaluationMetrics_Swipes = CalculateMeanMetrics(EvaluationMetrics_Swipes_Folds, EvaluationMetrics_Swipes)
-        if F_Acc: EvaluationMetrics_Acc = CalculateMeanMetrics(EvaluationMetrics_Acc_Folds, EvaluationMetrics_Acc)
-        if F_Gyr: EvaluationMetrics_Gyr = CalculateMeanMetrics(EvaluationMetrics_Gyr_Folds, EvaluationMetrics_Gyr)    
-    
-        
-        # Print User Stats
-        #-----------------
-        if PrintUserStats:
-            SumaryTable = Texttable()
-            SumaryTable.header(['User:\n' + OriginalUser, 'TrnSize', 'TstSize', 'Mean Accuracy', 'Mean F1Score', 'Mean FAR', 'Mean FRR'])
-            SumaryTable.set_cols_align(['c','c', 'c', 'c', 'c', 'c', 'c'])
-            SumaryTable.set_cols_valign(['m','m', 'm', 'm', 'm', 'm', 'm'])
-            if F_Swipes: SumaryTable.add_row(['Swipes', EvaluationMetrics_Swipes.getTrnSize()[i], EvaluationMetrics_Swipes.getTstSize()[i], EvaluationMetrics_Swipes.getAccuracy()[i], EvaluationMetrics_Swipes.getF1Score()[i], EvaluationMetrics_Swipes.getFAR()[i], EvaluationMetrics_Swipes.getFRR()[i]])
-            if F_Acc: SumaryTable.add_row(['Acc', EvaluationMetrics_Acc.getTrnSize()[i], EvaluationMetrics_Acc.getTstSize()[i], EvaluationMetrics_Acc.getAccuracy()[i], EvaluationMetrics_Acc.getF1Score()[i], EvaluationMetrics_Acc.getFAR()[i], EvaluationMetrics_Acc.getFRR()[i]])
-            if F_Gyr: SumaryTable.add_row(['Gyr', EvaluationMetrics_Gyr.getTrnSize()[i], EvaluationMetrics_Gyr.getTstSize()[i], EvaluationMetrics_Gyr.getAccuracy()[i], EvaluationMetrics_Gyr.getF1Score()[i], EvaluationMetrics_Gyr.getFAR()[i], EvaluationMetrics_Gyr.getFRR()[i]])
-            print(SumaryTable.draw())    
+    # Print User Stats
+    #-----------------
+    if PrintUserStats:
+        SumaryTable = Texttable()
+        SumaryTable.header(['User:\n' + OriginalUser, 'TrnSize', 'TstSize', 'Mean Accuracy', 'Mean F1Score', 'Mean FAR', 'Mean FRR'])
+        SumaryTable.set_cols_align(['c','c', 'c', 'c', 'c', 'c', 'c'])
+        SumaryTable.set_cols_valign(['m','m', 'm', 'm', 'm', 'm', 'm'])
+        SumaryTable.add_row(['Swipes', EvaluationMetrics_Swipes.getTrnSize()[0], EvaluationMetrics_Swipes.getTstSize()[0], EvaluationMetrics_Swipes.getAccuracy()[0], EvaluationMetrics_Swipes.getF1Score()[0], EvaluationMetrics_Swipes.getFAR()[0], EvaluationMetrics_Swipes.getFRR()[0]])
+        SumaryTable.add_row(['Acc', EvaluationMetrics_Acc.getTrnSize()[0], EvaluationMetrics_Acc.getTstSize()[0], EvaluationMetrics_Acc.getAccuracy()[0], EvaluationMetrics_Acc.getF1Score()[0], EvaluationMetrics_Acc.getFAR()[0], EvaluationMetrics_Acc.getFRR()[0]])
+        SumaryTable.add_row(['Gyr', EvaluationMetrics_Gyr.getTrnSize()[0], EvaluationMetrics_Gyr.getTstSize()[0], EvaluationMetrics_Gyr.getAccuracy()[0], EvaluationMetrics_Gyr.getF1Score()[0], EvaluationMetrics_Gyr.getFAR()[0], EvaluationMetrics_Gyr.getFRR()[0]])
+        SumaryTable.add_row(['Sensors', EvaluationMetrics_Sensors.getTrnSize()[0], EvaluationMetrics_Sensors.getTstSize()[0], EvaluationMetrics_Sensors.getAccuracy()[0], EvaluationMetrics_Sensors.getF1Score()[0], EvaluationMetrics_Sensors.getFAR()[0], EvaluationMetrics_Sensors.getFRR()[0]])
+        print(SumaryTable.draw())    
         
     
-    # Calculating Total Metrics
-    #--------------------------
-    if F_Swipes: 
-        EvaluationMetrics_Swipes_Total = EvaluationMetrics()
-        EvaluationMetrics_Swipes_Total = CalculateMeanMetrics(EvaluationMetrics_Swipes, EvaluationMetrics_Swipes_Total)
-    if F_Acc:
-        EvaluationMetrics_Acc_Total = EvaluationMetrics()
-        EvaluationMetrics_Acc_Total = CalculateMeanMetrics(EvaluationMetrics_Acc, EvaluationMetrics_Acc_Total)
-    if F_Gyr:
-        EvaluationMetrics_Gyr_Total = EvaluationMetrics()
-        EvaluationMetrics_Gyr_Total = CalculateMeanMetrics(EvaluationMetrics_Gyr, EvaluationMetrics_Gyr_Total)
-    
-    
-    # Print Total Stats
-    #------------------
-    SumaryTable = Texttable()
-    SumaryTable.header([ScreenName + '\n' + str(len(DF_Users_Final)) + ' Users' + '\n' + str(Split_Rate) + ' Split' + '\n' + str(Folds) + ' Folds', 'TrnSize', 'TstSize', 'Mean Accuracy', 'Mean F1Score', 'Mean FAR', 'Mean FRR'])
-    SumaryTable.set_cols_align(['c','c', 'c', 'c', 'c', 'c', 'c'])
-    SumaryTable.set_cols_valign(['m','m', 'm', 'm', 'm', 'm', 'm'])
-    if F_Swipes: SumaryTable.add_row(['Swipes', EvaluationMetrics_Swipes_Total.getTrnSize()[0], EvaluationMetrics_Swipes_Total.getTstSize()[0], EvaluationMetrics_Swipes_Total.getAccuracy()[0], EvaluationMetrics_Swipes_Total.getF1Score()[0], EvaluationMetrics_Swipes_Total.getFAR()[0], EvaluationMetrics_Swipes_Total.getFRR()[0]])
-    if F_Acc: SumaryTable.add_row(['Acc', EvaluationMetrics_Acc_Total.getTrnSize()[0], EvaluationMetrics_Acc_Total.getTstSize()[0], EvaluationMetrics_Acc_Total.getAccuracy()[0], EvaluationMetrics_Acc_Total.getF1Score()[0], EvaluationMetrics_Acc_Total.getFAR()[0], EvaluationMetrics_Acc_Total.getFRR()[0]])
-    if F_Gyr: SumaryTable.add_row(['Gyr', EvaluationMetrics_Gyr_Total.getTrnSize()[0], EvaluationMetrics_Gyr_Total.getTstSize()[0], EvaluationMetrics_Gyr_Total.getAccuracy()[0], EvaluationMetrics_Gyr_Total.getF1Score()[0], EvaluationMetrics_Gyr_Total.getFAR()[0], EvaluationMetrics_Gyr_Total.getFRR()[0]])
-    print(SumaryTable.draw())
-    
-    if F_Swipes: row_Swipes = np.array([[EvaluationMetrics_Swipes_Total.getTrnSize()[0], EvaluationMetrics_Swipes_Total.getTstSize()[0], EvaluationMetrics_Swipes_Total.getAccuracy()[0], EvaluationMetrics_Swipes_Total.getF1Score()[0], EvaluationMetrics_Swipes_Total.getFAR()[0], EvaluationMetrics_Swipes_Total.getFRR()[0]]])
-    if F_Acc: row_Acc = np.array([[EvaluationMetrics_Acc_Total.getTrnSize()[0], EvaluationMetrics_Acc_Total.getTstSize()[0], EvaluationMetrics_Acc_Total.getAccuracy()[0], EvaluationMetrics_Acc_Total.getF1Score()[0], EvaluationMetrics_Acc_Total.getFAR()[0], EvaluationMetrics_Acc_Total.getFRR()[0]]])
-    if F_Gyr: row_Gyr = np.array([[EvaluationMetrics_Gyr_Total.getTrnSize()[0], EvaluationMetrics_Gyr_Total.getTstSize()[0], EvaluationMetrics_Gyr_Total.getAccuracy()[0], EvaluationMetrics_Gyr_Total.getF1Score()[0], EvaluationMetrics_Gyr_Total.getFAR()[0], EvaluationMetrics_Gyr_Total.getFRR()[0]]])
-    
-    return row_Acc, row_Gyr
+    return EvaluationMetrics_Swipes, EvaluationMetrics_Acc, EvaluationMetrics_Gyr, EvaluationMetrics_Sensors
