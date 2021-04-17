@@ -23,11 +23,11 @@ from s0_Funcs_Util import MongoDBHandler, DBDataHandler
 ##############################
 #    INITIALIZE FUNCTIONS    #
 ##############################
-#--------------------------------------------------
+# ============================================================================================================
 # Create_DF_Sensors : Create data frames for accelerometer and gyroscope data
 # SensData_Path - The directory where the sensors json file are
-# DF_Users - A data frame that must have the shape of findUsers_Common function result in s1_ExploreData
-#--------------------------------------------------
+# DF_Users - A data frame that must have the shape of findUsers_Common function result in s1_Funcs_ExploreData
+# ============================================================================================================
 def Create_DF_Sensors(SensData_Path, DF_Users):
     DF_Acc = pd.DataFrame(columns= ['User', 'TimeStamp', 'Screen', 'X', 'Y', 'Z', 'Magnitude', 'Combine_Angle'])
     DF_Gyr = pd.DataFrame(columns= ['User', 'TimeStamp', 'Screen', 'X', 'Y', 'Z', 'Magnitude', 'Combine_Angle'])
@@ -73,11 +73,11 @@ def Create_DF_Sensors(SensData_Path, DF_Users):
     return DF_Acc, DF_Gyr      
 
 
-#--------------------------------------------------
+# ============================================================================================================
 # Create_DF_Gestures : Create data frames for gestures data
 # GestData_DBName - The dabase name in the mongoDB localhost:27017
-# DF_Users - A data frame that must have the shape of findUsers_Common function result in s1_ExploreData
-#--------------------------------------------------
+# DF_Users - A data frame that must have the shape of findUsers_Common function result in s1_Funcs_ExploreData
+# ============================================================================================================
 def Create_DF_Gestures(GestData_DBName, DF_Users):
     DF_Gest = pd.DataFrame(columns= ['User', 'Screen', 'G_ID', 'G_Type', 'G_tStart', 'G_tStop', 'G_Duration', 'G_Data', 'D_Height', 'D_Width'])
     

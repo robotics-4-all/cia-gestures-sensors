@@ -25,7 +25,7 @@ class EvaluationMetrics:
 
     def __init__(self):
         self.Accuracy = []
-        self.F1score = []
+        self.F1Score = []
         self.ROC = []
         self.FAR = []
         self.FRR = []

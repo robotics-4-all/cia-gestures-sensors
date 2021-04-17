@@ -5,7 +5,7 @@
 #--- EXPLORING DATA ---#
 ########################
 Synced_Sensors = True
-minData_Screen = 200
+minData_Screen = 300
 minData_TimeStamp = 1
 minData_User = 1
 maxDeviceWidth = 600
@@ -15,23 +15,25 @@ minData_Gesture = 4
 maxData_Gesture = 10
 minGesture_User = 1
 Synced_Sensors_Gestures = False
-minSensData = 4000
-maxSensData = 10000
-minGest = 1
+minSensData = 3000
+maxSensData = 30000
+minGest = 10
 maxGest = float('inf')
 
+-> 25 Users
+
 #########################
-#--- SELECTING USERS ---#
+#    SELECTING USERS    #
 #########################    
 Number_Of_Users = 5
 
 #############################
-#--- EXTRACTING FEATURES ---#
+#    EXTRACTING FEATURES    #
 #############################    
 Sensors_Feature = 'Magnitude'
 Synced_Sensors = True
-Window = 200
-Overlaps = 0.9
+Windows = [100, 200, 300]
+Overlaps = [0.2, 0.4, 0.6, 0.8]
 Normalize_Swipes = True
 
 #######################################
@@ -40,15 +42,10 @@ Normalize_Swipes = True
 Final_Features_Swipes = ['Trace_Length_Horizontal', 'Trace_Length_Vertical', 'Slope', 'Mean_Square_Error', 'Mean_Abs_Error', 'Median_Abs_Error', 'Coef_Determination', 'Mean_Y', 'Acceleration_Horizontal', 'Acceleration_Vertical']
 Final_Features_Sensors = ['Mean', 'STD', 'Max', 'Min', 'Percentile25', 'Percentile50', 'Percentile75', 'Kurtosis', 'Skewness', 'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']
 
-###################################
-#--- STARTING MACHINE LEARNING ---#
-###################################
-Split_Rate = 0.2
-Folds = 5
-
+#####################
+#    CLASSIFIERS    #
+#####################
 Classifier = 'OneClassSVM'
-nus = []
-gammas = []
 for nu in frange(0.01, 0.3, 0.01):
 for gamma in frange(0.00005, 0.001, 0.00005):
 
@@ -60,20 +57,11 @@ ns_neighbors_Acc = [3]
 Classifier = 'LocalOutlierFactor'
 ns_neighbors_Gyr = [5]
 
+-> Sensors are minmax normilized but Swipes no
 
 #################
-#--- Results ---#
+#    RESULTS    #
 #################
-+-----------+---------+---------+------------+-----------+----------+----------+
-| Mathisis  | TrnSize | TstSize |    Mean    |   Mean    | Mean FAR | Mean FRR |
-|  5 Users  |         |         |  Accuracy  |  F1Score  |          |          |
-| 0.2 Split |         |         |            |           |          |          |
-|  5 Folds  |         |         |            |           |          |          |
-+===========+=========+=========+============+===========+==========+==========+
-|  Swipes   | 136.800 | 714.200 |   0.543    |     0     |  0.467   |  0.258   |
-+-----------+---------+---------+------------+-----------+----------+----------+
-|    Acc    | 119.200 | 622.800 |   0.777    |     0     |  0.230   |  0.127   |
-+-----------+---------+---------+------------+-----------+----------+----------+
-|    Gyr    | 119.200 | 622.800 |   0.809    |     0     |  0.198   |  0.082   |
-+-----------+---------+---------+------------+-----------+----------+----------+
+
+
 

@@ -20,11 +20,11 @@ from random import randint
 ##############################
 #    INITIALIZE FUNCTIONS    #
 ##############################
-#--------------------------------------------------
+# ==================================================================
 # SplitFDF_OrgAtt : Split the FDFs in Original User & Attackers Sets
 # FDF - A Data Frame of features, must have the 'Output' column
 # Original_User
-#--------------------------------------------------
+# ==================================================================
 def SplitFDF_OrgAtt(FDF, Original_User):
     
     FDF_Original = pd.DataFrame()
@@ -43,11 +43,11 @@ def SplitFDF_OrgAtt(FDF, Original_User):
     return FDF_Original, FDF_Attackers            
     
 
-#--------------------------------------------------
+# ==================================================================================
 # SplitRandom : Split a FDF in train & test set in a random way using the split rate
 # FDF - A Data Frame of features
 # Split_Rate - The percentage of entries that the test set must contain
-#--------------------------------------------------
+# ==================================================================================
 def SplitRandom(FDF, Split_Rate):
     
     Trn = FDF
@@ -65,11 +65,11 @@ def SplitRandom(FDF, Split_Rate):
     return Trn, Tst
 
 
-#--------------------------------------------------
+# =====================================================================
 # SplitRandom_Synced :
 # FDF_1, FDF_2: Must have synced data !!!!
 # Split_Rate - The percentage of entries that the test set must contain
-#--------------------------------------------------
+# =====================================================================
 def SplitRandom_Synced(FDF_1, FDF_2, Split_Rate):
     
     Trn_1 = FDF_1
@@ -93,14 +93,14 @@ def SplitRandom_Synced(FDF_1, FDF_2, Split_Rate):
     return Trn_1, Tst_1, Trn_2, Tst_2
     
     
-#--------------------------------------------------
+# ==========================================================================================
 # CreateFinalSets : Create Original User & Attackers Sets
 # FDF_Swipes - FDF of swipe, same to s3_CreateFeaturesDataFrames -> Create_FDF_Swipes output
 # FDF_Acc - FDF of acc, same to s3_CreateFeaturesDataFrames -> Create_FDF_Sensors output
 # FDF_Gyr - FDF of gyr, same to s3_CreateFeaturesDataFrames -> Create_FDF_Sensors output
 # Original_User
 # Split_Rate - The percentage of entries that the test set must contain
-#--------------------------------------------------
+# ==========================================================================================
 def CreateFinalSets(FDF_Swipes, FDF_Acc, FDF_Gyr, Original_User, Synced_Sensors, Split_Rate):
     
     FDF_Org_Swipes, FDF_Att_Swipes = SplitFDF_OrgAtt(FDF_Swipes, Original_User)

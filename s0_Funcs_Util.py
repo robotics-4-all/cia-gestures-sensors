@@ -6,7 +6,7 @@ Author : Christos Emmanouil
 
 Thesis : Continuous implicit authentication of mobile phone users with a combination of navigation and behavior data.
 
-s0_Funcs_Util : This source code file contains a series of help functions and classes.
+s0_Funcs_Util : This source code file contains a series of helpful functions and classes.
 """
 
 #################
@@ -22,13 +22,14 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, median_abso
 ##############################
 #    INITIALIZE FUNCTIONS    #
 ##############################
-#--------------------------------------------------
+# =============================================
 # class MongoDBHandler()
 # class DBDataHandler()
 # def linear_regression(x_pos, y_pos)
 # def calc_ellipse_area(x_pos, y_pos)
+# def frange(start, stop, step):
 # These functions are not implemented by me !!!
-#--------------------------------------------------
+# =============================================
 class MongoDBHandler():
     
     def __init__(self, mongo_uri, db_name, timeout = 5000):
@@ -186,3 +187,11 @@ def calc_ellipse_area(x_pos, y_pos):
     tap_size = math.pi*big_axis*small_axis
     
     return tap_size
+
+
+def frange(start, stop, step):
+	
+	i = start
+	while(i<stop):
+		yield i
+		i += step

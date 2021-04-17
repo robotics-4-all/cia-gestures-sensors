@@ -26,12 +26,12 @@ from s3_Class_Features_Sensors import Features_Sensors
 ##############################
 #    INITIALIZE FUNCTIONS    #
 ##############################
-#--------------------------------------------------
+# ==============================================================================================================================================
 # FeatureExtraction_Swipes : Add a swipes features in the FeautureObject
 # Gesture - A swipe
 # Normalize - If True normalize gestures data in a spesific screen size
-# FeautureObject - The object that contains the features of the swipes, must have the shape of Features_Swipes class in s3_Features_Gestures
-#--------------------------------------------------
+# FeautureObject - The object that contains the features of the swipes, must have the shape of Features_Swipes class in s3_Class_Features_Swipes
+# ==============================================================================================================================================
 def FeatureExtraction_Swipes(Gesture, Normalize, FeautureObject):
     
     scalar_width = 400
@@ -108,11 +108,11 @@ def FeatureExtraction_Swipes(Gesture, Normalize, FeautureObject):
     return  FeautureObject
         
         
-#--------------------------------------------------
+# ===================================================================================================================
 # Create_DFF_Gest : Return data frame of swipes features
-# DF_Gest - A data frame that must have the shape of Create_DF_Gestures function result in s2_CreateDataFrames
+# DF_Gest - A data frame that must have the shape of Create_DF_Gestures function result in s2__Funcs_CreateDataFrames
 # Normalize - If True normalize gestures data in a spesific screen size
-#--------------------------------------------------
+# ===================================================================================================================
 def Create_DFF_Swipes(DF_Gest, Normalize):
 
     F_Swipes = Features_Swipes()
@@ -150,9 +150,16 @@ def Create_DFF_Swipes(DF_Gest, Normalize):
     return DFF_Swipes
 
 
-#--------------------------------------------------
+# ===========================
 # FeatureExtraction_Sensors :
-#--------------------------------------------------
+# User - 
+# TimeStamp - 
+# Screen - 
+# Dataset - 
+# Window - 
+# Overlap - 
+# FeautureObject - 
+# ===========================
 def FeatureExtraction_Sensors(User, TimeStamp, Screen, Dataset, Window, Overlap, FeautureObject):
     
     Overlap = int(Overlap * Window)
@@ -220,15 +227,15 @@ def FeatureExtraction_Sensors(User, TimeStamp, Screen, Dataset, Window, Overlap,
     return  FeautureObject
 
 
-#--------------------------------------------------
+# ====================================================================================================================================
 # Create_DFF_Sensors : Return data frames of sensors features
-# DF_Users - A data frame that must have the shape same to that of findUsers_Common function result in s1_ExploreData
-# DF_Acc, DF_Gyr - Data frames that must have the shape same to that of Create_DF_Sensors function result in s2_CreateDataFrames
-# Feature
-# Synced_Sensors
-# Window
-# Overlap
-#--------------------------------------------------
+# DF_Users - A data frame that must have the shape same to that of findUsers_Common function result in s1_Funcs_ExploreData
+# DF_Acc, DF_Gyr - Data frames that must have the shape same to that of Create_DF_Sensors function result in s2_Funcs_CreateDataFrames
+# Feature - 
+# Synced_Sensors - 
+# Window - 
+# Overlap - 
+# ====================================================================================================================================
 def Create_DFF_Sensors(DF_Users, DF_Acc, DF_Gyr, Feature, Synced_Sensors, Window, Overlap):
     F_Acc = Features_Sensors()
     F_Gyr = Features_Sensors()

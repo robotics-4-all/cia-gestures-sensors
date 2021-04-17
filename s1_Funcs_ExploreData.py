@@ -24,7 +24,7 @@ from s0_Funcs_Util import MongoDBHandler, DBDataHandler
 ##############################
 #    INITIALIZE FUNCTIONS    #
 ##############################
-#--------------------------------------------------
+# ===================================================================================================
 # findUsers_Sensors : Find users with 'valid' sensors (accelerometer, gyroscope) data
 # SensData_Path - The full path of json files directory
 # ScreenName - The type of screen
@@ -32,7 +32,7 @@ from s0_Funcs_Util import MongoDBHandler, DBDataHandler
 # minData_Screen - A screen must have at least minData_TimeStamp number of data to be accepted
 # minData_TimeStamp - A timestamp must have at least minData_TimeStamp number of data to be accepted
 # minData_User - A user must have at least minData_User number of data to be accepted
-#--------------------------------------------------
+# ===================================================================================================
 def findUsers_Sensors(SensData_Path, ScreenName, Synced_Sensors, minData_Screen, minData_TimeStamp, minData_User):
     # List *.json files
     jsonFiles = [pos_json for pos_json in os.listdir(SensData_Path) if pos_json.endswith('.json')]
@@ -134,7 +134,7 @@ def findUsers_Sensors(SensData_Path, ScreenName, Synced_Sensors, minData_Screen,
     return valUsers, Synced_Sensors
 
 
-#--------------------------------------------------
+# ==================================================================================================================
 # findUsers_Swipes : Find users with 'valid' swipes
 # GestData_DBName - The dabase name in the mongoDB localhost:27017
 # ScreenName - The type of screen
@@ -143,7 +143,7 @@ def findUsers_Sensors(SensData_Path, ScreenName, Synced_Sensors, minData_Screen,
 # Fake_Swipe_Limit - If Gesture_Time < Fake_Swipe_Limit the swipe is fake
 # minData_Gesture, maxData_Gesture - Select gestures with minData_Gesture <= len(gesture["data"]) <= maxData_Gesture
 # minGestures_User - A user must have at least minGestures_User number of valid gestures to be accepted
-#--------------------------------------------------
+# ==================================================================================================================
 def findUsers_Swipes(GestData_DBName, ScreenName, maxDeviceWidth, maxDeviceHeight, Fake_Swipe_Limit, minData_Gesture, maxData_Gesture, minGestures_User):
     # Get data
     m = MongoDBHandler('mongodb://localhost:27017/', GestData_DBName)
@@ -194,14 +194,14 @@ def findUsers_Swipes(GestData_DBName, ScreenName, maxDeviceWidth, maxDeviceHeigh
     return valUsers
 
 
-#--------------------------------------------------
+# ==============================================================================================
 # findUsers_Common : Find users with 'valid' sensors and swipes data
 # Users_Sens - Users with 'valid' sensors data
 # Users_Gest - Users with 'valid' gestures data
 # Synced_Sensors_Gestures - If True find sensors and gestures data that occures at the same time
 # minSensData, maxSensData
 # minGest, maxGest 
-#--------------------------------------------------
+# ==============================================================================================
 def findUsers_Common(Users_Sensors, Users_Swipes, Synced_Sensors_Gestures, minSensData, maxSensData, minGest, maxGest):
             
     # List common users
