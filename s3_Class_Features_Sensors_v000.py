@@ -1,22 +1,19 @@
 """
 Aristotle University of Thessaloniki
-Intelligent Systems & Software Engineering Labgroup
+Intelligent Systems & Software Engineering Lab Group
 
 Author : Christos Emmanouil
-
-Thesis : Continuous implicit authentication of mobile phone users with a combination of navigation and behavior data.
-
-s3_Class_Features_Sensors
 """
 
+
 class Features_Sensors:
-    
+
     User = []
     TimeStamp = []
     Screen = []
     Num_Of_Samples = []
-  
-    Μean = []
+
+    Mean = []
     STD = []
     Max = []
     Min = []
@@ -38,14 +35,13 @@ class Features_Sensors:
     Vx = []
     Vy = []
 
-
     def __init__(self):
-        self.User = []        
+        self.User = []
         self.TimeStamp = []
         self.Screen = []
         self.Num_Of_Samples = []
-        
-        self.Μean = []
+
+        self.Mean = []
         self.STD = []
         self.Max = []
         self.Min = []
@@ -66,30 +62,29 @@ class Features_Sensors:
         self.Dy = []
         self.Vx = []
         self.Vy = []
-        
 
     # Set Methods
     def setUser(self, value):
         self.User.append(value)
-        
+
     def setTimeStamp(self, value):
         self.TimeStamp.append(value)
-        
+
     def setScreen(self, value):
         self.Screen.append(value)
-        
+
     def setNum_Of_Samples(self, value):
         self.Num_Of_Samples.append(value)
-    
-    def setΜean(self, value):
-        self.Μean.append(value)
-    
+
+    def setMean(self, value):
+        self.Mean.append(value)
+
     def setSTD(self, value):
         self.STD.append(value)
 
     def setMax(self, value):
         self.Max.append(value)
-    
+
     def setMin(self, value):
         self.Min.append(value)
 
@@ -127,7 +122,7 @@ class Features_Sensors:
         self.MeanFrequency.append(value)
 
     def setDx(self, value):
-        self.Dx.append(value)  
+        self.Dx.append(value)
 
     def setDy(self, value):
         self.Dy.append(value)
@@ -137,30 +132,29 @@ class Features_Sensors:
 
     def setVy(self, value):
         self.Vy.append(value)
-        
 
     # Get Methods
     def getUser(self):
-        return self.User  
-    
+        return self.User
+
     def getTimeStamp(self):
         return self.TimeStamp
-    
+
     def getScreen(self):
-        return self.Screen  
-    
+        return self.Screen
+
     def getNum_Of_Samples(self):
         return self.Num_Of_Samples
-    
+
     def getMean(self):
-        return self.Μean
+        return self.Mean
 
     def getSTD(self):
         return self.STD
-    
+
     def getMax(self):
         return self.Max
-    
+
     def getMin(self):
         return self.Min
 
