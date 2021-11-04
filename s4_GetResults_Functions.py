@@ -11,6 +11,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from _cases_dictionaries import dict_cases
+from s4_GetResults_EnsembleClass import Ensemble
 
 
 #  ============== #
@@ -24,7 +25,8 @@ def get_results(case_name: str, screen_path: str, ftr_acc: pd.DataFrame, ftr_gyr
     dict_obj = {
         'acc': dict_cases[case_name]['GetResults']['acc'],
         'gyr': dict_cases[case_name]['GetResults']['gyr'],
-        'swp': dict_cases[case_name]['GetResults']['swp']
+        'swp': dict_cases[case_name]['GetResults']['swp'],
+        'ags': Ensemble
     }
 
     dict_ftr = {
@@ -40,13 +42,17 @@ def get_results(case_name: str, screen_path: str, ftr_acc: pd.DataFrame, ftr_gyr
 
         # Get level 1 decisions
         for data_type in dict_obj:
-            obj = dict_obj[data_type](original_user, dict_ftr[data_type])
-            obj.train_classifier()
-            dict_decisions[data_type] = obj.get_decisions()
+
+            if data_type != 'ags':
+                obj = dict_obj[data_type](original_user, dict_ftr[data_type])
+                obj.train_classifier()
+                dict_decisions[data_type] = obj.get_decisions()
+            else:
+                obj = Ensemble(original_user, dict_decisions)
+                final_predictions = obj.get_final_predictions()
+
             metrics = obj.calculate_metrics()
             results = results.append(metrics, ignore_index=True)
-
-        # Get final predictions
 
     # Save all results
     results.to_csv(path_results, index=False)

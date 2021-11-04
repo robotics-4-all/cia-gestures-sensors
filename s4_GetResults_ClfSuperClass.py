@@ -14,11 +14,10 @@ import numpy as np
 # ============= #
 class ClfSuperClass:
 
-    def __init__(self, original_user: str, data_type: str, users_data: dict):
+    def __init__(self, original_user: str, data_type: str):
 
         self.original_user = original_user
         self.data_type = data_type
-        self.users_data = users_data
 
         self.folds = 10
 
@@ -34,7 +33,7 @@ class ClfSuperClass:
         Number_Of_Acceptances_Till_Lock = []
 
         for fold in range(self.folds):
-            for user in self.users_data:
+            for user in self.users_decisions:
 
                 predictions = self.users_predictions[user][fold]
                 threshold = 35
@@ -100,19 +99,24 @@ class ClfSuperClass:
         FAR = np.array(FAR)
         Number_Of_Acceptances_Till_Lock = np.array(Number_Of_Acceptances_Till_Lock)
 
-        num_data = 0
-        for user in self.users_data:
+        num_data_orgu = 0
+        for fold in self.users_decisions[self.original_user]:
+            num_data_orgu += self.users_decisions[self.original_user][fold].shape[0]
+
+        mean_num_data_att = 0
+        for user in self.users_decisions:
             if user != self.original_user:
-                num_data += self.users_data[user].shape[0]
-        num_data /= len(self.users_data) - 1
+                for fold in self.users_decisions[user]:
+                    mean_num_data_att += self.users_decisions[user][fold].shape[0]
+        mean_num_data_att /= len(self.users_decisions.keys()) - 1
 
         metrics = {
             'Data_Type': self.data_type,
 
             'OrgUser': self.original_user,
-            'OrgUser_NoD': self.users_data[self.original_user].shape[0],
+            'OrgUser_NoD': num_data_orgu,
 
-            'Attacker_Mean_NoD': num_data,
+            'Attacker_Mean_NoD': mean_num_data_att,
 
             'FRR_min': FRR.min(),
             'FRR_max': FRR.max(),

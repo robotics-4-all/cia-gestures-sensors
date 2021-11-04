@@ -59,12 +59,12 @@ class SimpleClf(ClfSuperClass):
         self.clfs_trained = {}
         self.clfs_max_distance = {}
 
-        users_data = {}
+        self.users_data = {}
         for user in set(features_df['User']):
-            users_data[user] = features_df.loc[features_df['User'] == user][final_features]
-            users_data[user] = users_data[user].reset_index(drop=True)
+            self.users_data[user] = features_df.loc[features_df['User'] == user][final_features]
+            self.users_data[user] = self.users_data[user].reset_index(drop=True)
 
-        super(SimpleClf, self).__init__(original_user, data_type, users_data)
+        super(SimpleClf, self).__init__(original_user, data_type)
 
     def train_classifier(self) -> None:
 
@@ -95,7 +95,7 @@ class SimpleClf(ClfSuperClass):
 
         return
 
-    def get_decisions(self):
+    def get_decisions(self) -> dict:
 
         for fold in range(self.folds):
             for user in self.users_data:
