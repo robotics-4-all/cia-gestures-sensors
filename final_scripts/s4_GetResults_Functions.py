@@ -9,10 +9,6 @@ author: eachrist
 import os
 import pandas as pd
 from tqdm import tqdm
-from sklearn import svm
-from sklearn.ensemble import IsolationForest
-from sklearn.covariance import EllipticEnvelope
-from sklearn.neighbors import LocalOutlierFactor
 
 from _cases_dictionaries import dict_cases
 
@@ -20,24 +16,6 @@ from _cases_dictionaries import dict_cases
 #  ============== #
 #    Functions    #
 # =============== #
-def clf_train(clf_name, parameters, train_data):
-
-    if clf_name == 'LocalOutlierFactor':
-        clf = LocalOutlierFactor(n_neighbors=parameters[0], novelty=True)  # parameters = [3]
-
-    elif clf_name == 'OneClassSVM':
-        clf = svm.OneClassSVM(gamma=parameters[0], kernel='rbf', nu=parameters[1])  # parameters = [0.001, 01]
-
-    else:
-        raise ValueError('No such Algorithm found !!!')
-
-    clf.fit(train_data)
-    distances = clf.decision_function(train_data)
-    max_distance = max(distances)
-
-    return clf, max_distance
-
-
 def get_results(case_name: str, screen_path: str, ftr_acc: pd.DataFrame, ftr_gyr: pd.DataFrame, ftr_swp: pd.DataFrame):
 
     path_results = os.path.join(screen_path, 'results.csv')

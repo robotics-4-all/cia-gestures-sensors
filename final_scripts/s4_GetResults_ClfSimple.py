@@ -10,8 +10,33 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold
 
-from s4_GetResults_Functions import *
-from s4_GetResults_ClassifiersSuperClass import *
+from sklearn import svm
+from sklearn.ensemble import IsolationForest
+from sklearn.covariance import EllipticEnvelope
+from sklearn.neighbors import LocalOutlierFactor
+
+from s4_GetResults_ClfSuperClass import ClfSuperClass
+
+
+#  ============== #
+#    Functions    #
+# =============== #
+def clf_train(clf_name, parameters, train_data):
+
+    if clf_name == 'LocalOutlierFactor':
+        clf = LocalOutlierFactor(n_neighbors=parameters[0], novelty=True)  # parameters = [3]
+
+    elif clf_name == 'OneClassSVM':
+        clf = svm.OneClassSVM(gamma=parameters[0], kernel='rbf', nu=parameters[1])  # parameters = [0.001, 01]
+
+    else:
+        raise ValueError('No such Algorithm found !!!')
+
+    clf.fit(train_data)
+    distances = clf.decision_function(train_data)
+    max_distance = max(distances)
+
+    return clf, max_distance
 
 
 #  ============ #

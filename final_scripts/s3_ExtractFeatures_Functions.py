@@ -15,8 +15,8 @@ from scipy.fftpack import fft
 from scipy.stats import entropy, kurtosis, skew
 
 from _cases_dictionaries import dict_cases
-from s0_Helpers_Functions import *
-from s3_ExtractFeatures_Classes import *
+from s0_Helpers_Functions import linear_regression
+from s3_ExtractFeatures_Classes import FeaturesSns, FeaturesSwp
 
 
 # =============== #

@@ -12,7 +12,7 @@ from tqdm import tqdm
 from bson.objectid import ObjectId
 
 from _cases_dictionaries import json_files_path, gestures_database_name, dict_cases
-from s0_Helpers_Functions import *
+from s0_Helpers_Functions import MongoDBHandler, DBDataHandler
 
 
 # =============== #

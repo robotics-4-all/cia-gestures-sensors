@@ -7,22 +7,22 @@ author: eachrist
 #    Imports    #
 # ============= #
 import os
-import json
-
-import pandas as pd
 
 from _cases_dictionaries import dict_cases
-from s0_Helpers_Functions import *
-from s1_ExploreData_Functions import *
-from s2_CreateDataframes_Functions import *
-from s3_ExtractFeatures_Functions import *
-from s4_GetResults_Functions import *
+from s0_Helpers_Functions import check_paths
+from s1_ExploreData_Functions import explore_sns_data, explore_swp_data, select_users
+from s2_CreateDataframes_Functions import create_df_sns, create_df_swp
+from s3_ExtractFeatures_Functions import extract_features_df_sns, extract_features_df_swp
+from s4_GetResults_Functions import get_results
 
 
 # =============== #
 #    Functions    #
 # =============== #
-def get_datasets(case_name: str, screen_name: str, screen_path: str):
+def main_thread(case_name: str, screen_name: str):
+
+    print('---', screen_name, '---\n')
+    screen_path = check_paths(case_path, screen_name)
 
     # Explore data
     print('-> ExploreData\n')
@@ -68,5 +68,4 @@ if __name__ == "__main__":
 
     # Select screen
     for screen_name in dict_cases[case_name]['screens']:
-        screen_path = check_paths(case_path, screen_name)
-        print('---', screen_name, '---\n')
+        main_thread(case_name, screen_name)
