@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     # Select case
     case_name = 'case1'
-    case_path = check_paths(os.path.dirname(__file__), case_name)
+    case_path = check_paths(os.path.dirname(__file__), os.path.join('cases', case_name))
 
     print('=====')
     print(case_name)

@@ -9,8 +9,8 @@ author: eachrist
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-from final_scripts.s0_Helpers_Functions import frange
-from final_scripts.s4_GetResults_ClfSimple import SimpleClf
+from s0_Helpers_Functions import frange
+from s4_GetResults_ClfSimple import SimpleClf
 
 
 # ============= #

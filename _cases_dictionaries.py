@@ -6,7 +6,7 @@ author: eachrist
 #  ================= #
 #    Dictionaries    #
 # ================== #
-import final_scripts.case1.case_subclasses
+import cases.case1.case_subclasses
 
 json_files_path = 'D:\_Projects_\Thesis_ContinuousImplicitAuthentication\Datasets\BrainRun\sensors_data'
 gestures_database_name = 'BrainRun_GestureDevicesUsersGames'
@@ -51,9 +51,9 @@ dict_cases = {
         },
 
         'GetResults': {
-            'acc': final_scripts.case1.case_subclasses.AccClf,
-            'gyr': final_scripts.case1.case_subclasses.GyrClf,
-            'swp': final_scripts.case1.case_subclasses.SwpClf
+            'acc': cases.case1.case_subclasses.AccClf,
+            'gyr': cases.case1.case_subclasses.GyrClf,
+            'swp': cases.case1.case_subclasses.SwpClf
         }
     }
 }
