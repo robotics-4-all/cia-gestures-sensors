@@ -14,6 +14,7 @@ from s1_ExploreData_Functions import explore_sns_data, explore_swp_data, select_
 from s2_CreateDataframes_Functions import create_df_sns, create_df_swp
 from s3_ExtractFeatures_Functions import extract_features_df_sns, extract_features_df_swp
 from s4_GetResults_Functions import get_results
+from s5_VisualizeResults_Functions import visualize_results
 
 
 # =============== #
@@ -47,7 +48,11 @@ def main_thread(case_name: str, screen_name: str):
     print('  ---\n')
 
     print('-> GettingResults\n')
-    get_results(case_name, screen_path, ftr_acc, ftr_gyr, ftr_swp)
+    results = get_results(case_name, screen_path, ftr_acc, ftr_gyr, ftr_swp)
+    print('  ---\n')
+
+    print('-> VisualizeResults\n')
+    visualize_results(screen_path, results)
     print('  ---\n')
 
     return

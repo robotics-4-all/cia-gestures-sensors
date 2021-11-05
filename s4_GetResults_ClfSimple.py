@@ -44,7 +44,7 @@ def clf_train(clf_name, parameters, train_data):
 # ============= #
 class SimpleClf(ClfSuperClass):
 
-    def __init__(self, original_user: str, data_type: str,
+    def __init__(self, folds: int, original_user: str, module: str,
                  features_df: pd.DataFrame,
                  final_features: list,
                  scalar, clfs_parameters):
@@ -64,7 +64,7 @@ class SimpleClf(ClfSuperClass):
             self.users_data[user] = features_df.loc[features_df['User'] == user][final_features]
             self.users_data[user] = self.users_data[user].reset_index(drop=True)
 
-        super(SimpleClf, self).__init__(original_user, data_type)
+        super(SimpleClf, self).__init__(folds, original_user, module)
 
     def train_classifier(self) -> None:
 

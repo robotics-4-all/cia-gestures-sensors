@@ -53,7 +53,10 @@ dict_cases = {
         'GetResults': {
             'acc': cases.case1.case_subclasses.AccClf,
             'gyr': cases.case1.case_subclasses.GyrClf,
-            'swp': cases.case1.case_subclasses.SwpClf
+            'swp': cases.case1.case_subclasses.SwpClf,
+            'ags': cases.case1.case_subclasses.Ensemble,
+
+            'folds': 10
         }
     }
 }
