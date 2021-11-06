@@ -18,28 +18,40 @@ sns.set()
 # =============== #
 def visualize_results(screen_path: str, results: pd.DataFrame) -> None:
 
-    metrics_table = [['NumOfOrgUserTstData', 'FRR', 'FAR'],
-                     ['NumOfUnlocks', 'FRR_Conf', 'NumOfAcceptTL']]
+    plots_path = os.path.join(screen_path, 'results.png')
 
-    ncols = 3
-    nrows = len(metrics_table) * 3 // ncols
+    if not os.path.exists(plots_path):
 
-    fig, axes = plt.subplots(nrows, ncols, sharey=True, figsize=(ncols * 6.4, nrows * 4.8))
-    fig.suptitle('Results')
+        metrics_table = [['NumOfOrgUserTstData', 'FRR', 'FAR'],
+                         ['NumOfUnlocks', 'FRR_Conf', 'NumOfAcceptTL']]
 
-    for i_row, metrics in enumerate(metrics_table):
-        for i_col, metric in enumerate(metrics):
-            sns.boxplot(ax=axes[i_row, i_col],
-                        data=results, y='Module', x=metric,
-                        showmeans=True, meanprops={'marker': 'o', 'markeredgecolor': 'black'})
+        ncols = 3
+        nrows = len(metrics_table) * 3 // ncols
 
-            axes[i_row, i_col].set_xlabel('')
-            axes[i_row, i_col].set_ylabel('')
-            axes[i_row, i_col].set_title(metric)
+        fig, axes = plt.subplots(nrows, ncols, sharey=True, figsize=(ncols * 6.4, nrows * 4.8))
+        fig.suptitle('Results')
 
-    plt.tight_layout()
-    fig.show()
-    plt.savefig(os.path.join(screen_path, 'results.png'), bbox_inches='tight')
-    # plt.close(fig)
+        for i_row, metrics in enumerate(metrics_table):
+            for i_col, metric in enumerate(metrics):
+                sns.boxplot(ax=axes[i_row, i_col],
+                            data=results, y='Module', x=metric,
+                            showmeans=True, meanprops={'marker': 'o', 'markeredgecolor': 'black'})
+
+                axes[i_row, i_col].set_xlabel('')
+                axes[i_row, i_col].set_ylabel('')
+                axes[i_row, i_col].set_title(metric)
+
+        plt.tight_layout()
+        # fig.show()
+        plt.savefig(plots_path, bbox_inches='tight')
+        plt.close(fig)
+
+        print('     Results plots saved at:', plots_path)
+
+    else:
+
+        print('     Results plots already saved at:', plots_path)
+
+    print('')
 
     return

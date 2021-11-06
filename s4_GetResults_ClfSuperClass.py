@@ -91,7 +91,7 @@ class ClfSuperClass:
 
             metrics_row = {
                 'OriginalUser': self.original_user,
-                'Fold': str(fold),
+                'Fold': 'f' + str(fold),
 
                 'Module': self.module,
                 'NumOfOrgUserTstData': Num_Of_OrgUser_Data,

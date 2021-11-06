@@ -64,12 +64,12 @@ def get_results(case_name: str, screen_path: str, ftr_acc: pd.DataFrame, ftr_gyr
             path_analytics = os.path.join(screen_path, 'results_analytics_' + module + '.csv')
             results.loc[results['Module'] == module].describe().to_csv(path_analytics, index=True)
             print('     ' + module + ' analytics saved saved at:', path_analytics)
-        print('')
 
     else:
 
         results = pd.read_csv(path_results)
         print('     Results loaded from:', path_results)
-        print('')
+
+    print('')
 
     return results

@@ -74,3 +74,4 @@ if __name__ == "__main__":
     # Select screen
     for screen_name in dict_cases[case_name]['screens']:
         main_thread(case_name, screen_name)
+        input('Press Enter to continue...\n')
