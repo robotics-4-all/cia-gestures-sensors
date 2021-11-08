@@ -15,6 +15,8 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
 
+from _cases_dictionaries import dict_cases
+
 
 #  ========= #
 #    Main    #
@@ -22,12 +24,7 @@ import plotly.express as px
 if __name__ == '__main__':
 
     # Parameters
-    case_name = 'case1'
-    screen_name = 'Mathisis'
-    title = case_name + ' ' + screen_name + ' Results'
-
-    results_path = os.path.join('cases', case_name, screen_name, 'results.csv')
-    results = pd.read_csv(results_path)
+    title = 'Results'
 
     # Init app
     app = dash.Dash(__name__)
@@ -38,6 +35,24 @@ if __name__ == '__main__':
 
         html.H1(title, style={'textAlign': 'center'}),
 
+        html.P('Case:'),
+        dcc.Dropdown(
+            id='case',
+            options=[{'value': x, 'label': x}
+                     for x in list(dict_cases)],
+            value='case1'
+            # labelStyle={'display': 'inline-block'}
+        ),
+
+        html.P('Screen:'),
+        dcc.RadioItems(
+            id='screen',
+            options=[{'value': x, 'label': x}
+                     for x in ['Mathisis', 'Focus']],
+            value='Mathisis',
+            labelStyle={'display': 'inline-block'}
+        ),
+
         html.P('Metrics:'),
         dcc.RadioItems(
             id='x-axis',
@@ -47,31 +62,50 @@ if __name__ == '__main__':
             labelStyle={'display': 'inline-block'}
         ),
 
-        html.P("Y Axis:"),
+        html.P('Y Axis:'),
         dcc.RadioItems(
             id='y-axis',
             options=[{'value': x, 'label': x}
-                     for x in ['Module', 'OriginalUser', 'Fold']],
+                     for x in ['Module', 'OriginalUser']],
             value='Module',
             labelStyle={'display': 'inline-block'}
         ),
 
-        html.P("Figure Height"),
-        dcc.Slider(id='height', min=250, max=2000, step=250, value=500),
+        html.P('Additional Info:'),
+        dcc.RadioItems(
+            id='add_info',
+            options=[{'value': x, 'label': x}
+                     for x in ['None', 'Mean', 'Mean + Std']],
+            value='Mean',
+            labelStyle={'display': 'inline-block'}
+        ),
 
-        dcc.Graph(id="box-plot"),
+        dcc.Graph(id='box-plot'),
     ])
 
+    height_dict = {
+        'Module': 500,
+        'OriginalUser': 2000
+    }
+
+    add_info_dict = {
+        'None': False,
+        'Mean': True,
+        'Mean + Std': 'sd'
+    }
 
     @app.callback(
-        Output("box-plot", "figure"),
-        [Input("x-axis", "value"),
-         Input("y-axis", "value"),
-         Input('height', 'value')])
-    def generate_chart(x, y, height):
-        fig = px.box(results, x=x, y=y, color='Module', height=height)
-        fig.update_traces(boxmean=True)
-        # fig.update_traces(boxmean='sd')
+        Output('box-plot', 'figure'),
+        [Input('case', 'value'),
+         Input('screen', 'value'),
+         Input('x-axis', 'value'),
+         Input('y-axis', 'value'),
+         Input('add_info', 'value')])
+    def generate_chart(case, screen, x, y, add_info):
+        results_path = os.path.join('cases', case, screen, 'results.csv')
+        results = pd.read_csv(results_path)
+        fig = px.box(results, x=x, y=y, color='Module', height=height_dict[y])
+        fig.update_traces(boxmean=add_info_dict[add_info])
         return fig
 
     # Run
