@@ -16,7 +16,8 @@ from _cases_dictionaries import dict_cases
 #  ============== #
 #    Functions    #
 # =============== #
-def get_results(case_name: str, screen_path: str, ftr_acc: pd.DataFrame, ftr_gyr: pd.DataFrame, ftr_swp: pd.DataFrame) -> pd.DataFrame:
+def get_results(case_name: str, screen_name: str, screen_path: str,
+                ftr_acc: pd.DataFrame, ftr_gyr: pd.DataFrame, ftr_ges: pd.DataFrame) -> pd.DataFrame:
 
     path_results = os.path.join(screen_path, 'results.csv')
 
@@ -26,25 +27,25 @@ def get_results(case_name: str, screen_path: str, ftr_acc: pd.DataFrame, ftr_gyr
         dict_obj = {
             'acc': dict_cases[case_name]['GetResults']['acc'],
             'gyr': dict_cases[case_name]['GetResults']['gyr'],
-            'swp': dict_cases[case_name]['GetResults']['swp'],
-            'ags': dict_cases[case_name]['GetResults']['ags']
+            'ges': dict_cases[case_name]['GetResults']['ges'],
+            'ttl': dict_cases[case_name]['GetResults']['ttl']
         }
 
         dict_ftr = {
             'acc': ftr_acc,
             'gyr': ftr_gyr,
-            'swp': ftr_swp
+            'ges': ftr_ges
         }
 
         # Select original user
         for original_user in tqdm(set(ftr_acc['User'])):
 
-            dict_decisions = {'acc': None, 'gyr': None, 'swp': None}
+            dict_decisions = {'acc': None, 'gyr': None, 'ges': None}
 
             # Get level 1 decisions
             for module in dict_obj:
 
-                if module != 'ags':
+                if module != 'ttl':
                     obj = dict_obj[module](original_user, dict_ftr[module])
                     obj.train_classifier()
                     dict_decisions[module] = obj.get_decisions()
@@ -52,7 +53,7 @@ def get_results(case_name: str, screen_path: str, ftr_acc: pd.DataFrame, ftr_gyr
                     obj = dict_obj[module](original_user, dict_decisions)
                     final_predictions = obj.get_final_predictions()
 
-                metrics = obj.calculate_metrics()
+                metrics = obj.calculate_metrics(screen_name)
                 results = results.append(metrics, ignore_index=True)
 
         # Save all results

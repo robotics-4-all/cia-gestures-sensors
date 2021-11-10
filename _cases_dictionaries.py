@@ -8,32 +8,45 @@ author: eachrist
 # ================== #
 import cases.case1.case_subclasses
 
+'''
+Mathisis -> swipe
+Focus -> swipe
+Reacton -> swipe, tap
+Memoria -> tap
+Speedy -> tap
+'''
+
 json_files_path = 'D:\_Projects_\Thesis_ContinuousImplicitAuthentication\Datasets\BrainRun\sensors_data'
 gestures_database_name = 'BrainRun_GestureDevicesUsersGames'
 
 dict_cases = {
-    'case1': {
+    'case2': {
         'comments': '',
-        'screens': ['Mathisis', 'Focus'],
+        'screens': ['Reacton'],
+
+        'gesture_type': 'tap',
 
         'ExploreData': {
             'sns': {
                 'synced_screen': False,
                 'min_nod_per_screen': 1,
                 'min_nod_per_timestamp': 1,
+
                 'min_nod_per_user': 4000,
                 'max_nod_per_user': 16000
 
             },
 
-            'swp': {
+            'ges': {
                 'device_max_width': 600,
                 'device_max_height': 1000,
+
                 'fake_swp_limit': 30,
                 'swp_min_data_points': 4,
                 'swp_max_data_points': 10,
-                'min_nos_per_user': 50,
-                'max_nos_per_user': 300
+
+                'min_nog_per_user': 50,
+                'max_nog_per_user': 300
             },
         },
 
@@ -45,7 +58,7 @@ dict_cases = {
                 'overlap': 0.9
             },
 
-            'swp': {
+            'ges': {
                 'normalize': True
             }
         },
@@ -53,8 +66,8 @@ dict_cases = {
         'GetResults': {
             'acc': cases.case1.case_subclasses.AccClf,
             'gyr': cases.case1.case_subclasses.GyrClf,
-            'swp': cases.case1.case_subclasses.SwpClf,
-            'ags': cases.case1.case_subclasses.Ensemble,
+            'ges': cases.case1.case_subclasses.GesClf,
+            'ttl': cases.case1.case_subclasses.Ensemble,
         }
     }
 }

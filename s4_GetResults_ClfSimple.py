@@ -8,11 +8,11 @@ author: eachrist
 # ============= #
 import numpy as np
 import pandas as pd
+from statistics import median
+
 from sklearn.model_selection import KFold
 
 from sklearn import svm
-from sklearn.ensemble import IsolationForest
-from sklearn.covariance import EllipticEnvelope
 from sklearn.neighbors import LocalOutlierFactor
 
 from s4_GetResults_ClfSuperClass import ClfSuperClass
@@ -22,7 +22,6 @@ from s4_GetResults_ClfSuperClass import ClfSuperClass
 #    Functions    #
 # =============== #
 def clf_train(clf_name, parameters, train_data):
-
     if clf_name == 'LocalOutlierFactor':
         clf = LocalOutlierFactor(n_neighbors=parameters[0], novelty=True)  # parameters = [3]
 
@@ -35,8 +34,9 @@ def clf_train(clf_name, parameters, train_data):
     clf.fit(train_data)
     distances = clf.decision_function(train_data)
     max_distance = max(distances)
+    median_distance = median(distances)
 
-    return clf, max_distance
+    return clf, max_distance, median_distance
 
 
 #  ============ #
@@ -47,7 +47,7 @@ class SimpleClf(ClfSuperClass):
     def __init__(self, folds: int, original_user: str, module: str,
                  features_df: pd.DataFrame,
                  final_features: list,
-                 scalar, clfs_parameters):
+                 scalar, clfs_parameters: dict, clfs_num: int):
 
         self.scalar = scalar
         self.scalar_trained = {}
@@ -58,6 +58,8 @@ class SimpleClf(ClfSuperClass):
         self.clfs_parameters = clfs_parameters
         self.clfs_trained = {}
         self.clfs_max_distance = {}
+        self.clfs_median_distance = {}
+        self.clfs_num = clfs_num
 
         self.users_data = {}
         for user in set(features_df['User']):
@@ -87,11 +89,13 @@ class SimpleClf(ClfSuperClass):
             # Train models
             self.clfs_trained[fold] = []
             self.clfs_max_distance[fold] = []
+            self.clfs_median_distance[fold] = []
             for clf_name in self.clfs_parameters:
                 for parameters in self.clfs_parameters[clf_name]:
-                    clf, max_distance = clf_train(clf_name, parameters, x_trn)
+                    clf, max_distance, median_distance = clf_train(clf_name, parameters, x_trn)
                     self.clfs_trained[fold].append(clf)
                     self.clfs_max_distance[fold].append(max_distance)
+                    self.clfs_median_distance[fold].append(median_distance)
 
         return
 
@@ -115,14 +119,26 @@ class SimpleClf(ClfSuperClass):
                     x_tst = scalar.transform(x_tst)
 
                 decision_total = np.zeros(x_tst.shape[0])
-                for idx, clf in enumerate(self.clfs_trained[fold]):
-                    decision = clf.decision_function(x_tst) / self.clfs_max_distance[fold][idx]
-                    decision_total += decision
-                self.users_decisions[user][fold] = decision_total
-
                 predictions = np.empty(x_tst.shape[0])
-                for idx in range(x_tst.shape[0]):
-                    predictions[idx] = 1 if decision_total[idx] > 0 else -1
+
+                for idx in np.argpartition(self.clfs_median_distance[fold], self.clfs_num - 1)[:self.clfs_num]:
+                    clf = self.clfs_trained[fold][idx]
+                    decision = clf.decision_function(x_tst) / self.clfs_max_distance[fold][idx]
+                    for sample_idx in range(x_tst.shape[0]):
+                        if decision[sample_idx] > 1:
+                            decision[sample_idx] = 1
+                        if decision[sample_idx] < -1:
+                            decision[sample_idx] = -1
+                    decision_total += decision
+
+                for sample_idx in range(x_tst.shape[0]):
+                    if decision_total[sample_idx] > 1:
+                        decision_total[sample_idx] = 1
+                    if decision_total[sample_idx] < -1:
+                        decision_total[sample_idx] = -1
+                    predictions[sample_idx] = 1 if decision_total[sample_idx] > 0 else -1
+
+                self.users_decisions[user][fold] = decision_total
                 self.users_predictions[user][fold] = predictions
 
         return self.users_decisions

@@ -102,25 +102,28 @@ def explore_sns_data(case_name: str, screen_path: str, screen_name: str, sensor:
     return output_dict
 
 
-def explore_swp_data(case_name: str, screen_path: str, screen_name: str) -> dict:
+def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict:
 
-    print(' - Exploring swipes data.')
-    path_save = os.path.join(screen_path, 'users_dict_swp.json')
+    ges_type = dict_cases[case_name]['gesture_type']
+    print(' - Exploring gestures ( ' + ges_type + 's ).')
+    path_save = os.path.join(screen_path, 'users_dict_ges.json')
 
     if not os.path.exists(path_save):
 
         output_dict = {
             'gestures_database_name': gestures_database_name,
-            'data_type': 'Swipes',
+            'ges_type': ges_type + 's',
             'screen_name': screen_name,
-            'device_max_width': dict_cases[case_name]['ExploreData']['swp']['device_max_width'],
-            'device_max_height': dict_cases[case_name]['ExploreData']['swp']['device_max_height'],
-            'fake_swp_limit': dict_cases[case_name]['ExploreData']['swp']['fake_swp_limit'],
-            'swp_min_data_points': dict_cases[case_name]['ExploreData']['swp']['swp_min_data_points'],
-            'swp_max_data_points': dict_cases[case_name]['ExploreData']['swp']['swp_max_data_points'],
+            'device_max_width': dict_cases[case_name]['ExploreData']['ges']['device_max_width'],
+            'device_max_height': dict_cases[case_name]['ExploreData']['ges']['device_max_height'],
             'num_of_users_found': 0,
             'users': {}
         }
+
+        if ges_type == 'swipe':
+            output_dict['fake_swp_limit'] = dict_cases[case_name]['ExploreData']['ges']['fake_swp_limit']
+            output_dict['swp_min_data_points'] = dict_cases[case_name]['ExploreData']['ges']['swp_min_data_points']
+            output_dict['swp_max_data_points'] = dict_cases[case_name]['ExploreData']['ges']['swp_max_data_points']
 
         # Get data
         m = MongoDBHandler('mongodb://localhost:27017/', gestures_database_name)
@@ -135,7 +138,7 @@ def explore_swp_data(case_name: str, screen_path: str, screen_name: str) -> dict
                         ('Johnys' not in user['username']) and ('Tenebrific' not in user['username']) and
                         ('Sherlocked' not in user['username']) and ('kavouras' not in user['username'])):
 
-                    output_dict['users'][user['player_id']] = {'nos': 0, 'swipes': {}}
+                    output_dict['users'][user['player_id']] = {'nog': 0, 'gestures': {}}
 
                     devices = d.get_devices({'user_id': ObjectId(user['_id'])})
                     for device in devices:
@@ -147,29 +150,32 @@ def explore_swp_data(case_name: str, screen_path: str, screen_name: str) -> dict
 
                             gestures = d.get_gestures_from_device(device['device_id'])
                             for gesture in gestures:
-                                if gesture['type'] == 'swipe':
+                                if gesture['type'] == ges_type:
                                     if output_dict['screen_name'] in gesture['screen']:
                                         if gesture['t_start'] == -1 or gesture['t_stop'] == -1:
                                             continue
 
-                                        # Fake swipes limit
-                                        if gesture['t_stop'] - gesture['t_start'] < output_dict['fake_swp_limit']:
-                                            continue
+                                        if ges_type == 'swipe':
+                                            # Fake swipes limit
+                                            if gesture['t_stop'] - gesture['t_start'] < output_dict['fake_swp_limit']:
+                                                continue
 
-                                        # Data length limitations
-                                        if output_dict['swp_min_data_points'] <= len(gesture['data']) \
-                                                <= output_dict['swp_max_data_points']:
-                                            output_dict['users'][user['player_id']]['swipes'][str(gesture['_id'])] = {
-                                                'swipe_screen': gesture['screen'],
-                                                'swipe_time_start': gesture['t_start'],
-                                                'swipe_time_stop': gesture['t_stop']
-                                            }
-                                            output_dict['users'][user['player_id']]['nos'] += 1
+                                            # Data length limitations
+                                            if len(gesture['data']) <= output_dict['swp_min_data_points'] or \
+                                                    len(gesture['data']) >= output_dict['swp_max_data_points']:
+                                                continue
+
+                                        output_dict['users'][user['player_id']]['gestures'][str(gesture['_id'])] = {
+                                            'ges_screen': gesture['screen'],
+                                            'ges_time_start': gesture['t_start'],
+                                            'ges_time_stop': gesture['t_stop']
+                                        }
+                                        output_dict['users'][user['player_id']]['nog'] += 1
 
         # Remove users without data
         initial_users_list = list(output_dict['users'])
         for user in initial_users_list:
-            if output_dict['users'][user]['nos'] == 0:
+            if output_dict['users'][user]['nog'] == 0:
                 output_dict['users'].pop(user)
 
         output_dict['num_of_users_found'] = len(output_dict['users'])
@@ -177,40 +183,40 @@ def explore_swp_data(case_name: str, screen_path: str, screen_name: str) -> dict
         # Save dict in a .json file
         with open(path_save, 'w') as fp:
             json.dump(output_dict, fp)
-        print('     Swipes dict saved in: ', path_save)
+        print('     Gestures ( ' + ges_type + 's ) dict saved in: ', path_save)
 
     else:
 
         f = open(path_save, )
         output_dict = json.load(f)
-        print('     Swipes dict loaded from: ', path_save)
+        print('     Gestures ( ' + ges_type + 's ) dict loaded from: ', path_save)
         f.close()
 
-    print('     ' + str(output_dict['num_of_users_found']), 'Users with valid swipes data found.')
+    print('     ' + str(output_dict['num_of_users_found']), 'Users with valid gestures ( ' + ges_type + 's ) found.')
     print('')
 
     return output_dict
 
 
-def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dict, dict_swp: dict):
+def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dict, dict_ges: dict):
 
     print(' - Selecting common users with specific data limits.')
     path_fnl_acc = os.path.join(screen_path, 'users_dict_acc_fnl.json')
     path_fnl_gyr = os.path.join(screen_path, 'users_dict_gyr_fnl.json')
-    path_fnl_swp = os.path.join(screen_path, 'users_dict_swp_fnl.json')
+    path_fnl_ges = os.path.join(screen_path, 'users_dict_ges_fnl.json')
 
-    if not (os.path.exists(path_fnl_acc) or os.path.exists(path_fnl_gyr) or os.path.exists(path_fnl_swp)):
+    if not (os.path.exists(path_fnl_acc) or os.path.exists(path_fnl_gyr) or os.path.exists(path_fnl_ges)):
 
         # Synced sensor data -> TO DO!!!
-        # Synced sensor with swipes data -> From previous experiments are not enough.
+        # Synced sensor with gestures -> From previous experiments are not enough.
 
         # Define users data limits
         dict_acc['min_nod_per_user'] = dict_cases[case_name]['ExploreData']['sns']['min_nod_per_user']
         dict_acc['max_nod_per_user'] = dict_cases[case_name]['ExploreData']['sns']['max_nod_per_user']
         dict_gyr['min_nod_per_user'] = dict_cases[case_name]['ExploreData']['sns']['min_nod_per_user']
         dict_gyr['max_nod_per_user'] = dict_cases[case_name]['ExploreData']['sns']['max_nod_per_user']
-        dict_swp['min_nos_per_user'] = dict_cases[case_name]['ExploreData']['swp']['min_nos_per_user']
-        dict_swp['max_nos_per_user'] = dict_cases[case_name]['ExploreData']['swp']['max_nos_per_user']
+        dict_ges['min_nog_per_user'] = dict_cases[case_name]['ExploreData']['ges']['min_nog_per_user']
+        dict_ges['max_nog_per_user'] = dict_cases[case_name]['ExploreData']['ges']['max_nog_per_user']
 
         # If a user do not pass the min, max data limitation delete it
         for sensor_dict in [dict_acc, dict_gyr]:
@@ -221,18 +227,18 @@ def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dic
                     sensor_dict['users'].pop(user)
             sensor_dict['num_of_users_found'] = len(sensor_dict['users'])
 
-        initial_users_list = list(dict_swp['users'])
+        initial_users_list = list(dict_ges['users'])
         for user in initial_users_list:
-            if dict_swp['users'][user]['nos'] < dict_swp['min_nos_per_user'] or \
-                    dict_swp['users'][user]['nos'] > dict_swp['max_nos_per_user']:
-                dict_swp['users'].pop(user)
-        dict_swp['num_of_users_found'] = len(dict_swp['users'])
+            if dict_ges['users'][user]['nog'] < dict_ges['min_nog_per_user'] or \
+                    dict_ges['users'][user]['nog'] > dict_ges['max_nog_per_user']:
+                dict_ges['users'].pop(user)
+        dict_ges['num_of_users_found'] = len(dict_ges['users'])
 
         # Select common users among three dicts.
         common_users = list(set(list(set(list(dict_acc['users'])).intersection(list(dict_gyr['users']))))
-                            .intersection(list(dict_swp['users'])))
+                            .intersection(list(dict_ges['users'])))
 
-        for data_dict in [dict_acc, dict_gyr, dict_swp]:
+        for data_dict in [dict_acc, dict_gyr, dict_ges]:
             initial_users_list = list(data_dict['users'])
             for user in initial_users_list:
                 if user not in common_users:
@@ -250,10 +256,10 @@ def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dic
             json.dump(dict_fnl_gyr, dict_temp)
         print('     Gyroscope final dict saved in: ', path_fnl_gyr)
 
-        dict_fnl_swp = dict_swp
-        with open(path_fnl_swp, 'w') as dict_temp:
-            json.dump(dict_fnl_swp, dict_temp)
-        print('     Swipes final dict saved in: ', path_fnl_swp)
+        dict_fnl_ges = dict_ges
+        with open(path_fnl_ges, 'w') as dict_temp:
+            json.dump(dict_fnl_ges, dict_temp)
+        print('     Gestures final dict saved in: ', path_fnl_ges)
 
     else:
 
@@ -267,12 +273,12 @@ def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dic
         print('     Gyroscope final dict loaded from: ', path_fnl_gyr)
         f.close()
 
-        f = open(path_fnl_swp, )
-        dict_fnl_swp = json.load(f)
-        print('     Swipes final dict loaded from: ', path_fnl_swp)
+        f = open(path_fnl_ges, )
+        dict_fnl_ges = json.load(f)
+        print('     Gestures final dict loaded from: ', path_fnl_ges)
         f.close()
 
     print('     ' + str(dict_fnl_acc['num_of_users_found']), 'Final users selected.')
     print('')
 
-    return dict_fnl_acc, dict_fnl_gyr, dict_fnl_swp
+    return dict_fnl_acc, dict_fnl_gyr, dict_fnl_ges

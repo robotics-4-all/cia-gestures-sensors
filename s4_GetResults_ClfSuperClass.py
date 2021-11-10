@@ -9,6 +9,27 @@ author: eachrist
 import pandas as pd
 
 
+#  ================= #
+#    Dictionaries    #
+# ================== #
+dict_conf = {
+    'inlier': {
+        'Mathisis': 40,
+        'Focus': 40,
+        'Speedy': 40,
+        'Reaction': 10,
+        'Memoria': 10
+    },
+    'outlier': {
+        'Mathisis': -15,
+        'Focus': -8,
+        'Speedy': -15,
+        'Reaction': -15,
+        'Memoria': -15
+    }
+}
+
+
 #  ============ #
 #    Classes    #
 # ============= #
@@ -24,7 +45,7 @@ class ClfSuperClass:
         self.users_decisions = {}
         self.users_predictions = {}
 
-    def calculate_metrics(self) -> pd.DataFrame:
+    def calculate_metrics(self, screen: str) -> pd.DataFrame:
 
         metrics = pd.DataFrame()
 
@@ -48,10 +69,10 @@ class ClfSuperClass:
                             confidence = 60
                             Num_Of_Unlocks += 1
 
-                        if sample == 1:
-                            confidence += 5
+                        if sample != 1:
+                            confidence += dict_conf['inlier'][screen]
                         else:
-                            confidence -= 15
+                            confidence += dict_conf['outlier'][screen]
                             false_rejections += 1
 
                         if confidence > 100:
@@ -75,11 +96,11 @@ class ClfSuperClass:
 
                         if sample == 1:
                             if flag:
-                                confidence += 5
+                                confidence += dict_conf['inlier'][screen]
                             false_acceptances += 1
                         else:
                             if flag:
-                                confidence -= 15
+                                confidence += dict_conf['outlier'][screen]
 
                         if confidence > 100:
                             confidence = 100

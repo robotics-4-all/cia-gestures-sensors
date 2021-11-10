@@ -145,21 +145,30 @@ class FeaturesSwp:
 
         self.Duration = []
 
-        self.TraceLengthHorizontal = []
-        self.TraceLengthVertical = []
-        self.Direction = []
+        self.MeanX = []
+        self.MeanY = []
+
+        self.TraceLength = []
+        self.StartStopLength = []
+
+        self.TraceProjection = []
+        self.ScreenPercentage = []
+
+        self.Ratio = []
+        self.Deviation = []
+        self.Leaning = []
+
+        self.StartVelocity = []
+        self.StopVelocity = []
+
+        self.AccelerationHor = []
+        self.AccelerationVer = []
 
         self.Slope = []
         self.MeanSquareError = []
         self.MeanAbsError = []
         self.MedianAbsError = []
         self.CoefDetermination = []
-
-        self.AccelerationHorizontal = []
-        self.AccelerationVertical = []
-
-        self.MeanX = []
-        self.MeanY = []
 
     # Set Methods
     def setUser(self, value):
@@ -177,14 +186,44 @@ class FeaturesSwp:
     def setDuration(self, value):
         self.Duration.append(value)
 
-    def setTraceLengthHorizontal(self, value):
-        self.TraceLengthHorizontal.append(value)
+    def setMeanX(self, value):
+        self.MeanX.append(value)
 
-    def setTraceLengthVertical(self, value):
-        self.TraceLengthVertical.append(value)
+    def setMeanY(self, value):
+        self.MeanY.append(value)
 
-    def setDirection(self, value):
-        self.Direction.append(value)
+    def setTraceLength(self, value):
+        self.TraceLength.append(value)
+
+    def setStartStopLength(self, value):
+        self.StartStopLength.append(value)
+
+    def setTraceProjection(self, value):
+        self.TraceProjection.append(value)
+
+    def setScreenPercentage(self, value):
+        self.ScreenPercentage.append(value)
+
+    def setRatio(self, value):
+        self.Ratio.append(value)
+
+    def setDeviation(self, value):
+        self.Deviation.append(value)
+
+    def setLeaning(self, value):
+        self.Leaning.append(value)
+
+    def setStartVelocity(self, value):
+        self.StartVelocity.append(value)
+
+    def setStopVelocity(self, value):
+        self.StopVelocity.append(value)
+
+    def setAccelerationHor(self, value):
+        self.AccelerationHor.append(value)
+
+    def setAccelerationVer(self, value):
+        self.AccelerationVer.append(value)
 
     def setSlope(self, value):
         self.Slope.append(value)
@@ -201,17 +240,59 @@ class FeaturesSwp:
     def setCoefDetermination(self, value):
         self.CoefDetermination.append(value)
 
-    def setAccelerationHorizontal(self, value):
-        self.AccelerationHorizontal.append(value)
+    # Create dataframe method
+    def create_dataframe(self) -> pd.DataFrame:
+        df = pd.DataFrame()
 
-    def setAccelerationVertical(self, value):
-        self.AccelerationVertical.append(value)
+        df['User'] = self.User
+        df['TimeStart'] = self.TimeStart
+        df['TimeStop'] = self.TimeStop
+        df['Screen'] = self.Screen
+        df['Duration'] = self.Duration
+        df['MeanX'] = self.MeanX
+        df['MeanY'] = self.MeanY
+        df['TraceLength'] = self.TraceLength
+        df['StartStopLength'] = self.StartStopLength
+        df['ScreenPercentage'] = self.ScreenPercentage
+        df['TraceProjection'] = self.TraceProjection
+        df['Ratio'] = self.Ratio
+        df['Deviation'] = self.Deviation
+        df['Leaning'] = self.Leaning
+        df['StartVelocity'] = self.StartVelocity
+        df['StopVelocity'] = self.StopVelocity
+        df['AccelerationHor'] = self.AccelerationHor
+        df['AccelerationVer'] = self.AccelerationVer
+        df['Slope'] = self.Slope
+        df['MeanSquareError'] = self.MeanSquareError
+        df['MeanAbsError'] = self.MeanAbsError
+        df['MedianAbsError'] = self.MedianAbsError
+        df['CoefDetermination'] = self.CoefDetermination
 
-    def setMeanX(self, value):
-        self.MeanX.append(value)
+        return df
 
-    def setMeanY(self, value):
-        self.MeanY.append(value)
+
+class FeaturesTap:
+
+    def __init__(self):
+        self.User = []
+        self.TimeStart = []
+        self.TimeStop = []
+        self.Screen = []
+
+        self.Duration = []
+
+    # Set Methods
+    def setUser(self, value):
+        self.User.append(value)
+
+    def setTimeStart(self, value):
+        self.TimeStart.append(value)
+
+    def setTimeStop(self, value):
+        self.TimeStop.append(value)
+
+    def setScreen(self, value):
+        self.Screen.append(value)
 
     # Create dataframe method
     def create_dataframe(self) -> pd.DataFrame:
@@ -222,17 +303,5 @@ class FeaturesSwp:
         df['TimeStop'] = self.TimeStop
         df['Screen'] = self.Screen
         df['Duration'] = self.Duration
-        df['TraceLengthHorizontal'] = self.TraceLengthHorizontal
-        df['TraceLengthVertical'] = self.TraceLengthVertical
-        df['Direction'] = self.Direction
-        df['Slope'] = self.Slope
-        df['MeanSquareError'] = self.MeanSquareError
-        df['MeanAbsError'] = self.MeanAbsError
-        df['MedianAbsError'] = self.MedianAbsError
-        df['CoefDetermination'] = self.CoefDetermination
-        df['AccelerationHorizontal'] = self.AccelerationHorizontal
-        df['AccelerationVertical'] = self.AccelerationVertical
-        df['MeanX'] = self.MeanX
-        df['MeanY'] = self.MeanY
 
         return df

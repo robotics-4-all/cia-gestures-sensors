@@ -11,12 +11,14 @@ import ast
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from math import sqrt
+from statistics import mean
 from scipy.fftpack import fft
 from scipy.stats import entropy, kurtosis, skew
 
 from _cases_dictionaries import dict_cases
 from s0_Helpers_Functions import linear_regression
-from s3_ExtractFeatures_Classes import FeaturesSns, FeaturesSwp
+from s3_ExtractFeatures_Classes import FeaturesSns, FeaturesSwp, FeaturesTap
 
 
 # =============== #
@@ -138,103 +140,123 @@ def extract_features_df_sns(case_name: str, screen_path: str, df: pd.DataFrame, 
     return features_df_sns
 
 
-def extract_features_swp(case_name: str, swipe, features_object):
+def extract_features_ges(case_name: str, ges, features_object):
 
-    normalize = dict_cases[case_name]['ExtractFeatures']['swp']['normalize']
+    features_object.setUser(ges['user'])
+    features_object.setTimeStart(ges['time_start'])
+    features_object.setTimeStop(ges['time_stop'])
+    features_object.setScreen(ges['screen'])
+    features_object.setDuration(ges['duration'])
 
-    scalar_width = 400
-    scalar_height = 700
+    if dict_cases[case_name]['gesture_type'] == 'swipe':
 
-    features_object.setUser(swipe['user'])
-    features_object.setTimeStart(swipe['time_start'])
-    features_object.setTimeStop(swipe['time_stop'])
-    features_object.setScreen(swipe['screen'])
-    features_object.setDuration(swipe['duration'])
+        normalize = dict_cases[case_name]['ExtractFeatures']['ges']['normalize']
+        scalar_width = 400
+        scalar_height = 700
 
-    if type(swipe['data']) == str:
-        swipe_data = ast.literal_eval(swipe['data'])
-    else:
-        swipe_data = swipe['data']
-
-    x_positions = []
-    y_positions = []
-    x_positions.append(swipe_data[0]['x0'])
-    y_positions.append(swipe_data[0]['y0'])
-    for data in swipe_data:
-        x_positions.append(data['moveX'])
-        y_positions.append(data['moveY'])
-
-    length_horizontal = x_positions[-1] - x_positions[0]
-    length_vertical = y_positions[-1] - y_positions[0]
-    if normalize:
-        length_horizontal = scalar_width * length_horizontal / swipe['device_width']
-        length_vertical = scalar_height * length_vertical / swipe['device_height']
-    features_object.setTraceLengthHorizontal(np.abs(length_horizontal))
-    features_object.setTraceLengthVertical(np.abs(length_vertical))
-
-    if np.abs(length_horizontal) > np.abs(length_vertical):
-        if length_horizontal > 0:
-            direction = 'right'
+        if type(ges['data']) == str:
+            swp_data = ast.literal_eval(ges['data'])
         else:
-            direction = 'left'
-    else:
-        if length_vertical > 0:
-            direction = 'up'
-        else:
-            direction = 'down'
-    features_object.setDirection(direction)
+            swp_data = ges['data']
 
-    trace_stats = linear_regression(x_positions, y_positions)
-    features_object.setSlope(trace_stats['slope'])
-    features_object.setMeanSquareError(trace_stats['mean_squared_error'])
-    features_object.setMeanAbsError(trace_stats['mean_abs_error'])
-    features_object.setMedianAbsError(trace_stats['median_abs_error'])
-    features_object.setCoefDetermination(trace_stats['coef_determination'])
+        x_poss, y_poss = [swp_data[0]['x0']], [swp_data[0]['y0']]
+        for data in swp_data:
+            x_poss.append(data['moveX'])
+            y_poss.append(data['moveY'])
+        if normalize:
+            x_poss = [x * scalar_width / ges['device_width'] for x in x_poss]
+            y_poss = [y * scalar_height / ges['device_height'] for y in y_poss]
 
-    acceleration_horizontal = (swipe_data[-1]['vx'] - swipe_data[0]['vx']) / (swipe['duration'] * 0.001)
-    acceleration_vertical = (swipe_data[-1]['vy'] - swipe_data[0]['vy']) / (swipe['duration'] * 0.001)
-    features_object.setAccelerationHorizontal(acceleration_horizontal)
-    features_object.setAccelerationVertical(acceleration_vertical)
+        features_object.setMeanX(mean(x_poss))
+        features_object.setMeanY(mean(y_poss))
 
-    mean_x = 0
-    mean_y = 0
-    for x in x_positions:
-        mean_x += x
-    for y in y_positions:
-        mean_y += y
-    mean_x /= len(x_positions)
-    mean_y /= len(y_positions)
-    if normalize:
-        mean_x = scalar_width * mean_x / swipe['device_width']
-        mean_y = scalar_height * mean_y / swipe['device_height']
-    features_object.setMeanX(mean_x)
-    features_object.setMeanY(mean_y)
+        trace_length = 0
+        for idx in range(1, len(x_poss)):
+            dx = x_poss[idx] - x_poss[idx - 1]
+            dy = y_poss[idx] - y_poss[idx - 1]
+            trace_length += sqrt(dx ** 2 + dy ** 2)
+        features_object.setTraceLength(trace_length)
+
+        dx = abs(x_poss[-1] - x_poss[0])
+        dy = abs(y_poss[-1] - y_poss[0])
+        start_stop_length = sqrt(dx ** 2 + dy ** 2)
+        features_object.setStartStopLength(start_stop_length)
+
+        temp_dict = {
+            'hor': {
+                'trace_projection': dx,
+                'points': {},
+                'norm': {
+                    True: scalar_width,
+                    False: ges['device_width']
+                }
+            },
+            'ver': {
+                'trace_projection': dy,
+                'points': {},
+                'norm': {
+                    True: scalar_height,
+                    False: ges['device_height']
+                }
+            }
+        }
+
+        direction = 'hor' if dx >= dy else 'ver'
+
+        trace_projection = temp_dict['direction']['trace_projection']
+        features_object.setTraceProjection(trace_projection)
+
+        features_object.setScreenPercentage(trace_projection / temp_dict[direction]['norm'][normalize])
+
+        features_object.setRatio(trace_projection / start_stop_length)
+
+        start_velocity = sqrt(swp_data[0]['vx'] ** 2 + swp_data[0]['vy'] ** 2)
+        features_object.setStartVelocity(start_velocity)
+
+        stop_velocity = sqrt(swp_data[-1]['vx'] ** 2 + swp_data[-1]['vy'] ** 2)
+        features_object.setStopVelocity(stop_velocity)
+
+        acceleration_hor = (swp_data[-1]['vx'] - swp_data[0]['vx']) / (ges['duration'] * 0.001)
+        features_object.setAccelerationHor(acceleration_hor)
+
+        acceleration_ver = (swp_data[-1]['vy'] - swp_data[0]['vy']) / (ges['duration'] * 0.001)
+        features_object.setAccelerationVer(acceleration_ver)
+
+        trace_stats = linear_regression(x_poss, y_poss)
+        features_object.setSlope(trace_stats['slope'])
+        features_object.setMeanSquareError(trace_stats['mean_squared_error'])
+        features_object.setMeanAbsError(trace_stats['mean_abs_error'])
+        features_object.setMedianAbsError(trace_stats['median_abs_error'])
+        features_object.setCoefDetermination(trace_stats['coef_determination'])
 
     return features_object
 
 
-def extract_features_df_swp(case_name: str, screen_path: str, df: pd.DataFrame) -> pd.DataFrame:
+def extract_features_df_ges(case_name: str, screen_path: str, df: pd.DataFrame) -> pd.DataFrame:
 
-    print(' - Extract features swipes.')
-    path_features_df_swp = os.path.join(screen_path, 'features_swipes.csv')
+    print(' - Extract features gestures.')
+    path_features_df_ges = os.path.join(screen_path, 'features_ges.csv')
 
-    if not os.path.exists(path_features_df_swp):
+    if not os.path.exists(path_features_df_ges):
 
-        features_object = FeaturesSwp()
+        if dict_cases[case_name]['gesture_type'] == 'swipe':
+            features_object = FeaturesSwp()
+        elif dict_cases[case_name]['gesture_type'] == 'tap':
+            features_object = FeaturesTap()
 
-        for index, swipe in tqdm(df.iterrows()):
-            features_object = extract_features_swp(case_name, swipe, features_object)
+        for index, ges in tqdm(df.iterrows()):
+            features_object = extract_features_ges(case_name, ges, features_object)
 
-        features_df_swp = features_object.create_dataframe()
-        features_df_swp.to_csv(path_features_df_swp, index=False)
-        print('     Swipes features saved at: ', path_features_df_swp)
+        features_df_ges = features_object.create_dataframe()
+        features_df_ges.to_csv(path_features_df_ges, index=False)
+        print('     Gestures features saved at: ', path_features_df_ges)
 
     else:
 
-        features_df_swp = pd.read_csv(path_features_df_swp)
-        print('     Swipes features loaded from: ', path_features_df_swp)
+        features_df_ges = pd.read_csv(path_features_df_ges)
+        print('     Gestures features loaded from: ', path_features_df_ges)
 
-    print('     swipes_feature size: ', features_df_swp.shape[0])
+    print('     gestures_feature size: ', features_df_ges.shape[0])
     print('')
 
-    return features_df_swp
+    return features_df_ges
