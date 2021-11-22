@@ -7,6 +7,7 @@ author: eachrist
 #    Dictionaries    #
 # ================== #
 import cases.case1.case_subclasses
+import cases.case2.case_subclasses
 
 '''
 Mathisis -> swipe
@@ -20,20 +21,19 @@ json_files_path = 'D:\_Projects_\Thesis_ContinuousImplicitAuthentication\Dataset
 gestures_database_name = 'BrainRun_GestureDevicesUsersGames'
 
 dict_cases = {
-    'case2': {
+    'case1': {
         'comments': '',
-        'screens': ['Reacton'],
+        'screens': ['Mathisis', 'Focus', 'Reacton'],
 
-        'gesture_type': 'tap',
+        'gesture_type': 'swipe',
 
         'ExploreData': {
             'sns': {
-                'synced_screen': False,
                 'min_nod_per_screen': 1,
                 'min_nod_per_timestamp': 1,
 
-                'min_nod_per_user': 4000,
-                'max_nod_per_user': 16000
+                'min_nod_per_user': 3000,
+                'max_nod_per_user': float('inf')
 
             },
 
@@ -45,16 +45,22 @@ dict_cases = {
                 'swp_min_data_points': 4,
                 'swp_max_data_points': 10,
 
-                'min_nog_per_user': 50,
-                'max_nog_per_user': 300
+                'min_nog_per_user': 300,
+                'max_nog_per_user': float('inf')
             },
+        },
+
+        'CreateDataframes': {
+            'sns': {
+                'max_user_data': 15000
+            }
         },
 
         'ExtractFeatures': {
             'sns': {
                 'extraction_type': 'User',  # User, Timestamp, TimestampScreen, Screen
-                'feature': 'magnitude',  # magnitude, combine_angle, x, y, z
-                'window': 200,
+                'feature': {'acc': 'magnitude', 'gyr': 'x'},
+                'window': 500,
                 'overlap': 0.9
             },
 
@@ -68,6 +74,58 @@ dict_cases = {
             'gyr': cases.case1.case_subclasses.GyrClf,
             'ges': cases.case1.case_subclasses.GesClf,
             'ttl': cases.case1.case_subclasses.Ensemble,
+        }
+    },
+
+    'case2': {
+        'comments': '',
+        'screens': ['Reacton', 'Memoria', 'Speedy'],
+
+        'gesture_type': 'tap',
+
+        'ExploreData': {
+            'sns': {
+                'min_nod_per_screen': 1,
+                'min_nod_per_timestamp': 1,
+
+                'min_nod_per_user': 3000,
+                'max_nod_per_user': float('inf')
+
+            },
+
+            'ges': {
+                'device_max_width': 600,
+                'device_max_height': 1000,
+
+                'min_nog_per_user': 300,
+                'max_nog_per_user': float('inf')
+            },
+        },
+
+        'CreateDataframes': {
+            'sns': {
+                'max_user_data': 15000
+            }
+        },
+
+        'ExtractFeatures': {
+            'sns': {
+                'extraction_type': 'User',  # User, Timestamp, TimestampScreen, Screen
+                'feature': {'acc': 'magnitude', 'gyr': 'x'},
+                'window': 500,
+                'overlap': 0.9
+            },
+
+            'ges': {
+                'normalize': True
+            }
+        },
+
+        'GetResults': {
+            'acc': cases.case2.case_subclasses.AccClf,
+            'gyr': cases.case2.case_subclasses.GyrClf,
+            'ges': cases.case2.case_subclasses.GesClf,
+            'ttl': cases.case2.case_subclasses.Ensemble,
         }
     }
 }

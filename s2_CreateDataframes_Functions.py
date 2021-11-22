@@ -8,31 +8,39 @@ author: eachrist
 # ============= #
 import os
 import json
+import random
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from bson.objectid import ObjectId
 
+from _cases_dictionaries import json_files_path, gestures_database_name, dict_cases
 from s0_Helpers_Functions import MongoDBHandler, DBDataHandler
 
 
 # =============== #
 #    Functions    #
 # =============== #
-def create_df_sns(screen_path: str, dict_sns: dict, sensor: str):
+def create_df_sns(case_name: str, screen_path: str, dict_sns: dict, sensor: str):
 
     print(' - Creating ' + sensor + ' dataframe.')
     path_df = os.path.join(screen_path, 'df_' + sensor[0:3] + '.csv')
 
     if not os.path.exists(path_df):
 
-        json_files_path = dict_sns['json_files_path']
-
         df = pd.DataFrame()
 
         for user in tqdm(dict_sns['users']):
-            for timestamp in dict_sns['users'][user]['timestamps']:
+            flag = False
+            user_data = 0
+
+            timestamps = list(dict_sns['users'][user]['timestamps'])
+            random.shuffle(timestamps) # If synced do not do this -> To Do !!!
+            for timestamp in timestamps:
                 dict_temp_screen = {}
+
+                if flag:
+                    break
 
                 with open(os.path.join(json_files_path, user + '_' + timestamp + '.json')) as json_file:
                     json_text = json.load(json_file)
@@ -63,6 +71,11 @@ def create_df_sns(screen_path: str, dict_sns: dict, sensor: str):
                             df = df.append(df_row, ignore_index=True)
                             dict_temp_screen[j['screen']]['nod'] += 1
 
+                            user_data += 1
+                            if user_data == dict_cases[case_name]['CreateDataframes']['sns']['max_user_data']:
+                                flag = True
+                                break
+
         df.to_csv(path_df, index=False)
         print('     ' + sensor + ' dataframe saved at: ', path_df)
 
@@ -77,14 +90,13 @@ def create_df_sns(screen_path: str, dict_sns: dict, sensor: str):
     return df
 
 
-def create_df_ges(screen_path: str, dict_ges: dict) -> pd.DataFrame:
+def create_df_ges(case_name: str, screen_path: str, dict_ges: dict) -> pd.DataFrame:
 
     print(' - Creating gestures dataframe.')
     path_df = os.path.join(screen_path, 'df_ges.csv')
 
     if not os.path.exists(path_df):
 
-        gestures_database_name = dict_ges['gestures_database_name']
         m = MongoDBHandler('mongodb://localhost:27017/', gestures_database_name)
         d = DBDataHandler(m)
 

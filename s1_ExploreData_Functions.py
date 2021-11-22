@@ -26,11 +26,8 @@ def explore_sns_data(case_name: str, screen_path: str, screen_name: str, sensor:
     if not os.path.exists(path_save):
 
         output_dict = {
-
-            'json_files_path': json_files_path,
             'data_type': sensor,
             'screen_name': screen_name,
-            'synced_screen': dict_cases[case_name]['ExploreData']['sns']['synced_screen'],
             'min_nod_per_screen': dict_cases[case_name]['ExploreData']['sns']['min_nod_per_screen'],
             'min_nod_per_timestamp': dict_cases[case_name]['ExploreData']['sns']['min_nod_per_timestamp'],
             'num_of_users_found': 0,
@@ -111,7 +108,6 @@ def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict
     if not os.path.exists(path_save):
 
         output_dict = {
-            'gestures_database_name': gestures_database_name,
             'ges_type': ges_type + 's',
             'screen_name': screen_name,
             'device_max_width': dict_cases[case_name]['ExploreData']['ges']['device_max_width'],
@@ -165,6 +161,11 @@ def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict
                                                     len(gesture['data']) >= output_dict['swp_max_data_points']:
                                                 continue
 
+                                            # Closed loop
+                                            if abs(gesture['data'][-1]['dx']) < 0.0001 and \
+                                                    abs(gesture['data'][-1]['dy']) < 0.0001:
+                                                continue
+
                                         output_dict['users'][user['player_id']]['gestures'][str(gesture['_id'])] = {
                                             'ges_screen': gesture['screen'],
                                             'ges_time_start': gesture['t_start'],
@@ -208,7 +209,7 @@ def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dic
     if not (os.path.exists(path_fnl_acc) or os.path.exists(path_fnl_gyr) or os.path.exists(path_fnl_ges)):
 
         # Synced sensor data -> TO DO!!!
-        # Synced sensor with gestures -> From previous experiments are not enough.
+        # Synced sensor with gestures -> TO DO!!!
 
         # Define users data limits
         dict_acc['min_nod_per_user'] = dict_cases[case_name]['ExploreData']['sns']['min_nod_per_user']

@@ -1,5 +1,5 @@
 """
-This script was created at 05-Nov-21
+This script was created at 14-Nov-21
 author: eachrist
 
 """
@@ -24,7 +24,7 @@ from _cases_dictionaries import dict_cases
 if __name__ == '__main__':
 
     # Parameters
-    title = 'Results'
+    title = 'SensorsFeatureSelection Level 0'
 
     # Init app
     app = dash.Dash(__name__)
@@ -41,7 +41,6 @@ if __name__ == '__main__':
             options=[{'value': x, 'label': x}
                      for x in list(dict_cases)],
             value='case1'
-            # labelStyle={'display': 'inline-block'}
         ),
 
         html.P('Screen:'),
@@ -53,12 +52,21 @@ if __name__ == '__main__':
             labelStyle={'display': 'inline-block'}
         ),
 
-        html.P('Metrics:'),
+        html.P('Data:'),
+        dcc.RadioItems(
+            id='data',
+            options=[{'value': x, 'label': x}
+                     for x in ['acc', 'gyr']],
+            value='acc',
+            labelStyle={'display': 'inline-block'}
+        ),
+
+        html.P('X Axis:'),
         dcc.RadioItems(
             id='x-axis',
             options=[{'value': x, 'label': x}
-                     for x in ['NumOfOrgUserTstData', 'FRR', 'FAR', 'NumOfUnlocks', 'FRR_Conf', 'NumOfAcceptTL']],
-            value='FRR_Conf',
+                     for x in ['x', 'y', 'z', 'magnitude', 'combine_angle']],
+            value='magnitude',
             labelStyle={'display': 'inline-block'}
         ),
 
@@ -66,8 +74,8 @@ if __name__ == '__main__':
         dcc.RadioItems(
             id='y-axis',
             options=[{'value': x, 'label': x}
-                     for x in ['Module', 'OriginalUser']],
-            value='Module',
+                     for x in ['None', 'user']],
+            value='None',
             labelStyle={'display': 'inline-block'}
         ),
 
@@ -80,13 +88,11 @@ if __name__ == '__main__':
             labelStyle={'display': 'inline-block'}
         ),
 
+        html.P("Figure Height"),
+        dcc.Slider(id='height', min=500, max=5000, step=500, value=500),
+
         dcc.Graph(id='box-plot'),
     ])
-
-    height_dict = {
-        'Module': 500,
-        'OriginalUser': 2000
-    }
 
     add_info_dict = {
         'None': False,
@@ -98,13 +104,19 @@ if __name__ == '__main__':
         Output('box-plot', 'figure'),
         [Input('case', 'value'),
          Input('screen', 'value'),
+         Input('data', 'value'),
          Input('x-axis', 'value'),
          Input('y-axis', 'value'),
+         Input('height', 'value'),
          Input('add_info', 'value')])
-    def generate_chart(case, screen, x, y, add_info):
-        results_path = os.path.join('cases', case, screen, 'results.csv')
-        results = pd.read_csv(results_path)
-        fig = px.box(results, x=x, y=y, color='Module', height=height_dict[y])
+    def generate_chart(case, screen, data, x, y, height, add_info):
+
+        data_path = os.path.join('cases', case, screen, 'df_' + data + '.csv')
+        df_data = pd.read_csv(data_path)
+
+        if y == 'None':
+            y = None
+        fig = px.box(df_data, x=x, y=y, height=height)
         fig.update_traces(boxmean=add_info_dict[add_info])
         return fig
 

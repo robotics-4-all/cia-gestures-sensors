@@ -90,7 +90,7 @@ def extract_features_df_sns(case_name: str, screen_path: str, df: pd.DataFrame, 
     if not os.path.exists(path_features_df_sns):
 
         extraction_type = dict_cases[case_name]['ExtractFeatures']['sns']['extraction_type']
-        feature = dict_cases[case_name]['ExtractFeatures']['sns']['feature']
+        feature = dict_cases[case_name]['ExtractFeatures']['sns']['feature'][sensor[0:3]]
 
         features_object = FeaturesSns()
 
@@ -203,12 +203,14 @@ def extract_features_ges(case_name: str, ges, features_object):
 
         direction = 'hor' if dx >= dy else 'ver'
 
-        trace_projection = temp_dict['direction']['trace_projection']
+        trace_projection = temp_dict[direction]['trace_projection']
         features_object.setTraceProjection(trace_projection)
 
         features_object.setScreenPercentage(trace_projection / temp_dict[direction]['norm'][normalize])
 
-        features_object.setRatio(trace_projection / start_stop_length)
+        features_object.setRatio(None)  # (trace_projection / start_stop_length)
+        features_object.setDeviation(None)  # define
+        features_object.setLeaning(None)  # define
 
         start_velocity = sqrt(swp_data[0]['vx'] ** 2 + swp_data[0]['vy'] ** 2)
         features_object.setStartVelocity(start_velocity)

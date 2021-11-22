@@ -35,9 +35,9 @@ def main_thread(case_name: str, screen_name: str):
 
     # Create dataframes
     print('-> CreateDataframes\n')
-    df_acc = create_df_sns(screen_path, dict_acc_fnl, 'accelerometer')
-    df_gyr = create_df_sns(screen_path, dict_gyr_fnl, 'gyroscope')
-    df_ges = create_df_ges(screen_path, dict_ges_fnl)
+    df_acc = create_df_sns(case_name, screen_path, dict_acc_fnl, 'accelerometer')
+    df_gyr = create_df_sns(case_name, screen_path, dict_gyr_fnl, 'gyroscope')
+    df_ges = create_df_ges(case_name, screen_path, dict_ges_fnl)
     print('  ---\n')
 
     # Extract features

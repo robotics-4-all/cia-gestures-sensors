@@ -141,3 +141,6 @@ cython_debug/
 .idea
 .old
 **/users_dict*
+**/df_*
+**/features_*.csv
+**/results_*.csv

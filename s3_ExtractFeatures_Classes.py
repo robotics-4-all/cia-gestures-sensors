@@ -294,6 +294,9 @@ class FeaturesTap:
     def setScreen(self, value):
         self.Screen.append(value)
 
+    def setDuration(self, value):
+        self.Duration.append(value)
+
     # Create dataframe method
     def create_dataframe(self) -> pd.DataFrame:
         df = pd.DataFrame()

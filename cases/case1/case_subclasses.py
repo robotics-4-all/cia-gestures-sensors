@@ -31,9 +31,8 @@ class AccClf(SimpleClf):
 
         data_type = 'acc'
 
-        final_features = ['Mean', 'STD', 'Max', 'Min', 'Range',
-                          'Percentile25', 'Percentile50', 'Percentile75',
-                          'Kurtosis', 'Skewness', 'Entropy', 'Amplitude1', 'Amplitude2', 'Frequency2']
+        final_features = ['Mean', 'STD', 'Max', 'Min', 'Percentile25', 'Percentile50', 'Percentile75',
+                          'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']
 
         scalar = MinMaxScaler
 
@@ -54,9 +53,8 @@ class GyrClf(SimpleClf):
 
         data_type = 'gyr'
 
-        final_features = ['Mean', 'STD', 'Max', 'Min', 'Range',
-                          'Percentile25', 'Percentile50', 'Percentile75',
-                          'Kurtosis', 'Skewness', 'Entropy', 'Amplitude1', 'Amplitude2', 'Frequency2']
+        final_features = ['Mean', 'STD', 'Max', 'Min', 'Percentile25', 'Percentile50', 'Percentile75',
+                          'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']
 
         scalar = MinMaxScaler
 
@@ -77,10 +75,9 @@ class GesClf(SimpleClf):
 
         data_type = 'ges'
 
-        final_features = ['TraceLengthHorizontal', 'TraceLengthVertical',
-                          'Slope', 'MeanSquareError', 'MeanAbsError', 'MedianAbsError', 'CoefDetermination',
-                          'AccelerationHorizontal', 'AccelerationVertical',
-                          'MeanY']
+        final_features = ['Duration', 'MeanX', 'MeanY', 'StartStopLength', 'ScreenPercentage',
+                          'TraceProjection', 'StartVelocity', 'StopVelocity',
+                          'AccelerationHor', 'AccelerationVer', 'Slope', 'MeanSquareError', 'CoefDetermination']
 
         scalar = MinMaxScaler
 

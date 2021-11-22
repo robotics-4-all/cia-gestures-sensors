@@ -17,14 +17,14 @@ dict_conf = {
         'Mathisis': 40,
         'Focus': 40,
         'Speedy': 40,
-        'Reaction': 10,
+        'Reacton': 10,
         'Memoria': 10
     },
     'outlier': {
         'Mathisis': -15,
         'Focus': -8,
         'Speedy': -15,
-        'Reaction': -15,
+        'Reacton': -15,
         'Memoria': -15
     }
 }
