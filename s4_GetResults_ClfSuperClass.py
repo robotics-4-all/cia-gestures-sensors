@@ -12,6 +12,9 @@ import pandas as pd
 #  ================= #
 #    Dictionaries    #
 # ================== #
+start_threshold = 35
+start_confidence = 60
+
 dict_conf = {
     'inlier': {
         'Mathisis': 40,
@@ -56,8 +59,8 @@ class ClfSuperClass:
             for user in self.users_decisions:
 
                 predictions = self.users_predictions[user][fold]
-                threshold = 35
-                confidence = 60
+                threshold = start_threshold
+                confidence = start_confidence
 
                 if user == self.original_user:
 
@@ -66,7 +69,7 @@ class ClfSuperClass:
                     for sample in predictions:
 
                         if confidence < threshold:
-                            confidence = 60
+                            confidence = start_confidence
                             Num_Of_Unlocks += 1
 
                         if sample != 1:

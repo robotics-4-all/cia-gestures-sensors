@@ -28,6 +28,9 @@ def clf_train(clf_name, parameters, train_data):
     elif clf_name == 'OneClassSVM':
         clf = svm.OneClassSVM(gamma=parameters[0], kernel='rbf', nu=parameters[1])  # parameters = [0.001, 01]
 
+    elif clf_name == 'OneClassSVM_rbf_dflt':
+        clf = svm.OneClassSVM(kernel='rbf')
+
     else:
         raise ValueError('No such Algorithm found !!!')
 
