@@ -64,7 +64,7 @@ def main_thread(case_name: str, screen_name: str):
 if __name__ == "__main__":
 
     # Select case
-    case_name = 'case6'
+    case_name = 'case12'
     case_path = check_paths(os.path.dirname(__file__), os.path.join('cases', case_name))
 
     print('=====')
@@ -74,4 +74,4 @@ if __name__ == "__main__":
     # Select screen
     for screen_name in dict_cases[case_name]['screens']:
         main_thread(case_name, screen_name)
-        # input('Press Enter to continue...\n')
+        input('Press Enter to continue...\n')

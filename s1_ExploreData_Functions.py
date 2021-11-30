@@ -239,6 +239,11 @@ def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dic
         common_users = list(set(list(set(list(dict_acc['users'])).intersection(list(dict_gyr['users']))))
                             .intersection(list(dict_ges['users'])))
 
+        max_users = dict_cases[case_name]['ExploreData']['max_users']
+        if max_users != float('inf'):
+            if len(common_users) > max_users:
+                common_users = common_users[0:max_users]
+
         for data_dict in [dict_acc, dict_gyr, dict_ges]:
             initial_users_list = list(data_dict['users'])
             for user in initial_users_list:

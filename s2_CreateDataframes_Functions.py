@@ -103,6 +103,12 @@ def create_df_ges(case_name: str, screen_path: str, dict_ges: dict) -> pd.DataFr
         df = pd.DataFrame()
 
         for user in tqdm(dict_ges['users']):
+            flag = False
+            user_data = 0
+
+            if flag:
+                break
+
             for ges_id in dict_ges['users'][user]['gestures']:
 
                 ges = d.get_gestures({'_id': ObjectId(ges_id)})[0]
@@ -120,6 +126,11 @@ def create_df_ges(case_name: str, screen_path: str, dict_ges: dict) -> pd.DataFr
                     'device_width': device['width']
                 }
                 df = df.append(df_row, ignore_index=True)
+
+                user_data += 1
+                if user_data == dict_cases[case_name]['CreateDataframes']['ges']['max_user_data']:
+                    flag = True
+                    break
 
         df.to_csv(path_df, index=False)
         print('     Gestures dataframe saved at: ', path_df)

@@ -31,6 +31,9 @@ def clf_train(clf_name, parameters, train_data):
     elif clf_name == 'OneClassSVM_rbf_dflt':
         clf = svm.OneClassSVM(kernel='rbf')
 
+    elif clf_name == 'LocalOutlierFactor_dflt':
+        clf = LocalOutlierFactor(novelty=True)
+
     else:
         raise ValueError('No such Algorithm found !!!')
 
