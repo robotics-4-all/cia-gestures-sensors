@@ -36,8 +36,8 @@ class AccClf(SimpleClf):
 
         scalar = MinMaxScaler
 
-        clf_name = 'LocalOutlierFactor'
-        parameters = [[3]]
+        clf_name = 'OneClassSVM_rbf_dflt'
+        parameters = [[None]]
 
         clfs_parameters = {clf_name: parameters}
 
@@ -58,8 +58,8 @@ class GyrClf(SimpleClf):
 
         scalar = MinMaxScaler
 
-        clf_name = 'LocalOutlierFactor'
-        parameters = [[5]]
+        clf_name = 'OneClassSVM_rbf_dflt'
+        parameters = [[None]]
 
         clfs_parameters = {clf_name: parameters}
 

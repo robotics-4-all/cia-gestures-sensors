@@ -130,11 +130,11 @@ class SimpleClf(ClfSuperClass):
                 for idx in np.argpartition(self.clfs_median_distance[fold], self.clfs_num - 1)[:self.clfs_num]:
                     clf = self.clfs_trained[fold][idx]
                     decision = clf.decision_function(x_tst) / self.clfs_max_distance[fold][idx]
-                    for sample_idx in range(x_tst.shape[0]):
-                        if decision[sample_idx] > 1:
-                            decision[sample_idx] = 1
-                        if decision[sample_idx] < -1:
-                            decision[sample_idx] = -1
+                    # for sample_idx in range(x_tst.shape[0]):
+                    #     if decision[sample_idx] > 1:
+                    #         decision[sample_idx] = 1
+                    #     if decision[sample_idx] < -1:
+                    #         decision[sample_idx] = -1
                     decision_total += decision
 
                 for sample_idx in range(x_tst.shape[0]):

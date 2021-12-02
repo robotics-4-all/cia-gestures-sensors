@@ -8,7 +8,7 @@ author: eachrist
 # ============= #
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from s0_Helpers_Functions import frange
 from s4_GetResults_ClfSimple import SimpleClf
@@ -18,7 +18,7 @@ from s4_GetResults_ClfSuperClass import ClfSuperClass
 # ================ #
 #    Parameters    #
 # ================ #
-folds = 10
+folds = 5
 
 
 # ============= #
@@ -34,14 +34,20 @@ class AccClf(SimpleClf):
         final_features = ['Mean', 'STD', 'Max', 'Min', 'Percentile25', 'Percentile50', 'Percentile75',
                           'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']
 
-        scalar = MinMaxScaler
+        scalar = StandardScaler
 
-        clfs_parameters = {'OneClassSVM_rbf_dflt': [[None]],
-                           'LocalOutlierFactor_dflt': [[None]]}
+        clf_name = 'OneClassSVM'
+        parameters = []
+
+        for nu in frange(0.3, 0.5, 0.02):
+            for gamma in frange(0.0005, 0.1, 0.005):
+                parameters.append([gamma, nu])
+
+        clfs_parameters = {clf_name: parameters}
 
         super(AccClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=2)
+                                     scalar, clfs_parameters, clfs_num=50)
 
 
 # Gyroscope Class
@@ -54,14 +60,20 @@ class GyrClf(SimpleClf):
         final_features = ['Mean', 'STD', 'Max', 'Min', 'Percentile25', 'Percentile50', 'Percentile75',
                           'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']
 
-        scalar = MinMaxScaler
+        scalar = StandardScaler
 
-        clfs_parameters = {'OneClassSVM_rbf_dflt': [[None]],
-                           'LocalOutlierFactor_dflt': [[None]]}
+        clf_name = 'OneClassSVM'
+        parameters = []
+
+        for nu in frange(0.3, 0.5, 0.02):
+            for gamma in frange(0.0005, 0.1, 0.005):
+                parameters.append([gamma, nu])
+
+        clfs_parameters = {clf_name: parameters}
 
         super(GyrClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=2)
+                                     scalar, clfs_parameters, clfs_num=50)
 
 
 # Swipes Class
@@ -71,18 +83,22 @@ class GesClf(SimpleClf):
 
         data_type = 'ges'
 
-        final_features = ['Duration', 'MeanX', 'MeanY', 'StartStopLength', 'ScreenPercentage',
-                          'TraceProjection', 'StartVelocity', 'StopVelocity',
-                          'AccelerationHor', 'AccelerationVer', 'Slope', 'MeanSquareError', 'CoefDetermination']
+        final_features = ['Duration']
 
-        scalar = MinMaxScaler
+        scalar = StandardScaler
 
-        clfs_parameters = {'OneClassSVM_rbf_dflt': [[None]],
-                           'LocalOutlierFactor_dflt': [[None]]}
+        clf_name = 'OneClassSVM'
+        parameters = []
+
+        for nu in frange(0.3, 0.5, 0.01):
+            for gamma in frange(0.0005, 0.1, 0.005):
+                parameters.append([gamma, nu])
+
+        clfs_parameters = {clf_name: parameters}
 
         super(GesClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=2)
+                                     scalar, clfs_parameters, clfs_num=50)
 
 
 # Ensemble Class

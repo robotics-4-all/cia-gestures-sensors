@@ -36,14 +36,14 @@ class AccClf(SimpleClf):
 
         scalar = MinMaxScaler
 
-        clf_name = 'LocalOutlierFactor'
-        parameters = [[3], [5], [7]]
+        clf_name = 'OneClassSVM_rbf_dflt'
+        parameters = [[None]]
 
         clfs_parameters = {clf_name: parameters}
 
         super(AccClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=3)
+                                     scalar, clfs_parameters, clfs_num=1)
 
 
 # Gyroscope Class
@@ -58,14 +58,14 @@ class GyrClf(SimpleClf):
 
         scalar = MinMaxScaler
 
-        clf_name = 'LocalOutlierFactor'
-        parameters = [[3], [5], [7]]
+        clf_name = 'OneClassSVM_rbf_dflt'
+        parameters = [[None]]
 
         clfs_parameters = {clf_name: parameters}
 
         super(GyrClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=3)
+                                     scalar, clfs_parameters, clfs_num=1)
 
 
 # Swipes Class
@@ -75,22 +75,20 @@ class GesClf(SimpleClf):
 
         data_type = 'ges'
 
-        final_features = ['Duration']
+        final_features = ['Duration', 'MeanX', 'MeanY', 'StartStopLength', 'ScreenPercentage',
+                          'TraceProjection', 'StartVelocity', 'StopVelocity',
+                          'AccelerationHor', 'AccelerationVer', 'Slope', 'MeanSquareError', 'CoefDetermination']
 
         scalar = MinMaxScaler
 
-        clf_name = 'OneClassSVM'
-        parameters = []
-
-        for nu in frange(0.01, 0.3, 0.1):
-            for gamma in frange(5.00, 10.00, 0.5):
-                parameters.append([gamma, nu])
+        clf_name = 'OneClassSVM_rbf_dflt'
+        parameters = [[None]]
 
         clfs_parameters = {clf_name: parameters}
 
         super(GesClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=30)
+                                     scalar, clfs_parameters, clfs_num=1)
 
 
 # Ensemble Class

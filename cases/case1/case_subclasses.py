@@ -37,13 +37,13 @@ class AccClf(SimpleClf):
         scalar = MinMaxScaler
 
         clf_name = 'LocalOutlierFactor'
-        parameters = [[3], [5], [7]]
+        parameters = [[3]]
 
         clfs_parameters = {clf_name: parameters}
 
         super(AccClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=3)
+                                     scalar, clfs_parameters, clfs_num=1)
 
 
 # Gyroscope Class
@@ -59,13 +59,13 @@ class GyrClf(SimpleClf):
         scalar = MinMaxScaler
 
         clf_name = 'LocalOutlierFactor'
-        parameters = [[3], [5], [7]]
+        parameters = [[5]]
 
         clfs_parameters = {clf_name: parameters}
 
         super(GyrClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=3)
+                                     scalar, clfs_parameters, clfs_num=1)
 
 
 # Swipes Class
@@ -81,18 +81,14 @@ class GesClf(SimpleClf):
 
         scalar = MinMaxScaler
 
-        clf_name = 'OneClassSVM'
-        parameters = []
-
-        for nu in frange(0.01, 0.3, 0.1):
-            for gamma in frange(5.00, 10.00, 0.5):
-                parameters.append([gamma, nu])
+        clf_name = 'OneClassSVM_rbf_dflt'
+        parameters = [[None]]
 
         clfs_parameters = {clf_name: parameters}
 
         super(GesClf, self).__init__(folds, original_user, data_type,
                                      features_df, final_features,
-                                     scalar, clfs_parameters, clfs_num=30)
+                                     scalar, clfs_parameters, clfs_num=1)
 
 
 # Ensemble Class
