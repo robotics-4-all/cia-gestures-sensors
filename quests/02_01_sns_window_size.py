@@ -11,10 +11,9 @@ import pandas as pd
 from tqdm import tqdm
 from statistics import stdev
 
-from s0_Helpers_Functions import check_paths, frange
-from s3_ExtractFeatures_Functions import extract_features_df_sns
+from s__Helpers_Functions import check_paths
 
-from _cases_dictionaries import dict_cases
+from s0_cases_dictionaries import dict_cases
 
 '''
 desc:

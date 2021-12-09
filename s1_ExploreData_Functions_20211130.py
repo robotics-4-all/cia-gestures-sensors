@@ -1,8 +1,10 @@
 """
-This script was created at 05-Sep-21
+This script was created at 09-Dec-21
 author: eachrist
 
 """
+# Remove x = 0 & y = 0 limitation
+
 #  ============ #
 #    Imports    #
 # ============= #
@@ -11,8 +13,8 @@ import json
 from tqdm import tqdm
 from bson.objectid import ObjectId
 
-from _cases_dictionaries import json_files_path, gestures_database_name, dict_cases
-from s0_Helpers_Functions import MongoDBHandler, DBDataHandler
+from s0_cases_dictionaries import json_files_path, gestures_database_name, dict_cases
+from s__Helpers_Functions import MongoDBHandler, DBDataHandler
 
 
 # =============== #
@@ -41,6 +43,7 @@ def explore_sns_data(case_name: str, screen_path: str, screen_name: str, sensor:
 
             user = json_file.replace('.json', '').split('_')[0]
             timestamp_str = json_file.replace('.json', '').split('_')[1]
+            zero_samples = 0
 
             if user not in output_dict['users']:
                 output_dict['users'][user] = {'nod': 0, 'timestamps': {}}
@@ -58,8 +61,10 @@ def explore_sns_data(case_name: str, screen_path: str, screen_name: str, sensor:
                         if i['screen'] not in screens:
                             screens[i['screen']] = {'nod': 0}
 
-                        if i['x'] != 0 and i['y'] != 0:
-                            screens[i['screen']]['nod'] += 1
+                        if i['x'] == 0 and i['y'] == 0:
+                            zero_samples += 1
+
+                        screens[i['screen']]['nod'] += 1
 
             # If a screen pass the min data limitation put it in the timestamps dict
             for screen in screens:
@@ -69,8 +74,9 @@ def explore_sns_data(case_name: str, screen_path: str, screen_name: str, sensor:
 
             # If a timestamp pass the min data limitation put it in the users dict
             if timestamp['nod'] >= output_dict['min_nod_per_timestamp']:
-                output_dict['users'][user]['timestamps'][timestamp_str] = timestamp
-                output_dict['users'][user]['nod'] += timestamp['nod']
+                if zero_samples <= timestamp['nod'] / 2:
+                    output_dict['users'][user]['timestamps'][timestamp_str] = timestamp
+                    output_dict['users'][user]['nod'] += timestamp['nod']
 
         # Remove users without data
         initial_users_list = list(output_dict['users'])
@@ -101,14 +107,23 @@ def explore_sns_data(case_name: str, screen_path: str, screen_name: str, sensor:
 
 def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict:
 
-    ges_type = dict_cases[case_name]['gesture_type']
-    print(' - Exploring gestures ( ' + ges_type + 's ).')
+    ges_type_dict = {
+        'Mathisis': ['swipe'],
+        'Focus': ['swipe'],
+        'Reacton': ['swipe', 'tap'],
+        'Memoria': ['tap'],
+        'Speedy': ['tap']
+    }
+
+    ges_types = ges_type_dict[screen_name]
+
+    print(' - Exploring gestures ( ' + ', '.join(ges_types) + ' ).')
     path_save = os.path.join(screen_path, 'users_dict_ges.json')
 
     if not os.path.exists(path_save):
 
         output_dict = {
-            'ges_type': ges_type + 's',
+            'ges_type': ', '.join(ges_types),
             'screen_name': screen_name,
             'device_max_width': dict_cases[case_name]['ExploreData']['ges']['device_max_width'],
             'device_max_height': dict_cases[case_name]['ExploreData']['ges']['device_max_height'],
@@ -116,7 +131,7 @@ def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict
             'users': {}
         }
 
-        if ges_type == 'swipe':
+        if 'swipe' in ges_types:
             output_dict['fake_swp_limit'] = dict_cases[case_name]['ExploreData']['ges']['fake_swp_limit']
             output_dict['swp_min_data_points'] = dict_cases[case_name]['ExploreData']['ges']['swp_min_data_points']
             output_dict['swp_max_data_points'] = dict_cases[case_name]['ExploreData']['ges']['swp_max_data_points']
@@ -146,12 +161,12 @@ def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict
 
                             gestures = d.get_gestures_from_device(device['device_id'])
                             for gesture in gestures:
-                                if gesture['type'] == ges_type:
+                                if gesture['type'] in ges_types:
                                     if output_dict['screen_name'] in gesture['screen']:
                                         if gesture['t_start'] == -1 or gesture['t_stop'] == -1:
                                             continue
 
-                                        if ges_type == 'swipe':
+                                        if gesture['type'] == 'swipe':
                                             # Fake swipes limit
                                             if gesture['t_stop'] - gesture['t_start'] < output_dict['fake_swp_limit']:
                                                 continue
@@ -184,16 +199,17 @@ def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict
         # Save dict in a .json file
         with open(path_save, 'w') as fp:
             json.dump(output_dict, fp)
-        print('     Gestures ( ' + ges_type + 's ) dict saved in: ', path_save)
+        print('     Gestures ( ' + ', '.join(ges_types) + ' ) dict saved in: ', path_save)
 
     else:
 
         f = open(path_save, )
         output_dict = json.load(f)
-        print('     Gestures ( ' + ges_type + 's ) dict loaded from: ', path_save)
+        print('     Gestures ( ' + ', '.join(ges_types) + ' ) dict loaded from: ', path_save)
         f.close()
 
-    print('     ' + str(output_dict['num_of_users_found']), 'Users with valid gestures ( ' + ges_type + 's ) found.')
+    print('     ' + str(output_dict['num_of_users_found']),
+          'Users with valid gestures ( ' + ', '.join(ges_types) + ' ) found.')
     print('')
 
     return output_dict
@@ -202,9 +218,9 @@ def explore_ges_data(case_name: str, screen_path: str, screen_name: str) -> dict
 def select_users(case_name: str, screen_path: str, dict_acc: dict, dict_gyr: dict, dict_ges: dict):
 
     print(' - Selecting common users with specific data limits.')
-    path_fnl_acc = os.path.join(screen_path, 'users_dict_acc_fnl.json')
-    path_fnl_gyr = os.path.join(screen_path, 'users_dict_gyr_fnl.json')
-    path_fnl_ges = os.path.join(screen_path, 'users_dict_ges_fnl.json')
+    path_fnl_acc = os.path.join(screen_path, 'users_dict_fnl_acc.json')
+    path_fnl_gyr = os.path.join(screen_path, 'users_dict_fnl_gyr.json')
+    path_fnl_ges = os.path.join(screen_path, 'users_dict_fnl_ges.json')
 
     if not (os.path.exists(path_fnl_acc) or os.path.exists(path_fnl_gyr) or os.path.exists(path_fnl_ges)):
 

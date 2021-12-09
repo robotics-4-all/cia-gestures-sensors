@@ -8,9 +8,9 @@ author: eachrist
 # ============= #
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import StandardScaler
 
-from s0_Helpers_Functions import frange
+from s__Helpers_Functions import frange
 from s4_GetResults_ClfSimple import SimpleClf
 from s4_GetResults_ClfSuperClass import ClfSuperClass
 

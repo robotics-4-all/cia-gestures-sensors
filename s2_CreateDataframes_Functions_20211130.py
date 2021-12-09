@@ -1,21 +1,22 @@
 """
-This script was created at 09-Sep-21
+This script was created at 09-Dec-21
 author: eachrist
 
 """
+# Remove random shuffle from line 38.
+
 # ============= #
 #    Imports    #
 # ============= #
 import os
 import json
-import random
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from bson.objectid import ObjectId
 
-from _cases_dictionaries import json_files_path, gestures_database_name, dict_cases
-from s0_Helpers_Functions import MongoDBHandler, DBDataHandler
+from s0_cases_dictionaries import json_files_path, gestures_database_name, dict_cases
+from s__Helpers_Functions import MongoDBHandler, DBDataHandler
 
 
 # =============== #
@@ -35,7 +36,6 @@ def create_df_sns(case_name: str, screen_path: str, dict_sns: dict, sensor: str)
             user_data = 0
 
             timestamps = list(dict_sns['users'][user]['timestamps'])
-            random.shuffle(timestamps) # If synced do not do this -> To Do !!!
             for timestamp in timestamps:
                 dict_temp_screen = {}
 
@@ -55,12 +55,12 @@ def create_df_sns(case_name: str, screen_path: str, dict_sns: dict, sensor: str)
                                     dict_sns['users'][user]['timestamps'][timestamp]['screens'][j['screen']]['nod']:
                                 continue
 
-                            if j['x'] == 0 and j['y'] == 0:
-                                continue
+                            # if j['x'] == 0 and j['y'] == 0:
+                            #     continue
 
                             df_row = {
                                 'user': user,
-                                'timestamp': timestamp,
+                                'timestamp': int(timestamp),
                                 'screen': j['screen'],
                                 'x': j['x'],
                                 'y': j['y'],
@@ -118,6 +118,7 @@ def create_df_ges(case_name: str, screen_path: str, dict_ges: dict) -> pd.DataFr
                     'user': user,
                     'screen': ges['screen'],
                     'id': ObjectId(ges_id),
+                    'type': ges['type'],
                     'time_start': ges['t_start'],
                     'time_stop': ges['t_stop'],
                     'duration': ges['t_stop'] - ges['t_start'],

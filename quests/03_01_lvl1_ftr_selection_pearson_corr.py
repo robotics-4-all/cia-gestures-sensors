@@ -15,7 +15,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
 
-from _cases_dictionaries import dict_cases
+from s0_cases_dictionaries import dict_cases
 
 '''
 results = {

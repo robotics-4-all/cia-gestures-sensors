@@ -16,7 +16,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
 
-from _cases_dictionaries import dict_cases
+from s0_cases_dictionaries import dict_cases
 
 
 #  ========= #
