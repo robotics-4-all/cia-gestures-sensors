@@ -15,16 +15,15 @@ import pandas as pd
 class FeaturesSns:
 
     def __init__(self):
+
         self.User = []
         self.Screen = []
-
+        self.Type = []
         self.Timestamp = []
         self.StartTime = []
         self.StopTime = []
-
         self.Group = []
         self.Window = []
-
         self.Mean = []
         self.STD = []
         self.Max = []
@@ -36,12 +35,10 @@ class FeaturesSns:
         self.Kurtosis = []
         self.Skewness = []
         self.Entropy = []
-
         self.Amplitude1 = []
         self.Amplitude2 = []
         self.Frequency2 = []
         self.MeanFrequency = []
-
         self.Dx = []
         self.Dy = []
         self.Vx = []
@@ -53,6 +50,9 @@ class FeaturesSns:
 
     def setScreen(self, value=None):
         self.Screen.append(value)
+
+    def setType(self, value=None):
+        self.Type.append(value)
 
     def setTimestamp(self, value=None):
         self.Timestamp.append(value)
@@ -130,9 +130,9 @@ class FeaturesSns:
     def create_dataframe(self) -> pd.DataFrame:
 
         df = pd.DataFrame()
-
         df['User'] = self.User
         df['Screen'] = self.Screen
+        df['Type'] = self.Type
         df['Timestamp'] = self.Timestamp
         df['StartTime'] = self.StartTime
         df['StopTime'] = self.StopTime
@@ -160,33 +160,26 @@ class FeaturesSns:
 class FeaturesGes:
 
     def __init__(self):
+
         self.User = []
         self.Screen = []
         self.Type = []
-
-        self.TimeStart = []
-        self.TimeStop = []
+        self.StartTime = []
+        self.StopTime = []
         self.Duration = []
-
         self.MeanX = []
         self.MeanY = []
-
         self.TraceLength = []
         self.StartStopLength = []
-
         self.TraceProjection = []
         self.ScreenPercentage = []
-
         self.Ratio = []
         self.Deviation = []
         self.Leaning = []
-
         self.StartVelocity = []
         self.StopVelocity = []
-
         self.AccelerationHor = []
         self.AccelerationVer = []
-
         self.Slope = []
         self.MeanSquareError = []
         self.MeanAbsError = []
@@ -203,11 +196,11 @@ class FeaturesGes:
     def setType(self, value=None):
         self.Type.append(value)
 
-    def setTimeStart(self, value=None):
-        self.TimeStart.append(value)
+    def setStartTime(self, value=None):
+        self.StartTime.append(value)
 
-    def setTimeStop(self, value=None):
-        self.TimeStop.append(value)
+    def setStopTime(self, value=None):
+        self.StopTime.append(value)
 
     def setDuration(self, value=None):
         self.Duration.append(value)
@@ -268,13 +261,13 @@ class FeaturesGes:
 
     # Create dataframe method
     def create_dataframe(self) -> pd.DataFrame:
-        df = pd.DataFrame()
 
+        df = pd.DataFrame()
         df['User'] = self.User
         df['Screen'] = self.Screen
         df['Type'] = self.Type
-        df['TimeStart'] = self.TimeStart
-        df['TimeStop'] = self.TimeStop
+        df['StartTime'] = self.StartTime
+        df['StopTime'] = self.StopTime
         df['Duration'] = self.Duration
         df['MeanX'] = self.MeanX
         df['MeanY'] = self.MeanY

@@ -11,9 +11,9 @@ import pandas as pd
 from tqdm import tqdm
 
 from s0_cases_dictionaries import dict_cases
-from s3_ExtractFeatures_Functions_20211130 import extract_features_sns, extract_features_ges
-from s3_GetResults_SimpleClassifier_20211130 import get_predictions
-from s3_GetResults_Evaluator_20211130 import Evaluator
+from s3_ExtractFeatures_Functions import extract_features_sns, extract_features_ges
+from s3_GetResults_SimpleClassifier import get_predictions
+from s3_GetResults_Evaluator import Evaluator
 
 
 #  ============== #
@@ -80,22 +80,22 @@ def get_results(case_name: str, screen_name: str, screen_path: str,
         ges_trn, ges_tst, ges_att = split_df_ges(original_user, df_ges, split_rate)
 
         # Extract features for training data
-        ftr_acc_trn = extract_features_sns(acc_trn, sns_lvl0_ftr, window, overlap, sample_rate)
-        ftr_gyr_trn = extract_features_sns(gyr_trn, sns_lvl0_ftr, window, overlap, sample_rate)
+        ftr_acc_trn = extract_features_sns(acc_trn, 'acc', sns_lvl0_ftr, window, overlap, sample_rate)
+        ftr_gyr_trn = extract_features_sns(gyr_trn, 'gyr', sns_lvl0_ftr, window, overlap, sample_rate)
         ftr_ges_trn = extract_features_ges(ges_trn, normalize, default_width, default_height)
         ftr_swp_trn = ftr_ges_trn.loc[ftr_ges_trn['Type'] == 'swipe'].reset_index(drop=True)
         ftr_tap_trn = ftr_ges_trn.loc[ftr_ges_trn['Type'] == 'tap'].reset_index(drop=True)
 
         # Extract features for testing data
-        ftr_acc_tst = extract_features_sns(acc_tst, sns_lvl0_ftr, window, 0, sample_rate)
-        ftr_gyr_tst = extract_features_sns(gyr_tst, sns_lvl0_ftr, window, 0, sample_rate)
+        ftr_acc_tst = extract_features_sns(acc_tst, 'acc', sns_lvl0_ftr, window, 0, sample_rate)
+        ftr_gyr_tst = extract_features_sns(gyr_tst, 'gyr', sns_lvl0_ftr, window, 0, sample_rate)
         ftr_ges_tst = extract_features_ges(ges_tst, normalize, default_width, default_height)
         ftr_swp_tst = ftr_ges_tst.loc[ftr_ges_tst['Type'] == 'swipe'].reset_index(drop=True)
         ftr_tap_tst = ftr_ges_tst.loc[ftr_ges_tst['Type'] == 'tap'].reset_index(drop=True)
 
         # Extract features for attackers data
-        ftr_acc_att = extract_features_sns(acc_att, sns_lvl0_ftr, window, 0, sample_rate)
-        ftr_gyr_att = extract_features_sns(gyr_att, sns_lvl0_ftr, window, 0, sample_rate)
+        ftr_acc_att = extract_features_sns(acc_att, 'acc', sns_lvl0_ftr, window, 0, sample_rate)
+        ftr_gyr_att = extract_features_sns(gyr_att, 'gyr', sns_lvl0_ftr, window, 0, sample_rate)
         ftr_ges_att = extract_features_ges(ges_att, normalize, default_width, default_height)
         ftr_swp_att = ftr_ges_att.loc[ftr_ges_att['Type'] == 'swipe'].reset_index(drop=True)
         ftr_tap_att = ftr_ges_att.loc[ftr_ges_att['Type'] == 'tap'].reset_index(drop=True)
@@ -119,7 +119,8 @@ def get_results(case_name: str, screen_name: str, screen_path: str,
         # Get prediction for training, testing and attackers data
         for sett in sets_dict:
             for idx, clf in enumerate(classifiers):
-                sets_dict[sett][idx]['Predictions'] = get_predictions(clf.get_decisions(sets_dict[sett][idx]))
+                sets_dict[sett][idx]['Decision'] = clf.get_decisions(sets_dict[sett][idx])
+                sets_dict[sett][idx]['Prediction'] = get_predictions(sets_dict[sett][idx]['Decision'])
 
         # Evaluate predictions of every module separately
         eval_obj.calculate_metrics(original_user, sets_dict)

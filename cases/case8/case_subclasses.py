@@ -9,7 +9,7 @@ author: eachrist
 from sklearn.preprocessing import StandardScaler
 
 from s__Helpers_Functions import frange
-from s3_GetResults_SimpleClassifier_20211130 import SimpleClassifier
+from s3_GetResults_SimpleClassifier import SimpleClassifier
 
 
 # ============= #

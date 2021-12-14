@@ -10,9 +10,9 @@ import os
 
 from s0_cases_dictionaries import dict_cases
 from s__Helpers_Functions import check_paths
-from s1_ExploreData_Functions_20211130 import explore_sns_data, explore_ges_data, select_users
-from s2_CreateDataframes_Functions_20211130 import create_df_sns, create_df_ges
-from s3_GetResults_Functions_20211130 import get_results
+from s1_ExploreData_Functions import explore_sns_data, explore_ges_data, select_users
+from s2_CreateDataframes_Functions import create_df_sns, create_df_ges
+from s3_GetResults_Functions import get_results
 
 
 # =============== #
@@ -52,7 +52,7 @@ def main_thread(case_name: str, screen_name: str):
 if __name__ == "__main__":
 
     # Select case
-    case_name = 'case9'
+    case_name = 'case8'
     case_path = check_paths(os.path.dirname(__file__), os.path.join('cases', case_name))
 
     print('=====')

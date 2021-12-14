@@ -15,37 +15,34 @@ from scipy.fftpack import fft
 from scipy.stats import entropy, kurtosis, skew
 
 from s__Helpers_Functions import linear_regression
-from s3_ExtractFeatures_Classes_20211130 import FeaturesSns, FeaturesGes
+from s3_ExtractFeatures_Classes import FeaturesSns, FeaturesGes
 
 
 # =============== #
 #    Functions    #
 # =============== #
-def calculate_features_sns(user: int, data: np.ndarray, group: int, timestamp: float, features_object: FeaturesSns,
-                           window: int, overlap: float, sample_rate: float):
+def calculate_features_sns(user: int, module: str, data: np.ndarray, group: int, timestamp: float,
+                           features_object: FeaturesSns, window: int, overlap: float, sample_rate: float):
 
     overlap = int(overlap * window)
-
     flag = True
     start = 0
     start_time = timestamp
-
     data_length = data.shape[0]
+
     while data_length > 1:
 
         stop = start + window
         if stop > data.shape[0]:
             stop = data.shape[0]
-
         stop_time = timestamp + (stop - 1) * sample_rate
 
         features_object.setUser(user)
         features_object.setScreen()
+        features_object.setType(module)
         features_object.setTimestamp()
-
         features_object.setStartTime(start_time)
         features_object.setStopTime(stop_time)
-
         features_object.setGroup(group)
         features_object.setWindow(stop-start)
 
@@ -84,7 +81,7 @@ def calculate_features_sns(user: int, data: np.ndarray, group: int, timestamp: f
     return features_object
 
 
-def extract_features_sns(data: pd.DataFrame, feature: str, window: int, overlap: float, sample_rate: float):
+def extract_features_sns(data: pd.DataFrame, module: str, feature: str, window: int, overlap: float, sample_rate: float):
 
     features_object = FeaturesSns()
 
@@ -96,7 +93,7 @@ def extract_features_sns(data: pd.DataFrame, feature: str, window: int, overlap:
         for idx, ts in enumerate(timestamps):
             data_to_window = user_data.loc[data['timestamp'] == ts][feature].to_numpy()
 
-            features_object = calculate_features_sns(user, data_to_window, idx, ts, features_object,
+            features_object = calculate_features_sns(user, module, data_to_window, idx, ts, features_object,
                                                      window, overlap, sample_rate)
 
     df_features = features_object.create_dataframe()
@@ -110,8 +107,8 @@ def calculate_features_ges(gesture: pd.Series, features_object: FeaturesGes,
     features_object.setUser(gesture['user'])
     features_object.setScreen()
     features_object.setType(gesture['type'])
-    features_object.setTimeStart(gesture['time_start'])
-    features_object.setTimeStop(gesture['time_stop'])
+    features_object.setStartTime(gesture['time_start'])
+    features_object.setStopTime(gesture['time_stop'])
     features_object.setDuration(gesture['duration'])
 
     if gesture['type'] == 'swipe':

@@ -37,10 +37,6 @@ def get_predictions(decisions: np.ndarray):
 
     predictions = np.empty(decisions.shape[0])
     for sample_idx in range(decisions.shape[0]):
-        if decisions[sample_idx] > 1:
-            decisions[sample_idx] = 1
-        if decisions[sample_idx] < -1:
-            decisions[sample_idx] = -1
         predictions[sample_idx] = 1 if decisions[sample_idx] > 0 else -1
 
     return predictions
@@ -103,5 +99,6 @@ class SimpleClassifier:
                     if decision[sample_idx] < -1:
                         decision[sample_idx] = -1
                 decision_total += decision
+            decision_total /= self.clfs_dec
 
         return decision_total
