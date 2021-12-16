@@ -45,7 +45,7 @@ dict_cases = {
                 'sns': {
                     'lvl0_ftr': 'magnitude',
                     'sample_rate': 20,  # 20ms, 50Hz
-                    'window': 500,
+                    'window': 500,  # 500 samples in 10 sec
                     'overlap': 0.9
                 },
                 'ges': {
@@ -59,8 +59,10 @@ dict_cases = {
                 'gyr': cases.case8.case_subclasses.GyrClassifier,
                 'swp': cases.case8.case_subclasses.SwpClassifier,
                 'tap': cases.case8.case_subclasses.TapClassifier
+            },
+            'Evaluator': {
+                'time_window': 10000  # ms or 10sec
             }
-
         }
-    },
+    }
 }

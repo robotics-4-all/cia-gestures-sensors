@@ -100,22 +100,17 @@ def evaluate_attackers(data: pd.DataFrame, screen: str):
     return Mean_FAR, Mean_Num_Of_Acceptances_Till_Lock
 
 
-def find_groups(data: pd.DataFrame):
+def find_groups(data: pd.DataFrame, time_window: int):
 
     group = 0
     groups = [group]
-    stop_time = data.iloc[0]['StopTime']
-    temp_sns_sample = data.loc[data['Type'] == 'acc'].iloc[0]
-    window_time = temp_sns_sample['StopTime'] - temp_sns_sample['StartTime']
+    stop_time = data.iloc[0]['StartTime'] + time_window
 
     for index, sample in data[1:].iterrows():
         if sample['StartTime'] > stop_time:
             group += 1
-            if sample['Type'] == 'swipe' or sample['Type'] == 'tap':
-                stop_time = sample['StartTime'] + window_time
+            stop_time = sample['StartTime'] + time_window
         groups.append(group)
-        if sample['Type'] == 'acc' or sample['Type'] == 'gyr':
-            stop_time = sample['StopTime']
 
     return groups
 
@@ -132,7 +127,7 @@ def groups_predictions(data: pd.DataFrame):
     return predictions
 
 
-def get_final_evaluation_metrics(list_of_data: list):
+def get_final_evaluation_metrics(list_of_data: list, time_window: int):
 
     # Append and sort all data
     all_data = pd.DataFrame()
@@ -148,7 +143,7 @@ def get_final_evaluation_metrics(list_of_data: list):
     }
     for user in set(all_data['User']):
         all_user_data = all_data.loc[all_data['User'] == user].sort_values(by=['StartTime']).reset_index(drop=True)
-        all_user_data['Group'] = find_groups(all_user_data)
+        all_user_data['Group'] = find_groups(all_user_data, time_window)
         predictions = groups_predictions(all_user_data)
         metrics['number_of_data'] += len(predictions)
         metrics['pos_ones_percentage'] += len([x for x in predictions if x == 1]) / len(predictions)
@@ -165,9 +160,10 @@ def get_final_evaluation_metrics(list_of_data: list):
 # ============= #
 class Evaluator:
 
-    def __init__(self, screen: str):
+    def __init__(self, screen: str, time_window: int):
 
         self.screen = screen
+        self.time_window = time_window
         self.OriginalUser = []
         self.Module = []
         self.NumOfTrnData = []
@@ -211,17 +207,17 @@ class Evaluator:
         # Combine Modules
         self.OriginalUser.append(original_user)
         self.Module.append('fnl')
-        metrics = get_final_evaluation_metrics(sets_dict['trn'])
+        metrics = get_final_evaluation_metrics(sets_dict['trn'], self.time_window)
         self.NumOfTrnData.append(metrics['number_of_data'])
         self.FRR_trn.append(metrics['neg_ones_percentage'])
         self.FRRConf_trn.append(None)
         self.NumOfUnlocks_trn.append(None)
-        metrics = get_final_evaluation_metrics(sets_dict['tst'])
+        metrics = get_final_evaluation_metrics(sets_dict['tst'], self.time_window)
         self.NumOfTstData.append(metrics['number_of_data'])
         self.FRR_tst.append(metrics['neg_ones_percentage'])
         self.FRRConf_tst.append(None)
         self.NumOfUnlocks_tst.append(None)
-        metrics = get_final_evaluation_metrics(sets_dict['att'])
+        metrics = get_final_evaluation_metrics(sets_dict['att'], self.time_window)
         self.NumOfAtt.append(metrics['number_of_users'])
         self.NumOfAttData.append(metrics['number_of_data'])
         self.FAR.append(metrics['pos_ones_percentage'])

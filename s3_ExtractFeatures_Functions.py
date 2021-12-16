@@ -85,8 +85,7 @@ def extract_features_sns(data: pd.DataFrame, module: str, feature: str, window: 
 
     features_object = FeaturesSns()
 
-    users = list(set(data['user']))
-    for user in users:
+    for user in list(set(data['user'])):
         user_data = data.loc[data['user'] == user]
         timestamps = list(set(user_data['timestamp']))
         timestamps.sort()
@@ -218,8 +217,11 @@ def extract_features_ges(data: pd.DataFrame, normalize: bool, default_width: flo
 
     features_object = FeaturesGes()
 
-    for index, ges in data.iterrows():
-        features_object = calculate_features_ges(ges, features_object, normalize, default_width, default_height)
+    for user in list(set(data['user'])):
+        user_data = data.loc[data['user'] == user]
+        user_data = user_data.sort_values(by=['time_start'], ignore_index=True)
+        for index, ges in user_data.iterrows():
+            features_object = calculate_features_ges(ges, features_object, normalize, default_width, default_height)
 
     df_features = features_object.create_dataframe()
 

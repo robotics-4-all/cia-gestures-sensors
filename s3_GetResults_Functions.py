@@ -67,9 +67,10 @@ def get_results(case_name: str, screen_name: str, screen_path: str,
     normalize = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['normalize']
     default_width = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['default_width']
     default_height = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['default_height']
+    time_window = dict_cases[case_name]['GetResults']['Evaluator']['time_window']
 
     # Define evaluator
-    eval_obj = Evaluator(screen_name)
+    eval_obj = Evaluator(screen_name, time_window)
 
     # Select original user
     for original_user in tqdm(set(df_acc['user'])):
