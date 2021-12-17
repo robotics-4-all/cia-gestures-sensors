@@ -67,10 +67,9 @@ def get_results(case_name: str, screen_name: str, screen_path: str,
     normalize = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['normalize']
     default_width = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['default_width']
     default_height = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['default_height']
-    time_window = dict_cases[case_name]['GetResults']['Evaluator']['time_window']
 
     # Define evaluator
-    eval_obj = Evaluator(screen_name, time_window)
+    eval_obj = Evaluator(screen_name)
 
     # Select original user
     for original_user in tqdm(set(df_acc['user'])):
@@ -88,15 +87,15 @@ def get_results(case_name: str, screen_name: str, screen_path: str,
         ftr_tap_trn = ftr_ges_trn.loc[ftr_ges_trn['Type'] == 'tap'].reset_index(drop=True)
 
         # Extract features for testing data
-        ftr_acc_tst = extract_features_sns(acc_tst, 'acc', sns_lvl0_ftr, window, 0, sample_rate)
-        ftr_gyr_tst = extract_features_sns(gyr_tst, 'gyr', sns_lvl0_ftr, window, 0, sample_rate)
+        ftr_acc_tst = extract_features_sns(acc_tst, 'acc', sns_lvl0_ftr, window, overlap, sample_rate)
+        ftr_gyr_tst = extract_features_sns(gyr_tst, 'gyr', sns_lvl0_ftr, window, overlap, sample_rate)
         ftr_ges_tst = extract_features_ges(ges_tst, normalize, default_width, default_height)
         ftr_swp_tst = ftr_ges_tst.loc[ftr_ges_tst['Type'] == 'swipe'].reset_index(drop=True)
         ftr_tap_tst = ftr_ges_tst.loc[ftr_ges_tst['Type'] == 'tap'].reset_index(drop=True)
 
         # Extract features for attackers data
-        ftr_acc_att = extract_features_sns(acc_att, 'acc', sns_lvl0_ftr, window, 0, sample_rate)
-        ftr_gyr_att = extract_features_sns(gyr_att, 'gyr', sns_lvl0_ftr, window, 0, sample_rate)
+        ftr_acc_att = extract_features_sns(acc_att, 'acc', sns_lvl0_ftr, window, overlap, sample_rate)
+        ftr_gyr_att = extract_features_sns(gyr_att, 'gyr', sns_lvl0_ftr, window, overlap, sample_rate)
         ftr_ges_att = extract_features_ges(ges_att, normalize, default_width, default_height)
         ftr_swp_att = ftr_ges_att.loc[ftr_ges_att['Type'] == 'swipe'].reset_index(drop=True)
         ftr_tap_att = ftr_ges_att.loc[ftr_ges_att['Type'] == 'tap'].reset_index(drop=True)

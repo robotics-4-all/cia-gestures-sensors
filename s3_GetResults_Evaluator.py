@@ -35,12 +35,13 @@ dict_conf = {
 #  ============== #
 #    Functions    #
 # =============== #
-def evaluate_original_user(predictions: list, screen: str):
+def evaluate_original_user(data: pd.DataFrame, screen: str):
 
     FRR = None
     Num_Of_Unlocks = None
     FRRConf = None
 
+    predictions = data['Prediction'].to_list()
     if len(predictions) != 0:
         threshold = start_threshold
         confidence = start_confidence
@@ -67,6 +68,7 @@ def evaluate_attackers(data: pd.DataFrame, screen: str):
 
     Mean_FAR = None
     Mean_Num_Of_Acceptances_Till_Lock = None
+
     if data.shape[0] != 0:
         Mean_FAR = 0
         Mean_Num_Of_Acceptances_Till_Lock = 0
@@ -100,70 +102,14 @@ def evaluate_attackers(data: pd.DataFrame, screen: str):
     return Mean_FAR, Mean_Num_Of_Acceptances_Till_Lock
 
 
-def find_groups(data: pd.DataFrame, time_window: int):
-
-    group = 0
-    groups = [group]
-    stop_time = data.iloc[0]['StartTime'] + time_window
-
-    for index, sample in data[1:].iterrows():
-        if sample['StartTime'] > stop_time:
-            group += 1
-            stop_time = sample['StartTime'] + time_window
-        groups.append(group)
-
-    return groups
-
-
-def groups_predictions(data: pd.DataFrame):
-
-    predictions = []
-    for group in set(data['Group']):
-        group_data = data.loc[data['Group'] == group]['Decision'].to_list()
-        group_decision = mean(group_data)
-        group_prediction = 1 if group_decision > 0 else -1
-        predictions.append(group_prediction)
-
-    return predictions
-
-
-def get_final_evaluation_metrics(list_of_data: list, time_window: int):
-
-    # Append and sort all data
-    all_data = pd.DataFrame()
-    for data in list_of_data:
-        data_to_append = data[['User', 'Type', 'StartTime', 'StopTime', 'Decision']]
-        all_data = all_data.append(data_to_append, ignore_index=True)
-
-    metrics = {
-        'number_of_users': len(set(all_data['User'])),
-        'number_of_data': 0,
-        'pos_ones_percentage': 0,
-        'neg_ones_percentage': 0
-    }
-    for user in set(all_data['User']):
-        all_user_data = all_data.loc[all_data['User'] == user].sort_values(by=['StartTime']).reset_index(drop=True)
-        all_user_data['Group'] = find_groups(all_user_data, time_window)
-        predictions = groups_predictions(all_user_data)
-        metrics['number_of_data'] += len(predictions)
-        metrics['pos_ones_percentage'] += len([x for x in predictions if x == 1]) / len(predictions)
-        metrics['neg_ones_percentage'] += len([x for x in predictions if x == -1]) / len(predictions)
-    # metrics['number_of_data'] /= len(set(all_data['User']))
-    metrics['pos_ones_percentage'] /= len(set(all_data['User']))
-    metrics['neg_ones_percentage'] /= len(set(all_data['User']))
-
-    return metrics
-
-
 #  ============ #
 #    Classes    #
 # ============= #
 class Evaluator:
 
-    def __init__(self, screen: str, time_window: int):
+    def __init__(self, screen: str):
 
         self.screen = screen
-        self.time_window = time_window
         self.OriginalUser = []
         self.Module = []
         self.NumOfTrnData = []
@@ -181,11 +127,23 @@ class Evaluator:
 
     def calculate_metrics(self, original_user: str, sets_dict: dict):
 
-        # Its module separately
-        for idx, data_type in enumerate(['acc', 'gyr', 'swp', 'tap']):
-            trn = sets_dict['trn'][idx]['Prediction'].to_list()
-            tst = sets_dict['tst'][idx]['Prediction'].to_list()
-            att = sets_dict['att'][idx][['User', 'Prediction']]
+        # Define dataframe with all data types shorted by user and stop time
+        for sett in ['trn', 'tst', 'att']:
+            all_data = pd.DataFrame()
+            for data in sets_dict[sett]:
+                # Short every data type by user and stop time
+                data = data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
+                data_to_append = data[['User', 'Type', 'StartTime', 'StopTime', 'Decision', 'Prediction']]
+                all_data = all_data.append(data_to_append, ignore_index=True)
+            # Short final dataframe
+            all_data = all_data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
+            sets_dict[sett].append(all_data)
+
+        # Evaluate its module
+        for idx, data_type in enumerate(['acc', 'gyr', 'swp', 'tap', 'all']):
+            trn = sets_dict['trn'][idx][['Decision', 'Prediction']]
+            tst = sets_dict['tst'][idx][['Decision', 'Prediction']]
+            att = sets_dict['att'][idx][['User', 'Decision', 'Prediction']]
             self.OriginalUser.append(original_user)
             self.Module.append(data_type)
             self.NumOfTrnData.append(len(trn))
@@ -203,25 +161,6 @@ class Evaluator:
             FAR, NumOfAcceptTL = evaluate_attackers(att, self.screen)
             self.FAR.append(FAR)
             self.NumOfAcceptTL.append(NumOfAcceptTL)
-
-        # Combine Modules
-        self.OriginalUser.append(original_user)
-        self.Module.append('fnl')
-        metrics = get_final_evaluation_metrics(sets_dict['trn'], self.time_window)
-        self.NumOfTrnData.append(metrics['number_of_data'])
-        self.FRR_trn.append(metrics['neg_ones_percentage'])
-        self.FRRConf_trn.append(None)
-        self.NumOfUnlocks_trn.append(None)
-        metrics = get_final_evaluation_metrics(sets_dict['tst'], self.time_window)
-        self.NumOfTstData.append(metrics['number_of_data'])
-        self.FRR_tst.append(metrics['neg_ones_percentage'])
-        self.FRRConf_tst.append(None)
-        self.NumOfUnlocks_tst.append(None)
-        metrics = get_final_evaluation_metrics(sets_dict['att'], self.time_window)
-        self.NumOfAtt.append(metrics['number_of_users'])
-        self.NumOfAttData.append(metrics['number_of_data'])
-        self.FAR.append(metrics['pos_ones_percentage'])
-        self.NumOfAcceptTL.append(None)
 
         return
 

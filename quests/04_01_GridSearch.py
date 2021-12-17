@@ -12,11 +12,11 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 '''
 Results:
 
-case8 exp1:
+case1 exp1:
 nu [0.3, 0.5]
 gamma [0.00005, 0.1]
 
-case8 exp2:
+case1 exp2:
 nu [0.3, 0.5, 0.02]
 gamma [0.0005, 0.1, 0.005]
 '''

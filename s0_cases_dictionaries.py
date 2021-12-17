@@ -6,7 +6,7 @@ author: eachrist
 #  ================= #
 #    Dictionaries    #
 # ================== #
-import cases.case8.case_subclasses
+import cases.case1.case_subclasses
 
 json_files_path = 'D:\_Projects_\Thesis_ContinuousImplicitAuthentication\Datasets\BrainRun\sensors_data'
 gestures_database_name = 'BrainRun_GestureDevicesUsersGames'
@@ -14,7 +14,7 @@ gestures_database_name = 'BrainRun_GestureDevicesUsersGames'
 dict_cases = {
 
     # After meeting 30/11/2021
-    'case8': {
+    'case1': {
         'comments': '',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
@@ -55,14 +55,12 @@ dict_cases = {
                 }
             },
             'Classifiers': {
-                'acc': cases.case8.case_subclasses.AccClassifier,
-                'gyr': cases.case8.case_subclasses.GyrClassifier,
-                'swp': cases.case8.case_subclasses.SwpClassifier,
-                'tap': cases.case8.case_subclasses.TapClassifier
+                'acc': cases.case1.case_subclasses.AccClassifier,
+                'gyr': cases.case1.case_subclasses.GyrClassifier,
+                'swp': cases.case1.case_subclasses.SwpClassifier,
+                'tap': cases.case1.case_subclasses.TapClassifier
             },
-            'Evaluator': {
-                'time_window': 10000  # ms or 10sec
-            }
+            'Evaluator': {}
         }
     }
 }

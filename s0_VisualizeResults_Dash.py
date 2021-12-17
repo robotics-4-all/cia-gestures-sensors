@@ -47,7 +47,7 @@ if __name__ == '__main__':
             id='case1',
             options=[{'value': x, 'label': x}
                      for x in list(dict_cases)],
-            value='case8'
+            value='case1'
         ),
         html.P('Screen:'),
         dcc.RadioItems(
@@ -76,7 +76,7 @@ if __name__ == '__main__':
             id='case2',
             options=[{'value': x, 'label': x}
                      for x in list(dict_cases)],
-            value='case8'
+            value='case1'
         ),
         html.P('Screen:'),
         dcc.RadioItems(
