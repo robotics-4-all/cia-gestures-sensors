@@ -1,5 +1,5 @@
 """
-This script was created at 17-Dec-21
+This script was created at 29-Dec-21
 author: eachrist
 
 """
@@ -23,7 +23,7 @@ from s0_cases_dictionaries import dict_cases
 if __name__ == '__main__':
 
     # Parameters
-    title = 'Sensors Level 0 Feature Selection - Pearson Correlation'
+    title = 'Level 1 Feature Selection - Pearson Correlation'
 
     # Init app
     app = dash.Dash(__name__)
@@ -36,14 +36,14 @@ if __name__ == '__main__':
         dcc.Dropdown(
             id='case',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
-            value='case1'
+                     for x in ['case6']],
+            value='case6'
         ),
         html.P('Screen:'),
         dcc.RadioItems(
             id='screen',
             options=[{'value': x, 'label': x}
-                     for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
+                     for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],  # 'Memoria', 'Speedy' have only taps
             value='Mathisis',
             labelStyle={'display': 'inline-block'}
         ),
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         dcc.RadioItems(
             id='module',
             options=[{'value': x, 'label': x}
-                     for x in ['acc', 'gyr']],
+                     for x in ['acc', 'gyr', 'swp']],  # taps only has duration
             value='acc',
             labelStyle={'display': 'inline-block'}
         ),
@@ -66,15 +66,36 @@ if __name__ == '__main__':
     )
     def generate_chart(case, screen, module):
 
-        sns_ftr_lvl_0 = ['x', 'y', 'z', 'magnitude', 'combine_angle']
-        data_path = os.path.join('cases', case, screen, 'df_' + module + '.csv')
-        df_data = pd.read_csv(data_path)
+        features_dict = {
+            'acc': ['Window', 'Mean', 'STD', 'Max', 'Min', 'Range',
+                    'Percentile25', 'Percentile50', 'Percentile75',
+                    'Entropy', 'Kurtosis', 'Skewness',
+                    'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency'],
+
+            'gyr': ['Window', 'Mean', 'STD', 'Max', 'Min', 'Range',
+                    'Percentile25', 'Percentile50', 'Percentile75',
+                    'Entropy', 'Kurtosis', 'Skewness',
+                    'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency'],
+
+            'swp': ['Duration', 'MeanX', 'MeanY',
+                    'TraceLength', 'StartStopLength', 'TraceProjection', 'ScreenPercentage',
+                    'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
+                    'Slope', 'MeanSquareError', 'MeanAbsError', 'MedianAbsError', 'CoefDetermination']
+        }
+
+        features = features_dict[module]
+        if module == 'swp':
+            module = 'ges'
+        data_path = os.path.join('cases', case, screen, 'ftr_' + module + '.csv')
+        data = pd.read_csv(data_path)
+        if module == 'ges':
+            data = data.loc[data['Type'] == 'swipe']
 
         # Compute correlation
-        users = list(set(df_data['user']))
-        corr = df_data.loc[df_data['user'] == users[0]][sns_ftr_lvl_0].corr()
+        users = list(set(data['User']))
+        corr = data.loc[data['User'] == users[0]][features].corr()
         for user in users[1:]:
-            user_data = df_data.loc[df_data['user'] == user][sns_ftr_lvl_0]
+            user_data = data.loc[data['User'] == user][features]
             user_corr = user_data.corr()
             corr += user_corr
         corr /= len(users)
@@ -104,12 +125,13 @@ if __name__ == '__main__':
                     hovertext[-1].append('')
 
         # Make figure
+
         fig = go.Figure(data=go.Heatmap(z=corr, x=corr.columns, y=corr.columns,
                                         zmin=-1, zmax=1, xgap=1, ygap=1, colorscale='Viridis',
                                         hoverinfo='text', text=hovertext))
         fig.update_layout(
             title_text='Corrplot',
-            yaxis_autorange='reversed', width=600, height=600,
+            yaxis_autorange='reversed', width=800, height=800,
             xaxis_showgrid=False, yaxis_showgrid=False,
         )
 

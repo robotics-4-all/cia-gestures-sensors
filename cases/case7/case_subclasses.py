@@ -20,8 +20,10 @@ class AccClassifier(SimpleClassifier):
 
     def __init__(self):
 
-        final_features = ['Mean', 'STD', 'Max', 'Min', 'Percentile25', 'Percentile50', 'Percentile75',
-                          'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']
+        final_features = ['Window', 'Mean', 'STD', 'Max', 'Min', 'Range',
+                          'Percentile25', 'Percentile50', 'Percentile75',
+                          'Entropy', 'Kurtosis', 'Skewness',
+                          'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']
 
         scalar = StandardScaler
 
@@ -36,8 +38,10 @@ class GyrClassifier(SimpleClassifier):
 
     def __init__(self):
 
-        final_features = ['Mean', 'STD', 'Max', 'Min', 'Percentile25', 'Percentile50', 'Percentile75',
-                          'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']
+        final_features = ['Window', 'Mean', 'STD', 'Max', 'Min', 'Range',
+                          'Percentile25', 'Percentile50', 'Percentile75',
+                          'Entropy', 'Kurtosis', 'Skewness',
+                          'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']
 
         scalar = StandardScaler
 
@@ -52,9 +56,10 @@ class SwpClassifier(SimpleClassifier):
 
     def __init__(self):
 
-        final_features = ['Duration', 'MeanX', 'MeanY', 'StartStopLength', 'ScreenPercentage',
-                          'TraceProjection', 'StartVelocity', 'StopVelocity',
-                          'AccelerationHor', 'AccelerationVer', 'Slope', 'MeanSquareError', 'CoefDetermination']
+        final_features = ['Duration', 'MeanX', 'MeanY',
+                          'TraceLength', 'StartStopLength', 'TraceProjection', 'ScreenPercentage',
+                          'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
+                          'Slope', 'MeanSquareError', 'MeanAbsError', 'MedianAbsError', 'CoefDetermination']
 
         scalar = StandardScaler
 
@@ -68,7 +73,6 @@ class SwpClassifier(SimpleClassifier):
 class TapClassifier(SimpleClassifier):
 
     def __init__(self):
-
         final_features = ['Duration']
 
         scalar = StandardScaler

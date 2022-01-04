@@ -6,15 +6,18 @@ author: eachrist
 #  ============ #
 #    Imports    #
 # ============= #
+import os
 import ast
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from math import sqrt
 from statistics import mean
 from scipy.fftpack import fft
 from scipy.stats import entropy, kurtosis, skew
 
 from s__Helpers_Functions import linear_regression
+from s0_cases_dictionaries import dict_cases
 from s3_ExtractFeatures_Classes import FeaturesSns, FeaturesGes
 
 
@@ -25,16 +28,24 @@ def calculate_features_sns(user: int, module: str, data: np.ndarray, group: int,
                            features_object: FeaturesSns, window: int, overlap: float, sample_rate: float):
 
     overlap = int(overlap * window)
+    data_length = data.shape[0]
+
+    if data_length <= 1:
+        return features_object
+
+    if data_length < window:
+        window = data_length
+
     flag = True
     start = 0
     start_time = timestamp
-    data_length = data.shape[0]
 
-    while data_length > 1:
+    while data_length > 0:
 
         stop = start + window
-        if stop > data.shape[0]:
-            stop = data.shape[0]
+        # Dynamic window
+        # if stop > data.shape[0]:
+        #     stop = data.shape[0]
         stop_time = timestamp + (stop - 1) * sample_rate
 
         features_object.setUser(user)
@@ -75,27 +86,52 @@ def calculate_features_sns(user: int, module: str, data: np.ndarray, group: int,
         else:
             data_length += start - stop + overlap
 
+        # dynamic overlap
+        if data_length + overlap < window:
+            if data_length < overlap:
+                break
+            overlap = window - data_length
+
         start = stop - overlap
         start_time = timestamp + start * sample_rate
 
     return features_object
 
 
-def extract_features_sns(data: pd.DataFrame, module: str, feature: str, window: int, overlap: float, sample_rate: float):
+def extract_features_sns(case_name: str, screen_path: str, data: pd.DataFrame, module: str):
 
-    features_object = FeaturesSns()
+    print(' - Extracting ' + module + ' features.')
+    path_df = os.path.join(screen_path, 'ftr_' + module[0:3] + '.csv')
 
-    for user in list(set(data['user'])):
-        user_data = data.loc[data['user'] == user]
-        timestamps = list(set(user_data['timestamp']))
-        timestamps.sort()
-        for idx, ts in enumerate(timestamps):
-            data_to_window = user_data.loc[data['timestamp'] == ts][feature].to_numpy()
+    if not os.path.exists(path_df):
 
-            features_object = calculate_features_sns(user, module, data_to_window, idx, ts, features_object,
-                                                     window, overlap, sample_rate)
+        feature = dict_cases[case_name]['GetResults']['FeatureExtraction']['sns']['lvl0_ftr'][module[0:3]]
+        sample_rate = dict_cases[case_name]['GetResults']['FeatureExtraction']['sns']['sample_rate']
+        window = dict_cases[case_name]['GetResults']['FeatureExtraction']['sns']['window']
+        overlap = dict_cases[case_name]['GetResults']['FeatureExtraction']['sns']['overlap']
 
-    df_features = features_object.create_dataframe()
+        features_object = FeaturesSns()
+
+        for user in tqdm(list(set(data['user']))):
+            user_data = data.loc[data['user'] == user]
+            timestamps = list(set(user_data['timestamp']))
+            timestamps.sort()
+            for idx, ts in enumerate(timestamps):
+                data_to_window = user_data.loc[data['timestamp'] == ts][feature].to_numpy()
+
+                features_object = calculate_features_sns(user, module, data_to_window, idx, ts, features_object,
+                                                         window, overlap, sample_rate)
+
+        df_features = features_object.create_dataframe()
+        df_features.to_csv(path_df, index=False)
+        print('     ' + module + ' features dataframe saved at: ', path_df)
+
+    else:
+
+        df_features = pd.read_csv(path_df)
+        print('     ' + module + ' features dataframe loaded from: ', path_df)
+
+    print('')
 
     return df_features
 
@@ -213,16 +249,34 @@ def calculate_features_ges(gesture: pd.Series, features_object: FeaturesGes,
     return features_object
 
 
-def extract_features_ges(data: pd.DataFrame, normalize: bool, default_width: float, default_height: float):
+def extract_features_ges(case_name: str, screen_path: str, data: pd.DataFrame):
 
-    features_object = FeaturesGes()
+    print(' - Extracting gestures features.')
+    path_df = os.path.join(screen_path, 'ftr_ges.csv')
 
-    for user in list(set(data['user'])):
-        user_data = data.loc[data['user'] == user]
-        user_data = user_data.sort_values(by=['time_start'], ignore_index=True)
-        for index, ges in user_data.iterrows():
-            features_object = calculate_features_ges(ges, features_object, normalize, default_width, default_height)
+    if not os.path.exists(path_df):
 
-    df_features = features_object.create_dataframe()
+        normalize = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['normalize']
+        default_width = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['default_width']
+        default_height = dict_cases[case_name]['GetResults']['FeatureExtraction']['ges']['default_height']
+
+        features_object = FeaturesGes()
+
+        for user in tqdm(list(set(data['user']))):
+            user_data = data.loc[data['user'] == user]
+            user_data = user_data.sort_values(by=['time_start'], ignore_index=True)
+            for index, ges in user_data.iterrows():
+                features_object = calculate_features_ges(ges, features_object, normalize, default_width, default_height)
+
+        df_features = features_object.create_dataframe()
+        df_features.to_csv(path_df, index=False)
+        print('     gestures features dataframe saved at: ', path_df)
+
+    else:
+
+        df_features = pd.read_csv(path_df)
+        print('     gestures features dataframe loaded from: ', path_df)
+
+    print('')
 
     return df_features

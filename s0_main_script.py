@@ -12,7 +12,8 @@ from s0_cases_dictionaries import dict_cases
 from s__Helpers_Functions import check_paths
 from s1_ExploreData_Functions import explore_sns_data, explore_ges_data, select_users
 from s2_CreateDataframes_Functions import create_df_sns, create_df_ges
-from s3_GetResults_Functions import get_results
+from s3_ExtractFeatures_Functions import extract_features_sns, extract_features_ges
+from s4_GetResults_Functions import get_results
 
 
 # =============== #
@@ -38,9 +39,16 @@ def main_thread(case_name: str, screen_name: str):
     df_ges = create_df_ges(case_name, screen_path, dict_ges_fnl)
     print('  ---\n')
 
+    # Extract Features
+    print('-> ExtractingFeatures\n')
+    ftr_acc = extract_features_sns(case_name, screen_path, df_acc, 'accelerometer')
+    ftr_gyr = extract_features_sns(case_name, screen_path, df_gyr, 'gyroscope')
+    ftr_ges = extract_features_ges(case_name, screen_path, df_ges)
+    print('  ---\n')
+
     # Get Results
     print('-> GettingResults\n')
-    results = get_results(case_name, screen_name, screen_path, df_acc, df_gyr, df_ges)
+    results = get_results(case_name, screen_name, screen_path, ftr_acc, ftr_gyr, ftr_ges)
     print('  ---\n')
 
     return
@@ -52,7 +60,7 @@ def main_thread(case_name: str, screen_name: str):
 if __name__ == "__main__":
 
     # Select case
-    case_name = 'case1'
+    case_name = 'case7'
     case_path = check_paths(os.path.dirname(__file__), os.path.join('cases', case_name))
 
     print('=====')

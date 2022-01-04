@@ -1,5 +1,5 @@
 """
-This script was created at 09-Dec-21
+This script was created at 27-Dec-21
 author: eachrist
 
 """
@@ -8,13 +8,11 @@ author: eachrist
 # ============= #
 import os
 import pandas as pd
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
-
 from s0_cases_dictionaries import dict_cases
 
 
@@ -23,31 +21,24 @@ from s0_cases_dictionaries import dict_cases
 # ========== #
 if __name__ == '__main__':
 
+    # Parameters
+    title = 'Sensors Window & Overlap Selection - BoxPlots'
+
     # Init app
     app = dash.Dash(__name__)
-
-    app.title = 'Results'
-
+    app.title = title
     app.layout = html.Div([
 
-        html.H1('Results', style={'textAlign': 'center'}),
-
-        html.P('Additional Info:'),
-        dcc.RadioItems(
-            id='add_info',
-            options=[{'value': x, 'label': x}
-                     for x in ['None', 'Mean', 'Mean + Std']],
-            value='Mean + Std',
-            labelStyle={'display': 'inline-block'}
-        ),
+        html.H1(title, style={'textAlign': 'center'}),
 
         html.H2('Figure 1'),
         html.P('Case:'),
-        dcc.Dropdown(
+        dcc.RadioItems(
             id='case1',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
-            value='case1'
+                     for x in ['case4', 'case5']],
+            value='case4',
+            labelStyle={'display': 'inline-block'}
         ),
         html.P('Screen:'),
         dcc.RadioItems(
@@ -57,14 +48,28 @@ if __name__ == '__main__':
             value='Mathisis',
             labelStyle={'display': 'inline-block'}
         ),
+        html.P('Sensor:'),
+        dcc.RadioItems(
+            id='sns1',
+            options=[{'value': x, 'label': x}
+                     for x in ['acc', 'gyr']],
+            value='acc',
+            labelStyle={'display': 'inline-block'}
+        ),
+        html.P('Parameter:'),
+        dcc.RadioItems(
+            id='par1',
+            options=[{'value': x, 'label': x}
+                     for x in ['Window', 'Overlap']],
+            value='Window',
+            labelStyle={'display': 'inline-block'}
+        ),
         html.P('Metrics:'),
         dcc.RadioItems(
             id='x-axis1',
             options=[{'value': x, 'label': x}
                      for x in ['NumOfTrnData', 'NumOfTstData', 'NumOfAttData', 'NumOfAtt',
-                               'FRR_trn', 'FRRConf_trn', 'NumOfUnlocks_trn',
-                               'FRR_tst', 'FRRConf_tst', 'NumOfUnlocks_tst',
-                               'FAR', 'NumOfAcceptTL']],
+                               'FRR_trn', 'FRR_tst', 'FAR']],
             value='FRR_tst',
             labelStyle={'display': 'inline-block'}
         ),
@@ -72,11 +77,12 @@ if __name__ == '__main__':
 
         html.H2('Figure 2'),
         html.P('Case:'),
-        dcc.Dropdown(
+        dcc.RadioItems(
             id='case2',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
-            value='case1'
+                     for x in ['case4', 'case5']],
+            value='case5',
+            labelStyle={'display': 'inline-block'}
         ),
         html.P('Screen:'),
         dcc.RadioItems(
@@ -86,51 +92,65 @@ if __name__ == '__main__':
             value='Mathisis',
             labelStyle={'display': 'inline-block'}
         ),
+        html.P('Sensor:'),
+        dcc.RadioItems(
+            id='sns2',
+            options=[{'value': x, 'label': x}
+                     for x in ['acc', 'gyr']],
+            value='acc',
+            labelStyle={'display': 'inline-block'}
+        ),
+        html.P('Parameter:'),
+        dcc.RadioItems(
+            id='par2',
+            options=[{'value': x, 'label': x}
+                     for x in ['Window', 'Overlap']],
+            value='Window',
+            labelStyle={'display': 'inline-block'}
+        ),
         html.P('Metrics:'),
         dcc.RadioItems(
             id='x-axis2',
             options=[{'value': x, 'label': x}
                      for x in ['NumOfTrnData', 'NumOfTstData', 'NumOfAttData', 'NumOfAtt',
-                               'FRR_trn', 'FRRConf_trn', 'NumOfUnlocks_trn',
-                               'FRR_tst', 'FRRConf_tst', 'NumOfUnlocks_tst',
-                               'FAR', 'NumOfAcceptTL']],
-            value='FAR',
+                               'FRR_trn', 'FRR_tst', 'FAR']],
+            value='FRR_tst',
             labelStyle={'display': 'inline-block'}
         ),
         dcc.Graph(id='box-plot2')
     ])
 
-    add_info_dict = {
-        'None': False,
-        'Mean': True,
-        'Mean + Std': 'sd'
-    }
-
     @app.callback(
         [Output('box-plot1', 'figure'),
          Output('box-plot2', 'figure')],
-        [Input('add_info', 'value'),
-         Input('case1', 'value'),
-         Input('case2', 'value'),
+        [Input('case1', 'value'),
          Input('screen1', 'value'),
-         Input('screen2', 'value'),
+         Input('sns1', 'value'),
+         Input('par1', 'value'),
          Input('x-axis1', 'value'),
-         Input('x-axis2', 'value')])
-    def generate_chart(add_info, case1, case2, screen1, screen2, x1, x2):
+         Input('case2', 'value'),
+         Input('screen2', 'value'),
+         Input('sns2', 'value'),
+         Input('par2', 'value'),
+         Input('x-axis2', 'value')]
+    )
+    def generate_chart(c1, s1, sn1, p1, x1, c2, s2, sn2, p2, x2):
 
         temp = ['FRR_trn', 'FRRConf_trn', 'FRR_tst', 'FRRConf_tst', 'FAR']
 
-        results_path1 = os.path.join('cases', case1, screen1, 'results.csv')
+        results_path1 = os.path.join('cases', c1, s1, 'results.csv')
         results1 = pd.read_csv(results_path1)
-        fig1 = px.box(results1, x=x1, y='Module', color='Module')
-        fig1.update_traces(boxmean=add_info_dict[add_info], boxpoints=False)
+        results1 = results1.loc[results1['Module'] == sn1]
+        fig1 = px.box(results1, x=x1, y='Module', color=p1)
+        fig1.update_traces(boxmean='sd', boxpoints=False)
         if x1 in temp:
             fig1.update_xaxes(range=[0, 1])
 
-        results_path2 = os.path.join('cases', case2, screen2, 'results.csv')
+        results_path2 = os.path.join('cases', c2, s2, 'results.csv')
         results2 = pd.read_csv(results_path2)
-        fig2 = px.box(results2, x=x2, y='Module', color='Module')
-        fig2.update_traces(boxmean=add_info_dict[add_info], boxpoints=False)
+        results2 = results2.loc[results2['Module'] == sn2]
+        fig2 = px.box(results2, x=x2, y='Module', color=p2)
+        fig2.update_traces(boxmean='sd', boxpoints=False)
         if x2 in temp:
             fig2.update_xaxes(range=[0, 1])
 

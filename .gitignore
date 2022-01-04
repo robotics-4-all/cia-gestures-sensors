@@ -142,5 +142,5 @@ cython_debug/
 .old
 **/users_dict*
 **/df_*
-**/features_*.csv
+**/ftr_*.csv
 **/results_*.csv
