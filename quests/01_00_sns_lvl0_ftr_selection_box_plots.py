@@ -135,14 +135,14 @@ if __name__ == '__main__':
         df_data1 = pd.read_csv(data_path1)
         if y1 == 'None':
             y1 = None
-        fig1 = px.box(df_data1, x=feature1, y=y1)
+        fig1 = px.box(df_data1, x=feature1, y=y1, color=y1)
         fig1.update_traces(boxmean='sd', boxpoints=False)
 
         data_path2 = os.path.join('cases', case2, screen2, 'df_' + data2 + '.csv')
         df_data2 = pd.read_csv(data_path2)
         if y2 == 'None':
             y2 = None
-        fig2 = px.box(df_data2, x=feature2, y=y2)
+        fig2 = px.box(df_data2, x=feature2, y=y2, color=y2)
         fig2.update_traces(boxmean='sd', boxpoints=False)
 
         return fig1, fig2
