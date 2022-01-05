@@ -271,7 +271,7 @@ dict_cases = {
 
     # quest 03: Find sensors and gestures lvl1 features
     'case6': {
-        'comments': 'In the sensors feature extraction OVERLAP is dynamic.',
+        'comments': 'Some features as previous cases.',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
             'max_users': 15,
@@ -320,7 +320,7 @@ dict_cases = {
         }
     },
     'case7': {
-        'comments': 'In the sensors feature extraction OVERLAP is dynamic.',
+        'comments': 'All features.',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
             'max_users': 15,
