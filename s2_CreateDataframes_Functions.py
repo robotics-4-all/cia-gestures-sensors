@@ -3,8 +3,6 @@ This script was created at 09-Dec-21
 author: eachrist
 
 """
-# Remove random shuffle from line 38.
-
 # ============= #
 #    Imports    #
 # ============= #
@@ -14,7 +12,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from bson.objectid import ObjectId
-
 from s0_cases_dictionaries import json_files_path, gestures_database_name, dict_cases
 from s__Helpers_Functions import MongoDBHandler, DBDataHandler
 
@@ -22,7 +19,7 @@ from s__Helpers_Functions import MongoDBHandler, DBDataHandler
 # =============== #
 #    Functions    #
 # =============== #
-def create_df_sns(case_name: str, screen_path: str, dict_sns: dict, sensor: str):
+def create_df_sns(case: str, screen_path: str, dict_sns: dict, sensor: str):
 
     print(' - Creating ' + sensor + ' dataframe.')
     path_df = os.path.join(screen_path, 'df_' + sensor[0:3] + '.csv')
@@ -30,34 +27,23 @@ def create_df_sns(case_name: str, screen_path: str, dict_sns: dict, sensor: str)
     if not os.path.exists(path_df):
 
         df = pd.DataFrame()
-
         for user in tqdm(dict_sns['users']):
             flag = False
             user_data = 0
-
             timestamps = list(dict_sns['users'][user]['timestamps'])
             for timestamp in timestamps:
                 dict_temp_screen = {}
-
                 if flag:
                     break
-
                 with open(os.path.join(json_files_path, user + '_' + timestamp + '.json')) as json_file:
                     json_text = json.load(json_file)
-
                     for j in json_text[sensor]:
                         if j['screen'] in dict_sns['users'][user]['timestamps'][timestamp]['screens']:
-
                             if j['screen'] not in dict_temp_screen:
                                 dict_temp_screen[j['screen']] = {'nod': 0}
-
                             if dict_temp_screen[j['screen']]['nod'] == \
                                     dict_sns['users'][user]['timestamps'][timestamp]['screens'][j['screen']]['nod']:
                                 continue
-
-                            # if j['x'] == 0 and j['y'] == 0:
-                            #     continue
-
                             df_row = {
                                 'user': user,
                                 'timestamp': int(timestamp),
@@ -70,9 +56,8 @@ def create_df_sns(case_name: str, screen_path: str, dict_sns: dict, sensor: str)
                             }
                             df = df.append(df_row, ignore_index=True)
                             dict_temp_screen[j['screen']]['nod'] += 1
-
                             user_data += 1
-                            if user_data == dict_cases[case_name]['CreateDataframes']['sns']['max_user_data']:
+                            if user_data == dict_cases[case]['CreateDataframes']['sns']['max_user_data']:
                                 flag = True
                                 break
 
@@ -90,7 +75,7 @@ def create_df_sns(case_name: str, screen_path: str, dict_sns: dict, sensor: str)
     return df
 
 
-def create_df_ges(case_name: str, screen_path: str, dict_ges: dict) -> pd.DataFrame:
+def create_df_ges(case: str, screen_path: str, dict_ges: dict) -> pd.DataFrame:
 
     print(' - Creating gestures dataframe.')
     path_df = os.path.join(screen_path, 'df_ges.csv')
@@ -99,21 +84,15 @@ def create_df_ges(case_name: str, screen_path: str, dict_ges: dict) -> pd.DataFr
 
         m = MongoDBHandler('mongodb://localhost:27017/', gestures_database_name)
         d = DBDataHandler(m)
-
         df = pd.DataFrame()
-
         for user in tqdm(dict_ges['users']):
             flag = False
             user_data = 0
-
             if flag:
                 break
-
             for ges_id in dict_ges['users'][user]['gestures']:
-
                 ges = d.get_gestures({'_id': ObjectId(ges_id)})[0]
                 device = d.get_devices({'device_id': ges['device_id']})[0]
-
                 df_row = {
                     'user': user,
                     'screen': ges['screen'],
@@ -127,9 +106,8 @@ def create_df_ges(case_name: str, screen_path: str, dict_ges: dict) -> pd.DataFr
                     'device_width': device['width']
                 }
                 df = df.append(df_row, ignore_index=True)
-
                 user_data += 1
-                if user_data == dict_cases[case_name]['CreateDataframes']['ges']['max_user_data']:
+                if user_data == dict_cases[case]['CreateDataframes']['ges']['max_user_data']:
                     flag = True
                     break
 

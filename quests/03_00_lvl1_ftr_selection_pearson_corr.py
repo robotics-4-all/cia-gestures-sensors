@@ -6,6 +6,7 @@ author: eachrist
 #  ============ #
 #    Imports    #
 # ============= #
+import itertools
 import os
 import numpy as np
 import pandas as pd
@@ -15,7 +16,6 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 from s0_cases_dictionaries import dict_cases
-
 
 #  ========= #
 #    Main    #
@@ -33,17 +33,18 @@ if __name__ == '__main__':
         html.H1(title, style={'textAlign': 'center'}),
 
         html.P('Case:'),
-        dcc.Dropdown(
+        dcc.RadioItems(
             id='case',
             options=[{'value': x, 'label': x}
                      for x in ['case6']],
-            value='case6'
+            value='case6',
+            labelStyle={'display': 'inline-block'}
         ),
         html.P('Screen:'),
         dcc.RadioItems(
             id='screen',
             options=[{'value': x, 'label': x}
-                     for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],  # 'Memoria', 'Speedy' have only taps
+                     for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
             value='Mathisis',
             labelStyle={'display': 'inline-block'}
         ),
@@ -58,37 +59,52 @@ if __name__ == '__main__':
         dcc.Graph(id='graph')
     ])
 
+
     @app.callback(
         Output('graph', 'figure'),
         [Input('case', 'value'),
          Input('screen', 'value'),
          Input('module', 'value')]
     )
-    def generate_chart(case, screen, module):
+    def generate_chart(c, s, m):
 
         features_dict = {
-            'acc': ['Window', 'Mean', 'STD', 'Max', 'Min', 'Range',
-                    'Percentile25', 'Percentile50', 'Percentile75',
-                    'Entropy', 'Kurtosis', 'Skewness',
-                    'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency'],
+            'acc': {
+                'lvl0_features': dict_cases[c]['FeatureExtraction']['sns']['lvl0_ftr']['acc'],
+                'lvl1_features': {
+                    'unique': ['Window'],
+                    'lvl0_depended': ['Mean', 'STD', 'Max', 'Min', 'Range',
+                                      'Percentile25', 'Percentile50', 'Percentile75',
+                                      'Entropy', 'Kurtosis', 'Skewness',
+                                      'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']}},
 
-            'gyr': ['Window', 'Mean', 'STD', 'Max', 'Min', 'Range',
-                    'Percentile25', 'Percentile50', 'Percentile75',
-                    'Entropy', 'Kurtosis', 'Skewness',
-                    'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency'],
+            'gyr': {
+                'lvl0_features': dict_cases[c]['FeatureExtraction']['sns']['lvl0_ftr']['gyr'],
+                'lvl1_features': {
+                    'unique': ['Window'],
+                    'lvl0_depended': ['Mean', 'STD', 'Max', 'Min', 'Range',
+                                      'Percentile25', 'Percentile50', 'Percentile75',
+                                      'Entropy', 'Kurtosis', 'Skewness',
+                                      'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']}},
 
-            'swp': ['Duration', 'MeanX', 'MeanY',
-                    'TraceLength', 'StartStopLength', 'TraceProjection', 'ScreenPercentage',
-                    'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
-                    'Slope', 'MeanSquareError', 'MeanAbsError', 'MedianAbsError', 'CoefDetermination']
-        }
+            'swp': {
+                'final_features': ['Duration', 'MeanX', 'MeanY',
+                                   'TraceLength', 'StartStopLength', 'TraceProjection', 'ScreenPercentage',
+                                   'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
+                                   'Slope', 'MeanSquareError', 'MeanAbsError', 'MedianAbsError', 'CoefDetermination']}}
 
-        features = features_dict[module]
-        if module == 'swp':
-            module = 'ges'
-        data_path = os.path.join('cases', case, screen, 'ftr_' + module + '.csv')
+        for md in ['acc', 'gyr']:
+            temp = features_dict[md]['lvl1_features']['unique'] + \
+                   ['_'.join(ftr) for ftr in itertools.product(features_dict[md]['lvl1_features']['lvl0_depended'],
+                                                               features_dict[md]['lvl0_features'])]
+            features_dict[md]['final_features'] = temp
+
+        features = features_dict[m]['final_features']
+        if m == 'swp':
+            m = 'ges'
+        data_path = os.path.join('cases', c, s, 'ftr_' + m + '.csv')
         data = pd.read_csv(data_path)
-        if module == 'ges':
+        if m == 'ges':
             data = data.loc[data['Type'] == 'swipe']
 
         # Compute correlation
@@ -120,22 +136,24 @@ if __name__ == '__main__':
                 if yi == xi:
                     hovertext[-1].append('f: {}<br />abs_sum: {}'.format(yy, abs_sums[yi]))
                 elif yi > xi:
-                    hovertext[-1].append('f1: {}<br />f2: {}<br />corr: {}'.format(yy, xx, corr.at[yy, xx]))
+                    hovertext[-1].append(
+                        'f1: {} abs_sum: {}<br />f2: {} abs_sum: {}<br />corr: {}'.format(yy, abs_sums[yi],
+                                                                                          xx, abs_sums[xi],
+                                                                                          corr.at[yy, xx]))
                 elif yi < xi:
                     hovertext[-1].append('')
 
         # Make figure
-
         fig = go.Figure(data=go.Heatmap(z=corr, x=corr.columns, y=corr.columns,
                                         zmin=-1, zmax=1, xgap=1, ygap=1, colorscale='Viridis',
                                         hoverinfo='text', text=hovertext))
         fig.update_layout(
-            title_text='Corrplot',
-            yaxis_autorange='reversed', width=800, height=800,
-            xaxis_showgrid=False, yaxis_showgrid=False,
+            title_text='Corrplot', width=1000, height=1000,
+            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False
         )
 
         return fig
+
 
     # Run
     app.run_server(debug=True)

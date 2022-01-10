@@ -15,18 +15,15 @@ from s0_cases_dictionaries import dict_cases
 # ========== #
 if __name__ == '__main__':
 
-    case = 'case1'
-    screens = dict_cases[case]['screens']
-    snss = ['acc', 'gyr']
+    c = 'case1'
+    s = dict_cases[c]['screens']
+    sensors = ['acc', 'gyr']
 
-    for screen in screens:
-        for sns in snss:
-
-            data_path = os.path.join('cases', case, screen, 'df_' + sns + '.csv')
+    for screen in s:
+        for sns in sensors:
+            data_path = os.path.join('cases', c, screen, 'df_' + sns + '.csv')
             df_data = pd.read_csv(data_path)
-
             users = list(set(df_data['user']))
-
             votes = {}
             for user in users:
                 user_data = df_data.loc[df_data['user'] == user][['x', 'y', 'magnitude']]
@@ -39,5 +36,4 @@ if __name__ == '__main__':
                 votes[ftr_std]['mean'] += temp_std[ftr_std]
             for ftr in votes:
                 votes[ftr]['mean'] /= len(users)
-
-            print(case, screen, sns, votes)
+            print(c, screen, sns, votes)

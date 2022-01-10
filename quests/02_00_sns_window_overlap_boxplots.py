@@ -13,7 +13,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
-from s0_cases_dictionaries import dict_cases
 
 
 #  ========= #
@@ -36,7 +35,7 @@ if __name__ == '__main__':
         dcc.RadioItems(
             id='case1',
             options=[{'value': x, 'label': x}
-                     for x in ['case4', 'case5']],
+                     for x in ['case4', 'case5', 'case8']],
             value='case4',
             labelStyle={'display': 'inline-block'}
         ),
@@ -80,7 +79,7 @@ if __name__ == '__main__':
         dcc.RadioItems(
             id='case2',
             options=[{'value': x, 'label': x}
-                     for x in ['case4', 'case5']],
+                     for x in ['case4', 'case5', 'case8']],
             value='case5',
             labelStyle={'display': 'inline-block'}
         ),

@@ -17,9 +17,7 @@ class FeaturesSns:
     def __init__(self):
 
         self.User = []
-        self.Screen = []
         self.Type = []
-        self.Timestamp = []
         self.StartTime = []
         self.StopTime = []
         self.Group = []
@@ -39,23 +37,13 @@ class FeaturesSns:
         self.Amplitude2 = []
         self.Frequency2 = []
         self.MeanFrequency = []
-        self.Dx = []
-        self.Dy = []
-        self.Vx = []
-        self.Vy = []
 
     # Set Methods
     def setUser(self, value=None):
         self.User.append(value)
 
-    def setScreen(self, value=None):
-        self.Screen.append(value)
-
     def setType(self, value=None):
         self.Type.append(value)
-
-    def setTimestamp(self, value=None):
-        self.Timestamp.append(value)
 
     def setStartTime(self, value=None):
         self.StartTime.append(value)
@@ -114,45 +102,32 @@ class FeaturesSns:
     def setMeanFrequency(self, value=None):
         self.MeanFrequency.append(value)
 
-    def setDx(self, value=None):
-        self.Dx.append(value)
-
-    def setDy(self, value=None):
-        self.Dy.append(value)
-
-    def setVx(self, value=None):
-        self.Vx.append(value)
-
-    def setVy(self, value=None):
-        self.Vy.append(value)
-
     # Create dataframe method
-    def create_dataframe(self) -> pd.DataFrame:
+    def create_dataframe(self, feature: str, first: bool) -> pd.DataFrame:
 
         df = pd.DataFrame()
-        df['User'] = self.User
-        df['Screen'] = self.Screen
-        df['Type'] = self.Type
-        df['Timestamp'] = self.Timestamp
-        df['StartTime'] = self.StartTime
-        df['StopTime'] = self.StopTime
-        df['Group'] = self.Group
-        df['Window'] = self.Window
-        df['Mean'] = self.Mean
-        df['STD'] = self.STD
-        df['Max'] = self.Max
-        df['Min'] = self.Min
-        df['Range'] = self.Range
-        df['Percentile25'] = self.Percentile25
-        df['Percentile50'] = self.Percentile50
-        df['Percentile75'] = self.Percentile75
-        df['Kurtosis'] = self.Kurtosis
-        df['Skewness'] = self.Skewness
-        df['Entropy'] = self.Entropy
-        df['Amplitude1'] = self.Amplitude1
-        df['Amplitude2'] = self.Amplitude2
-        df['Frequency2'] = self.Frequency2
-        df['MeanFrequency'] = self.MeanFrequency
+        if first:
+            df['User'] = self.User
+            df['Type'] = self.Type
+            df['StartTime'] = self.StartTime
+            df['StopTime'] = self.StopTime
+            df['Group'] = self.Group
+            df['Window'] = self.Window
+        df['Mean_' + feature] = self.Mean
+        df['STD_' + feature] = self.STD
+        df['Max_' + feature] = self.Max
+        df['Min_' + feature] = self.Min
+        df['Range_' + feature] = self.Range
+        df['Percentile25_' + feature] = self.Percentile25
+        df['Percentile50_' + feature] = self.Percentile50
+        df['Percentile75_' + feature] = self.Percentile75
+        df['Kurtosis_' + feature] = self.Kurtosis
+        df['Skewness_' + feature] = self.Skewness
+        df['Entropy_' + feature] = self.Entropy
+        df['Amplitude1_' + feature] = self.Amplitude1
+        df['Amplitude2_' + feature] = self.Amplitude2
+        df['Frequency2_' + feature] = self.Frequency2
+        df['MeanFrequency_' + feature] = self.MeanFrequency
 
         return df
 
@@ -162,7 +137,6 @@ class FeaturesGes:
     def __init__(self):
 
         self.User = []
-        self.Screen = []
         self.Type = []
         self.StartTime = []
         self.StopTime = []
@@ -173,9 +147,6 @@ class FeaturesGes:
         self.StartStopLength = []
         self.TraceProjection = []
         self.ScreenPercentage = []
-        self.Ratio = []
-        self.Deviation = []
-        self.Leaning = []
         self.StartVelocity = []
         self.StopVelocity = []
         self.AccelerationHor = []
@@ -189,9 +160,6 @@ class FeaturesGes:
     # Set Methods
     def setUser(self, value=None):
         self.User.append(value)
-
-    def setScreen(self, value=None):
-        self.Screen.append(value)
 
     def setType(self, value=None):
         self.Type.append(value)
@@ -222,15 +190,6 @@ class FeaturesGes:
 
     def setScreenPercentage(self, value=None):
         self.ScreenPercentage.append(value)
-
-    def setRatio(self, value=None):
-        self.Ratio.append(value)
-
-    def setDeviation(self, value=None):
-        self.Deviation.append(value)
-
-    def setLeaning(self, value=None):
-        self.Leaning.append(value)
 
     def setStartVelocity(self, value=None):
         self.StartVelocity.append(value)
@@ -264,7 +223,6 @@ class FeaturesGes:
 
         df = pd.DataFrame()
         df['User'] = self.User
-        df['Screen'] = self.Screen
         df['Type'] = self.Type
         df['StartTime'] = self.StartTime
         df['StopTime'] = self.StopTime
@@ -275,9 +233,6 @@ class FeaturesGes:
         df['StartStopLength'] = self.StartStopLength
         df['ScreenPercentage'] = self.ScreenPercentage
         df['TraceProjection'] = self.TraceProjection
-        df['Ratio'] = self.Ratio
-        df['Deviation'] = self.Deviation
-        df['Leaning'] = self.Leaning
         df['StartVelocity'] = self.StartVelocity
         df['StopVelocity'] = self.StopVelocity
         df['AccelerationHor'] = self.AccelerationHor

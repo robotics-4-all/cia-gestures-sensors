@@ -13,7 +13,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
-from s0_cases_dictionaries import dict_cases
 
 
 #  ========= #
@@ -33,11 +32,12 @@ if __name__ == '__main__':
 
         html.H2('Figure 1'),
         html.P('Case:'),
-        dcc.Dropdown(
+        dcc.RadioItems(
             id='case1',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
-            value='case1'
+                     for x in ['case1']],
+            value='case1',
+            labelStyle={'display': 'inline-block'}
         ),
         html.P('Screen:'),
         dcc.RadioItems(
@@ -75,11 +75,12 @@ if __name__ == '__main__':
 
         html.H2('Figure 2'),
         html.P('Case:'),
-        dcc.Dropdown(
+        dcc.RadioItems(
             id='case2',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
-            value='case1'
+                     for x in ['case1']],
+            value='case1',
+            labelStyle={'display': 'inline-block'}
         ),
         html.P('Screen:'),
         dcc.RadioItems(
@@ -129,20 +130,20 @@ if __name__ == '__main__':
          Input('feature2', 'value'),
          Input('y1', 'value'),
          Input('y2', 'value')])
-    def generate_chart(case1, case2, screen1, screen2, data1, data2, feature1, feature2, y1, y2):
+    def generate_chart(c1, c2, s1, s2, d1, d2, f1, f2, y1, y2):
 
-        data_path1 = os.path.join('cases', case1, screen1, 'df_' + data1 + '.csv')
+        data_path1 = os.path.join('cases', c1, s1, 'df_' + d1 + '.csv')
         df_data1 = pd.read_csv(data_path1)
         if y1 == 'None':
             y1 = None
-        fig1 = px.box(df_data1, x=feature1, y=y1, color=y1)
+        fig1 = px.box(df_data1, x=f1, y=y1, color=y1)
         fig1.update_traces(boxmean='sd', boxpoints=False)
 
-        data_path2 = os.path.join('cases', case2, screen2, 'df_' + data2 + '.csv')
+        data_path2 = os.path.join('cases', c2, s2, 'df_' + d2 + '.csv')
         df_data2 = pd.read_csv(data_path2)
         if y2 == 'None':
             y2 = None
-        fig2 = px.box(df_data2, x=feature2, y=y2, color=y2)
+        fig2 = px.box(df_data2, x=f2, y=y2, color=y2)
         fig2.update_traces(boxmean='sd', boxpoints=False)
 
         return fig1, fig2

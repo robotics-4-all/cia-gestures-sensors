@@ -9,7 +9,6 @@ author: eachrist
 import os
 import pandas as pd
 from tqdm import tqdm
-
 from s0_cases_dictionaries import dict_cases
 from s4_GetResults_SimpleClassifier import get_predictions
 from s4_GetResults_Evaluator import Evaluator
@@ -54,17 +53,17 @@ def split_df_ges(original_user: str, df: pd.DataFrame, split_rate: float):
     return df_trn, df_tst, df_att
 
 
-def get_results(case_name: str, screen_name: str, screen_path: str,
+def get_results(case: str, screen: str, screen_path: str,
                 df_acc: pd.DataFrame, df_gyr: pd.DataFrame, df_ges: pd.DataFrame) -> pd.DataFrame:
 
     print(' - Getting results.')
     path_df = os.path.join(screen_path, 'results.csv')
 
     # Define parameters
-    split_rate = dict_cases[case_name]['GetResults']['split_rate']
+    split_rate = dict_cases[case]['GetResults']['split_rate']
 
     # Define evaluator
-    eval_obj = Evaluator(screen_name)
+    eval_obj = Evaluator(screen)
 
     # Select original user
     for original_user in tqdm(set(df_acc['User'])):
@@ -85,14 +84,17 @@ def get_results(case_name: str, screen_name: str, screen_path: str,
         # Concentrate data
         sets_dict = {
             'trn': [acc_trn, gyr_trn, swp_trn, tap_trn],
-            'tst': [acc_tst, gyr_tst, swp_tst, tap_tst],
-            'att': [acc_att, gyr_att, swp_att, tap_att]
+            'tst': [acc_tst, gyr_tst, swp_trn, tap_trn],
+            'att': [acc_att, gyr_att, swp_trn, tap_trn]
         }
 
         # Define Classifiers
         classifiers = []
         for data_type in ['acc', 'gyr', 'swp', 'tap']:
-            classifiers.append(dict_cases[case_name]['GetResults']['Classifiers'][data_type]())
+            lvl0_ftr = None
+            if data_type in ['acc', 'gyr']:
+                lvl0_ftr = dict_cases[case]['FeatureExtraction']['sns']['lvl0_ftr'][data_type]
+            classifiers.append(dict_cases[case]['GetResults']['Classifiers'][data_type](lvl0_ftr))
 
         # Train Classifiers
         for idx, clf in enumerate(classifiers):

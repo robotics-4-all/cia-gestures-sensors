@@ -7,7 +7,6 @@ author: eachrist
 #    Imports    #
 # ============= #
 import pandas as pd
-from statistics import mean
 
 #  =============== #
 #    Parameters    #

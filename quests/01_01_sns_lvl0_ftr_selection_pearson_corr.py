@@ -14,7 +14,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objects as go
-from s0_cases_dictionaries import dict_cases
 
 
 #  ========= #
@@ -33,11 +32,12 @@ if __name__ == '__main__':
         html.H1(title, style={'textAlign': 'center'}),
 
         html.P('Case:'),
-        dcc.Dropdown(
+        dcc.RadioItems(
             id='case',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
-            value='case1'
+                     for x in ['case1']],
+            value='case1',
+            labelStyle={'display': 'inline-block'}
         ),
         html.P('Screen:'),
         dcc.RadioItems(
@@ -64,10 +64,10 @@ if __name__ == '__main__':
          Input('screen', 'value'),
          Input('module', 'value')]
     )
-    def generate_chart(case, screen, module):
+    def generate_chart(c, s, m):
 
         sns_ftr_lvl_0 = ['x', 'y', 'z', 'magnitude', 'combine_angle']
-        data_path = os.path.join('cases', case, screen, 'df_' + module + '.csv')
+        data_path = os.path.join('cases', c, s, 'df_' + m + '.csv')
         df_data = pd.read_csv(data_path)
 
         # Compute correlation
@@ -99,7 +99,10 @@ if __name__ == '__main__':
                 if yi == xi:
                     hovertext[-1].append('f: {}<br />abs_sum: {}'.format(yy, abs_sums[yi]))
                 elif yi > xi:
-                    hovertext[-1].append('f1: {}<br />f2: {}<br />corr: {}'.format(yy, xx, corr.at[yy, xx]))
+                    hovertext[-1].append(
+                        'f1: {} abs_sum: {}<br />f2: {} abs_sum: {}<br />corr: {}'.format(yy, abs_sums[yi],
+                                                                                          xx, abs_sums[xi],
+                                                                                          corr.at[yy, xx]))
                 elif yi < xi:
                     hovertext[-1].append('')
 
@@ -108,9 +111,8 @@ if __name__ == '__main__':
                                         zmin=-1, zmax=1, xgap=1, ygap=1, colorscale='Viridis',
                                         hoverinfo='text', text=hovertext))
         fig.update_layout(
-            title_text='Corrplot',
-            yaxis_autorange='reversed', width=600, height=600,
-            xaxis_showgrid=False, yaxis_showgrid=False,
+            title_text='Corrplot', width=600, height=600,
+            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False
         )
 
         return fig

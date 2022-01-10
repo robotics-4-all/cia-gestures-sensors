@@ -39,7 +39,7 @@ if __name__ == '__main__':
         dcc.RadioItems(
             id='case1',
             options=[{'value': x, 'label': x}
-                     for x in ['case4', 'case5']],
+                     for x in ['case4', 'case5', 'case8']],
             value='case4',
             labelStyle={'display': 'inline-block'}
         ),
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         dcc.RadioItems(
             id='case2',
             options=[{'value': x, 'label': x}
-                     for x in ['case4', 'case5']],
+                     for x in ['case4', 'case5', 'case8']],
             value='case5',
             labelStyle={'display': 'inline-block'}
         ),
@@ -123,11 +123,11 @@ if __name__ == '__main__':
 
         results_path1 = os.path.join('cases', c1, s1, 'results.csv')
         results1 = pd.read_csv(results_path1)
-        windows = ['_' + str(x) for x in dict_cases[c1]['GetResults']['FeatureExtraction']['sns']['window']]
-        overlaps = ['_' + str(x) for x in dict_cases[c1]['GetResults']['FeatureExtraction']['sns']['overlap']]
+        windows = ['_' + str(x) for x in dict_cases[c1]['FeatureExtraction']['sns']['window']]
+        overlaps = ['_' + str(x) for x in dict_cases[c1]['FeatureExtraction']['sns']['overlap']]
         metric_means1 = pd.DataFrame(index=windows, columns=overlaps)
-        for window in dict_cases[c1]['GetResults']['FeatureExtraction']['sns']['window']:
-            for overlap in dict_cases[c1]['GetResults']['FeatureExtraction']['sns']['overlap']:
+        for window in dict_cases[c1]['FeatureExtraction']['sns']['window']:
+            for overlap in dict_cases[c1]['FeatureExtraction']['sns']['overlap']:
                 sr = results1.loc[(results1['Module'] == m1) &
                                   (results1['Window'] == window) &
                                   (results1['Overlap'] == overlap)][met1]
@@ -141,11 +141,11 @@ if __name__ == '__main__':
 
         results_path2 = os.path.join('cases', c2, s2, 'results.csv')
         results2 = pd.read_csv(results_path2)
-        windows = ['_' + str(x) for x in dict_cases[c2]['GetResults']['FeatureExtraction']['sns']['window']]
-        overlaps = ['_' + str(x) for x in dict_cases[c2]['GetResults']['FeatureExtraction']['sns']['overlap']]
+        windows = ['_' + str(x) for x in dict_cases[c2]['FeatureExtraction']['sns']['window']]
+        overlaps = ['_' + str(x) for x in dict_cases[c2]['FeatureExtraction']['sns']['overlap']]
         metric_means2 = pd.DataFrame(index=windows, columns=overlaps)
-        for window in dict_cases[c2]['GetResults']['FeatureExtraction']['sns']['window']:
-            for overlap in dict_cases[c2]['GetResults']['FeatureExtraction']['sns']['overlap']:
+        for window in dict_cases[c2]['FeatureExtraction']['sns']['window']:
+            for overlap in dict_cases[c2]['FeatureExtraction']['sns']['overlap']:
                 sr = results2.loc[(results2['Module'] == m2) &
                                   (results2['Window'] == window) &
                                   (results2['Overlap'] == overlap)][met2]

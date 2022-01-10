@@ -7,7 +7,6 @@ author: eachrist
 #    Imports    #
 # ============= #
 import os
-
 from s0_cases_dictionaries import dict_cases
 from s__Helpers_Functions import check_paths
 from s1_ExploreData_Functions import explore_sns_data, explore_ges_data, select_users
@@ -19,36 +18,36 @@ from s4_GetResults_Functions import get_results
 # =============== #
 #    Functions    #
 # =============== #
-def main_thread(case_name: str, screen_name: str):
+def main_thread(case: str, screen: str):
 
-    print('---', screen_name, '---\n')
-    screen_path = check_paths(case_path, screen_name)
+    print('---', screen, '---\n')
+    screen_path = check_paths(case_path, screen)
 
     # Explore data
     print('-> ExploreData\n')
-    dict_acc = explore_sns_data(case_name, screen_path, screen_name, 'accelerometer')
-    dict_gyr = explore_sns_data(case_name, screen_path, screen_name, 'gyroscope')
-    dict_ges = explore_ges_data(case_name, screen_path, screen_name)
-    dict_acc_fnl, dict_gyr_fnl, dict_ges_fnl = select_users(case_name, screen_path, dict_acc, dict_gyr, dict_ges)
+    dict_acc = explore_sns_data(case, screen, screen_path, 'accelerometer')
+    dict_gyr = explore_sns_data(case, screen, screen_path, 'gyroscope')
+    dict_ges = explore_ges_data(case, screen, screen_path)
+    dict_acc_fnl, dict_gyr_fnl, dict_ges_fnl = select_users(case, screen_path, dict_acc, dict_gyr, dict_ges)
     print('  ---\n')
 
     # Create dataframes
     print('-> CreateDataframes\n')
-    df_acc = create_df_sns(case_name, screen_path, dict_acc_fnl, 'accelerometer')
-    df_gyr = create_df_sns(case_name, screen_path, dict_gyr_fnl, 'gyroscope')
-    df_ges = create_df_ges(case_name, screen_path, dict_ges_fnl)
+    df_acc = create_df_sns(case, screen_path, dict_acc_fnl, 'accelerometer')
+    df_gyr = create_df_sns(case, screen_path, dict_gyr_fnl, 'gyroscope')
+    df_ges = create_df_ges(case, screen_path, dict_ges_fnl)
     print('  ---\n')
 
     # Extract Features
     print('-> ExtractingFeatures\n')
-    ftr_acc = extract_features_sns(case_name, screen_path, df_acc, 'accelerometer')
-    ftr_gyr = extract_features_sns(case_name, screen_path, df_gyr, 'gyroscope')
-    ftr_ges = extract_features_ges(case_name, screen_path, df_ges)
+    ftr_acc = extract_features_sns(case, screen_path, df_acc, 'accelerometer')
+    ftr_gyr = extract_features_sns(case, screen_path, df_gyr, 'gyroscope')
+    ftr_ges = extract_features_ges(case, screen_path, df_ges)
     print('  ---\n')
 
     # Get Results
     print('-> GettingResults\n')
-    results = get_results(case_name, screen_name, screen_path, ftr_acc, ftr_gyr, ftr_ges)
+    results = get_results(case, screen, screen_path, ftr_acc, ftr_gyr, ftr_ges)
     print('  ---\n')
 
     return
@@ -60,14 +59,14 @@ def main_thread(case_name: str, screen_name: str):
 if __name__ == "__main__":
 
     # Select case
-    case_name = 'case7'
-    case_path = check_paths(os.path.dirname(__file__), os.path.join('cases', case_name))
+    for case in ['case7', 'case9']:
 
-    print('=====')
-    print(case_name)
-    print('=====')
+        print('=====')
+        print(case)
+        print('=====')
+        case_path = check_paths(os.path.dirname(__file__), os.path.join('cases', case))
 
-    # Select screen
-    for screen_name in dict_cases[case_name]['screens']:
-        main_thread(case_name, screen_name)
-        # input('Press Enter to continue...\n')
+        # Select screen
+        for screen in dict_cases[case]['screens']:
+            main_thread(case, screen)
+            # input('Press Enter to continue...\n')

@@ -8,14 +8,14 @@ author: eachrist
 # ============= #
 import os
 import pandas as pd
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
-
 from s0_cases_dictionaries import dict_cases
+cases = list(dict_cases)
+cases.sort()
 
 
 #  ========= #
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         dcc.Dropdown(
             id='case1',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
+                     for x in cases],
             value='case1'
         ),
         html.P('Screen:'),
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         dcc.Dropdown(
             id='case2',
             options=[{'value': x, 'label': x}
-                     for x in list(dict_cases)],
+                     for x in cases],
             value='case1'
         ),
         html.P('Screen:'),

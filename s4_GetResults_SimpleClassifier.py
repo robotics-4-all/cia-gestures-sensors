@@ -9,7 +9,6 @@ author: eachrist
 import numpy as np
 import pandas as pd
 from statistics import median
-
 from sklearn import svm
 from sklearn.neighbors import LocalOutlierFactor
 
@@ -50,28 +49,22 @@ class SimpleClassifier:
     def __init__(self, final_features: list, scalar, clfs_parameters: dict, num_of_clf_that_decide: int):
 
         self.final_features = final_features
-
         self.scalar = scalar
-
         self.classifiers = []
         for clf_name in clfs_parameters:
             for parameters in clfs_parameters[clf_name]:
                 self.classifiers.append(define_classifiers(clf_name, parameters))
-
         self.classifiers_max_distances = []
         self.classifiers_median_distances = []
-
         self.clfs_dec = num_of_clf_that_decide
 
     def train_classifiers(self, data: pd.DataFrame):
 
         if data.shape[0] != 0:
-
             data = data[self.final_features].to_numpy()
             if self.scalar != None:
                 self.scalar = self.scalar().fit(data)
                 data = self.scalar.transform(data)
-
             # Train models
             for clf in self.classifiers:
                 clf.fit(data)
@@ -85,11 +78,9 @@ class SimpleClassifier:
 
         decision_total = np.zeros(data.shape[0])
         if data.shape[0] != 0:
-
             data = data[self.final_features].to_numpy()
             if self.scalar != None:
                 data = self.scalar.transform(data)
-
             for idx in np.argpartition(self.classifiers_median_distances, self.clfs_dec - 1)[:self.clfs_dec]:
                 clf = self.classifiers[idx]
                 decision = clf.decision_function(data) / self.classifiers_max_distances[idx]
