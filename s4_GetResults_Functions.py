@@ -84,8 +84,8 @@ def get_results(case: str, screen: str, screen_path: str,
         # Concentrate data
         sets_dict = {
             'trn': [acc_trn, gyr_trn, swp_trn, tap_trn],
-            'tst': [acc_tst, gyr_tst, swp_trn, tap_trn],
-            'att': [acc_att, gyr_att, swp_trn, tap_trn]
+            'tst': [acc_tst, gyr_tst, swp_tst, tap_tst],
+            'att': [acc_att, gyr_att, swp_att, tap_att]
         }
 
         # Define Classifiers

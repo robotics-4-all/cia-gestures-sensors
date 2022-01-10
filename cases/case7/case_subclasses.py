@@ -68,7 +68,7 @@ class SwpClassifier(SimpleClassifier):
     def __init__(self, param):
 
         final_features = ['Duration', 'MeanX', 'MeanY',
-                          'TraceLength',
+                          'TraceLength', 'TraceProjection',
                           'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
                           'Slope', 'MeanSquareError', 'CoefDetermination']
 
