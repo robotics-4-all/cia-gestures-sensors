@@ -15,7 +15,7 @@ from s0_cases_dictionaries import dict_cases
 # ========== #
 if __name__ == '__main__':
 
-    c = 'case1'
+    c = 'case01'
     s = dict_cases[c]['screens']
     sensors = ['acc', 'gyr']
 

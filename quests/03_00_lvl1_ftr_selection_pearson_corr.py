@@ -22,6 +22,8 @@ from s0_cases_dictionaries import dict_cases
 # ========== #
 if __name__ == '__main__':
 
+    cases = ['case05']
+
     # Parameters
     title = 'Level 1 Feature Selection - Pearson Correlation'
 
@@ -35,27 +37,21 @@ if __name__ == '__main__':
         html.P('Case:'),
         dcc.RadioItems(
             id='case',
-            options=[{'value': x, 'label': x}
-                     for x in ['case6']],
-            value='case6',
-            labelStyle={'display': 'inline-block'}
-        ),
+            options=[{'value': x, 'label': x} for x in cases],
+            value=cases[0],
+            labelStyle={'display': 'inline-block'}),
         html.P('Screen:'),
         dcc.RadioItems(
             id='screen',
-            options=[{'value': x, 'label': x}
-                     for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
+            options=[{'value': x, 'label': x} for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
             value='Mathisis',
-            labelStyle={'display': 'inline-block'}
-        ),
+            labelStyle={'display': 'inline-block'}),
         html.P('Module:'),
         dcc.RadioItems(
             id='module',
-            options=[{'value': x, 'label': x}
-                     for x in ['acc', 'gyr', 'swp']],  # taps only has duration
+            options=[{'value': x, 'label': x} for x in ['acc', 'gyr', 'swp']],  # taps only has duration
             value='acc',
-            labelStyle={'display': 'inline-block'}
-        ),
+            labelStyle={'display': 'inline-block'}),
         dcc.Graph(id='graph')
     ])
 
@@ -72,20 +68,22 @@ if __name__ == '__main__':
             'acc': {
                 'lvl0_features': dict_cases[c]['FeatureExtraction']['sns']['lvl0_ftr']['acc'],
                 'lvl1_features': {
-                    'unique': ['Window'],
+                    'unique': [],
                     'lvl0_depended': ['Mean', 'STD', 'Max', 'Min', 'Range',
                                       'Percentile25', 'Percentile50', 'Percentile75',
-                                      'Entropy', 'Kurtosis', 'Skewness',
-                                      'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']}},
+                                      'Kurtosis', 'Skewness',
+                                      'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']},
+                'final_features': []},
 
             'gyr': {
                 'lvl0_features': dict_cases[c]['FeatureExtraction']['sns']['lvl0_ftr']['gyr'],
                 'lvl1_features': {
-                    'unique': ['Window'],
+                    'unique': [],
                     'lvl0_depended': ['Mean', 'STD', 'Max', 'Min', 'Range',
                                       'Percentile25', 'Percentile50', 'Percentile75',
-                                      'Entropy', 'Kurtosis', 'Skewness',
-                                      'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']}},
+                                      'Kurtosis', 'Skewness',
+                                      'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']},
+                'final_features': []},
 
             'swp': {
                 'final_features': ['Duration', 'MeanX', 'MeanY',
@@ -97,7 +95,7 @@ if __name__ == '__main__':
             temp = features_dict[md]['lvl1_features']['unique'] + \
                    ['_'.join(ftr) for ftr in itertools.product(features_dict[md]['lvl1_features']['lvl0_depended'],
                                                                features_dict[md]['lvl0_features'])]
-            features_dict[md]['final_features'] = temp
+            features_dict[md]['final_features'] = temp + ['Entropy_magnitude']
 
         features = features_dict[m]['final_features']
         if m == 'swp':
@@ -149,8 +147,7 @@ if __name__ == '__main__':
                                         hoverinfo='text', text=hovertext))
         fig.update_layout(
             title_text='Corrplot', width=1000, height=1000,
-            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False
-        )
+            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
 
         return fig
 

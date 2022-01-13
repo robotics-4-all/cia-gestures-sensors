@@ -50,11 +50,11 @@ def evaluate_original_user(data: pd.DataFrame, screen: str):
             if confidence < threshold:
                 confidence = start_confidence
                 Num_Of_Unlocks += 1
+            tp = 'inlier'
             if sample != 1:
-                confidence += dict_conf['inlier'][screen]
-            else:
-                confidence += dict_conf['outlier'][screen]
+                tp = 'outlier'
                 false_rejections += 1
+            confidence += dict_conf[tp][screen]
             if confidence > 100:
                 confidence = 100
         FRR = false_rejections / len(predictions)
@@ -83,13 +83,12 @@ def evaluate_attackers(data: pd.DataFrame, screen: str):
                     Num_Of_Acceptances_Till_Lock += 1
                 else:
                     flag = False
+                tp = 'outlier'
                 if sample == 1:
-                    if flag:
-                        confidence += dict_conf['inlier'][screen]
+                    tp = 'inlier'
                     false_acceptances += 1
-                else:
-                    if flag:
-                        confidence += dict_conf['outlier'][screen]
+                if flag:
+                    confidence += dict_conf[tp][screen]
                 if confidence > 100:
                     confidence = 100
             FAR = false_acceptances / len(predictions)

@@ -42,9 +42,6 @@ def calculate_features_sns(user: int, module: str, data: np.ndarray, group: int,
     while data_length > 0:
 
         stop = start + window
-        # Dynamic window
-        # if stop > data.shape[0]:
-        #     stop = data.shape[0]
         stop_time = timestamp + (stop - 1) * sample_rate
 
         features_object.setUser(user)

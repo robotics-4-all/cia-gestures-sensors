@@ -21,6 +21,8 @@ import plotly.graph_objects as go
 # ========== #
 if __name__ == '__main__':
 
+    cases = ['case01']
+
     # Parameters
     title = 'Sensors Level 0 Feature Selection - Pearson Correlation'
 
@@ -34,27 +36,21 @@ if __name__ == '__main__':
         html.P('Case:'),
         dcc.RadioItems(
             id='case',
-            options=[{'value': x, 'label': x}
-                     for x in ['case1']],
-            value='case1',
-            labelStyle={'display': 'inline-block'}
-        ),
+            options=[{'value': x, 'label': x} for x in cases],
+            value=cases[0],
+            labelStyle={'display': 'inline-block'}),
         html.P('Screen:'),
         dcc.RadioItems(
             id='screen',
-            options=[{'value': x, 'label': x}
-                     for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
+            options=[{'value': x, 'label': x} for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
             value='Mathisis',
-            labelStyle={'display': 'inline-block'}
-        ),
+            labelStyle={'display': 'inline-block'}),
         html.P('Module:'),
         dcc.RadioItems(
             id='module',
-            options=[{'value': x, 'label': x}
-                     for x in ['acc', 'gyr']],
+            options=[{'value': x, 'label': x} for x in ['acc', 'gyr']],
             value='acc',
-            labelStyle={'display': 'inline-block'}
-        ),
+            labelStyle={'display': 'inline-block'}),
         dcc.Graph(id='graph')
     ])
 
@@ -112,8 +108,7 @@ if __name__ == '__main__':
                                         hoverinfo='text', text=hovertext))
         fig.update_layout(
             title_text='Corrplot', width=600, height=600,
-            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False
-        )
+            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
 
         return fig
 
