@@ -3,21 +3,8 @@ This script was created at 09-Dec-21
 author: eachrist
 
 """
-#  ============ #
-#    Imports    #
-# ============= #
-import os
-from s0_cases_dictionaries import dict_cases
-from s__Helpers_Functions import check_paths
-from s1_ExploreData_Functions import explore_sns_data, explore_ges_data, select_users
-from s2_CreateDataframes_Functions import create_df_sns, create_df_ges
-from s3_ExtractFeatures_Functions import extract_features_sns, extract_features_ges
-from s4_GetResults_Functions import get_results
+"""
 
-
-# =============== #
-#    Functions    #
-# =============== #
 def main_thread(case: str, screen: str):
 
     print('---', screen, '---\n')
@@ -45,28 +32,18 @@ def main_thread(case: str, screen: str):
     ftr_ges = extract_features_ges(case, screen_path, df_ges)
     print('  ---\n')
 
-    # Get Results
-    print('-> GettingResults\n')
-    results = get_results(case, screen, screen_path, ftr_acc, ftr_gyr, ftr_ges)
-    print('  ---\n')
+    all_results = pd.DataFrame()
+    for num_of_clf_that_decide in dict_cases[case]['GetResults']['Classifiers']['num_of_clf_that_decide']:
+        # Get Results
+        print('-> GettingResults\n')
+        results = get_results(case, screen, screen_path, ftr_acc, ftr_gyr, ftr_ges, num_of_clf_that_decide)
+        print('  ---\n')
+
+        results['num_of_clf_that_decide'] = num_of_clf_that_decide
+        all_results = all_results.append(results, ignore_index=True)
+
+    all_results.to_csv(os.path.join(screen_path, 'results.csv'), index=False)
 
     return
 
-
-# ========== #
-#    main    #
-# ========== #
-if __name__ == "__main__":
-
-    # Select case
-    for case in ['case11']:
-
-        print('=====')
-        print(case)
-        print('=====')
-        case_path = check_paths(os.path.dirname(__file__), os.path.join('cases', case))
-
-        # Select screen
-        for screen in dict_cases[case]['screens']:
-            main_thread(case, screen)
-            # input('Press Enter to continue...\n')
+"""

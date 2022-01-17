@@ -11,6 +11,8 @@ import cases.case05.case_subclasses
 import cases.case06.case_subclasses
 import cases.case08.case_subclasses
 import cases.case09.case_subclasses
+import cases.case10.case_subclasses
+import cases.case11.case_subclasses
 
 json_files_path = 'D:\_Projects_\Thesis_ContinuousImplicitAuthentication\Datasets\BrainRun\sensors_data'
 gestures_database_name = 'BrainRun_GestureDevicesUsersGames'
@@ -324,9 +326,8 @@ dict_cases = {
 
     # quest 03: Find sensors and gestures lvl1 features
     # 20220106: case06 select final features for acc, gyr and ges, final features at case06 case_subclasses.py
-    # 20220110: case08 use case07 results
     'case06': {
-        'comments': 'more than one lvl0 features, scripts changed.',
+        'comments': '',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
             'max_users': 15,
@@ -430,7 +431,7 @@ dict_cases = {
         }
     },
     'case09': {
-        'comments': 'more than one lvl0 features, scripts changed.',
+        'comments': '',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
             'max_users': 15,
@@ -479,5 +480,111 @@ dict_cases = {
             },
             'Evaluator': {}
         }
+    },
+
+    # quest 05: Optimal number of classifiers that decide (Scripts modification needed!)
+    # 20220117: from case10 Classifiers for all types of data, for the SVMs parameters defined in case09
+    'case10': {
+        'comments': 'more than one lvl0 features, scripts changed.',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 15,
+            'sns': {
+                'min_nod_per_screen': 1,
+                'min_nod_per_timestamp': 2,
+                'min_nod_per_user': 3000,
+                'max_nod_per_user': float('inf')
+            },
+            'ges': {
+                'device_max_width': 600,
+                'device_max_height': 1000,
+                'fake_swp_limit': 30,
+                'swp_min_data_points': 4,
+                'swp_max_data_points': 10,
+                'min_nog_per_user': 300,
+                'max_nog_per_user': float('inf')
+            }
+        },
+        'CreateDataframes': {
+            'sns': {'max_user_data': 20000},
+            'ges': {'max_user_data': 2000}
+        },
+        'FeatureExtraction': {
+            'sns': {
+                'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                'sample_rate': 20,  # 20ms, 50Hz
+                'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                'overlap': {'acc': 0.6, 'gyr': 0.6}
+            },
+            'ges': {
+                'normalize': True,
+                'default_width': 400,
+                'default_height': 700
+            }
+        },
+        'GetResults': {
+            'split_rate': 0.3,
+            'Classifiers': {
+                'num_of_clf_that_decide': [1, 5, 15, 50, 100, 200, 300],
+                'acc': cases.case10.case_subclasses.AccClassifier,
+                'gyr': cases.case10.case_subclasses.GyrClassifier,
+                'swp': cases.case10.case_subclasses.SwpClassifier,
+                'tap': cases.case10.case_subclasses.TapClassifier
+            },
+            'Evaluator': {}
+        }
+    },
+
+    # FinalTst: Combine quests' results
+    # 20220117: case11 testing case10 results
+    'case11': {
+        'comments': 'more than one lvl0 features, scripts changed.',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 15,
+            'sns': {
+                'min_nod_per_screen': 1,
+                'min_nod_per_timestamp': 2,
+                'min_nod_per_user': 3000,
+                'max_nod_per_user': float('inf')
+            },
+            'ges': {
+                'device_max_width': 600,
+                'device_max_height': 1000,
+                'fake_swp_limit': 30,
+                'swp_min_data_points': 4,
+                'swp_max_data_points': 10,
+                'min_nog_per_user': 300,
+                'max_nog_per_user': float('inf')
+            }
+        },
+        'CreateDataframes': {
+            'sns': {'max_user_data': 20000},
+            'ges': {'max_user_data': 2000}
+        },
+        'FeatureExtraction': {
+            'sns': {
+                'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                'sample_rate': 20,  # 20ms, 50Hz
+                'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                'overlap': {'acc': 0.6, 'gyr': 0.6}
+            },
+            'ges': {
+                'normalize': True,
+                'default_width': 400,
+                'default_height': 700
+            }
+        },
+        'GetResults': {
+            'split_rate': 0.3,
+            'Classifiers': {
+                'acc': cases.case11.case_subclasses.AccClassifier,
+                'gyr': cases.case11.case_subclasses.GyrClassifier,
+                'swp': cases.case11.case_subclasses.SwpClassifier,
+                'tap': cases.case11.case_subclasses.TapClassifier
+            },
+            'Evaluator': {}
+        }
     }
+
 }

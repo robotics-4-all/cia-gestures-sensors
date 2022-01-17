@@ -15,7 +15,6 @@ from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 from s0_cases_dictionaries import dict_cases
 
-
 #  ========= #
 #    Main    #
 # ========== #
@@ -96,16 +95,16 @@ if __name__ == '__main__':
             zmin, zmid, zmax = 0, 0.5, 1
 
         results_path = os.path.join('cases', c, s, 'results.csv')
-        results1 = pd.read_csv(results_path)
+        results = pd.read_csv(results_path)
         windows = ['_' + str(x) for x in dict_cases[c]['FeatureExtraction']['sns']['window']]
         overlaps = ['_' + str(x) for x in dict_cases[c]['FeatureExtraction']['sns']['overlap']]
         met_means1 = pd.DataFrame(index=windows, columns=overlaps)
         met_means2 = pd.DataFrame(index=windows, columns=overlaps)
         for window in dict_cases[c]['FeatureExtraction']['sns']['window']:
             for overlap in dict_cases[c]['FeatureExtraction']['sns']['overlap']:
-                sr = results1.loc[(results1['Module'] == m) &
-                                  (results1['Window'] == window) &
-                                  (results1['Overlap'] == overlap)]
+                sr = results.loc[(results['Module'] == m) &
+                                 (results['Window'] == window) &
+                                 (results['Overlap'] == overlap)]
                 met_means1.at['_' + str(window), '_' + str(overlap)] = sr[met1].mean()
                 met_means2.at['_' + str(window), '_' + str(overlap)] = sr[met2].mean()
 
