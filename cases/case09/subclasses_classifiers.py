@@ -8,7 +8,7 @@ author: eachrist
 # ============= #
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-from s4_GetResults_SimpleClassifier import SimpleClassifier
+from s4_GetResults_ClassClassifier import Classifier
 
 # ================ #
 #    Parameters    #
@@ -32,7 +32,7 @@ dict_gamma = {
 #    Classes    #
 # ============= #
 # Accelerometer Class
-class AccClassifier(SimpleClassifier):
+class AccClassifier(Classifier):
 
     def __init__(self, nu_idx, gamma_idx):
 
@@ -57,7 +57,7 @@ class AccClassifier(SimpleClassifier):
         super(AccClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
-class GyrClassifier(SimpleClassifier):
+class GyrClassifier(Classifier):
 
     def __init__(self, nu_idx, gamma_idx):
 
@@ -79,7 +79,7 @@ class GyrClassifier(SimpleClassifier):
         super(GyrClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
-class SwpClassifier(SimpleClassifier):
+class SwpClassifier(Classifier):
 
     def __init__(self, nu_idx, gamma_idx):
 
@@ -95,7 +95,7 @@ class SwpClassifier(SimpleClassifier):
         super(SwpClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
-class TapClassifier(SimpleClassifier):
+class TapClassifier(Classifier):
 
     def __init__(self, nu_idx, gamma_idx):
 

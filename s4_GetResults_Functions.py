@@ -10,8 +10,7 @@ import os
 import pandas as pd
 from tqdm import tqdm
 from s0_cases_dictionaries import dict_cases
-from s4_GetResults_SimpleClassifier import get_predictions
-from s4_GetResults_Evaluator import Evaluator
+from s4_GetResults_ClassClassifier import get_predictions
 
 
 #  ============== #
@@ -63,7 +62,7 @@ def get_results(case: str, screen: str, screen_path: str,
     split_rate = dict_cases[case]['GetResults']['split_rate']
 
     # Define evaluator
-    eval_obj = Evaluator(screen)
+    eval_obj = dict_cases[case]['GetResults']['Evaluator']()
 
     # Select original user
     for original_user in tqdm(set(df_acc['User'])):
@@ -107,7 +106,7 @@ def get_results(case: str, screen: str, screen_path: str,
                 sets_dict[sett][idx]['Prediction'] = get_predictions(sets_dict[sett][idx]['Decision'])
 
         # Evaluate predictions of every module separately
-        eval_obj.calculate_metrics(original_user, sets_dict)
+        eval_obj.calculate_metrics(screen, original_user, sets_dict)
 
     # Create dataframe with the results of separated modules
     results = eval_obj.create_dataframe()

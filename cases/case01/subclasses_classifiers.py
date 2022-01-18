@@ -8,22 +8,22 @@ author: eachrist
 # ============= #
 import itertools
 from sklearn.preprocessing import StandardScaler
-from s4_GetResults_SimpleClassifier import SimpleClassifier
+from s4_GetResults_ClassClassifier import Classifier
 
 
 # ============= #
 #    Classes    #
 # ============= #
 # Accelerometer Class
-class AccClassifier(SimpleClassifier):
+class AccClassifier(Classifier):
 
     def __init__(self, lvl0_features: list):
 
         lvl1_features = {
             'unique': [],
-            'lvl0_depended': ['Mean', 'STD', 'Max', 'Min', 'Range',
-                              'Percentile25', 'Percentile50', 'Percentile75', 'Kurtosis', 'Skewness',
-                              'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']}
+            'lvl0_depended': ['Mean', 'STD', 'Max', 'Min',
+                              'Percentile25', 'Percentile50', 'Percentile75',
+                              'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']}
 
         final_features = lvl1_features['unique'] + \
                          ['_'.join(ftr) for ftr in itertools.product(lvl1_features['lvl0_depended'], lvl0_features)]
@@ -35,15 +35,14 @@ class AccClassifier(SimpleClassifier):
         super(AccClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
-class GyrClassifier(SimpleClassifier):
+class GyrClassifier(Classifier):
 
     def __init__(self, lvl0_features: list):
-
         lvl1_features = {
             'unique': [],
-            'lvl0_depended': ['Mean', 'STD', 'Max', 'Min', 'Range',
-                              'Percentile25', 'Percentile50', 'Percentile75', 'Kurtosis', 'Skewness',
-                              'Amplitude1', 'Amplitude2', 'Frequency2', 'MeanFrequency']}
+            'lvl0_depended': ['Mean', 'STD', 'Max', 'Min',
+                              'Percentile25', 'Percentile50', 'Percentile75',
+                              'Kurtosis', 'Skewness', 'Amplitude2', 'Frequency2']}
 
         final_features = lvl1_features['unique'] + \
                          ['_'.join(ftr) for ftr in itertools.product(lvl1_features['lvl0_depended'], lvl0_features)]
@@ -55,14 +54,13 @@ class GyrClassifier(SimpleClassifier):
         super(GyrClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
-class SwpClassifier(SimpleClassifier):
+class SwpClassifier(Classifier):
 
     def __init__(self, param):
 
-        final_features = ['Duration', 'MeanX', 'MeanY',
-                          'TraceLength', 'StartStopLength', 'TraceProjection', 'ScreenPercentage',
-                          'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
-                          'Slope', 'MeanSquareError', 'MeanAbsError', 'MedianAbsError', 'CoefDetermination']
+        final_features = ['Duration', 'MeanX', 'MeanY', 'StartStopLength', 'ScreenPercentage',
+                          'TraceProjection', 'StartVelocity', 'StopVelocity',
+                          'AccelerationHor', 'AccelerationVer', 'Slope', 'MeanSquareError', 'CoefDetermination']
 
         scalar = StandardScaler
         clf_name = 'OneClassSVM_rbf_dflt'
@@ -71,7 +69,7 @@ class SwpClassifier(SimpleClassifier):
         super(SwpClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
-class TapClassifier(SimpleClassifier):
+class TapClassifier(Classifier):
 
     def __init__(self, param):
 

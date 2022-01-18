@@ -6,15 +6,16 @@ author: eachrist
 # ============= #
 #    Imports    #
 # ============= #
+import numpy as np
 from sklearn.preprocessing import StandardScaler
-from s4_GetResults_SimpleClassifier import SimpleClassifier
+from s4_GetResults_ClassClassifier import Classifier
 
 
 # ============= #
 #    Classes    #
 # ============= #
 # Accelerometer Class
-class AccClassifier(SimpleClassifier):
+class AccClassifier(Classifier):
 
     def __init__(self, param):
 
@@ -33,13 +34,16 @@ class AccClassifier(SimpleClassifier):
                           'MeanFrequency_x']
 
         scalar = StandardScaler
-        clf_name = 'OneClassSVM_rbf_dflt'
-        parameters = [None]
+        clf_name = 'OneClassSVM'
+        parameters = []
+        for nu in np.arange(0.01, 0.16, 0.01).round(2).tolist():
+            for gamma in np.arange(0.00005, 0.015, 0.00075).round(5).tolist():
+                parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(AccClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
+        super(AccClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)
 
 
-class GyrClassifier(SimpleClassifier):
+class GyrClassifier(Classifier):
 
     def __init__(self, param):
 
@@ -55,13 +59,16 @@ class GyrClassifier(SimpleClassifier):
                           'MeanFrequency_x']
 
         scalar = StandardScaler
-        clf_name = 'OneClassSVM_rbf_dflt'
-        parameters = [None]
+        clf_name = 'OneClassSVM'
+        parameters = []
+        for nu in np.arange(0.25, 0.39, 0.01).round(2).tolist():
+            for gamma in np.arange(0.00050, 0.070, 0.00350).round(4).tolist():
+                parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(GyrClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
+        super(GyrClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)
 
 
-class SwpClassifier(SimpleClassifier):
+class SwpClassifier(Classifier):
 
     def __init__(self, param):
 
@@ -71,20 +78,26 @@ class SwpClassifier(SimpleClassifier):
                           'Slope', 'MeanSquareError', 'CoefDetermination']
 
         scalar = StandardScaler
-        clf_name = 'OneClassSVM_rbf_dflt'
-        parameters = [None]
+        clf_name = 'OneClassSVM'
+        parameters = []
+        for nu in np.arange(0.10, 0.25, 0.01).round(2).tolist():
+            for gamma in np.arange(0.00050, 0.070, 0.00350).round(4).tolist():
+                parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(SwpClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
+        super(SwpClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)
 
 
-class TapClassifier(SimpleClassifier):
+class TapClassifier(Classifier):
 
     def __init__(self, param):
 
         final_features = ['Duration']
 
         scalar = StandardScaler
-        clf_name = 'OneClassSVM_rbf_dflt'
-        parameters = [None]
+        clf_name = 'OneClassSVM'
+        parameters = []
+        for nu in np.arange(0.40, 0.54, 0.01).round(2).tolist():
+            for gamma in np.arange(0.50000, 1.000, 0.02500).round(3).tolist():
+                parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(TapClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
+        super(TapClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)

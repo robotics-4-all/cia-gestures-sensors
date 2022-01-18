@@ -44,7 +44,7 @@ def get_predictions(decisions: np.ndarray):
 #  ============ #
 #    Classes    #
 # ============= #
-class SimpleClassifier:
+class Classifier:
 
     def __init__(self, final_features: list, scalar, clfs_parameters: dict, num_of_clf_that_decide: int):
 
