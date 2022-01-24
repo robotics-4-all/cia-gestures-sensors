@@ -28,7 +28,7 @@ def extract_features_sns(case: str, screen_path: str, data: pd.DataFrame, module
             for idx, ts in enumerate(timestamps):
                 for feature in features:
                     data_to_window = user_data.loc[data['timestamp'] == ts][feature].to_numpy()
-                    features_objects[feature] = calculate_features_sns(user, module, data_to_window, idx, ts,
+                    features_objects[feature] = calculate_features_sns(user, module[0:3], data_to_window, idx, ts,
                                                                        features_objects[feature],
                                                                        window, overlap, sample_rate)
 

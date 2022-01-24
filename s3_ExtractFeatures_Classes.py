@@ -17,7 +17,7 @@ class FeaturesSns:
     def __init__(self):
 
         self.User = []
-        self.Type = []
+        self.Module = []
         self.StartTime = []
         self.StopTime = []
         self.Group = []
@@ -42,8 +42,8 @@ class FeaturesSns:
     def setUser(self, value=None):
         self.User.append(value)
 
-    def setType(self, value=None):
-        self.Type.append(value)
+    def setModule(self, value=None):
+        self.Module.append(value)
 
     def setStartTime(self, value=None):
         self.StartTime.append(value)
@@ -108,7 +108,7 @@ class FeaturesSns:
         df = pd.DataFrame()
         if first:
             df['User'] = self.User
-            df['Type'] = self.Type
+            df['Module'] = self.Module
             df['StartTime'] = self.StartTime
             df['StopTime'] = self.StopTime
             df['Group'] = self.Group
@@ -137,7 +137,7 @@ class FeaturesGes:
     def __init__(self):
 
         self.User = []
-        self.Type = []
+        self.Module = []
         self.StartTime = []
         self.StopTime = []
         self.Duration = []
@@ -161,8 +161,8 @@ class FeaturesGes:
     def setUser(self, value=None):
         self.User.append(value)
 
-    def setType(self, value=None):
-        self.Type.append(value)
+    def setModule(self, value=None):
+        self.Module.append(value)
 
     def setStartTime(self, value=None):
         self.StartTime.append(value)
@@ -223,7 +223,7 @@ class FeaturesGes:
 
         df = pd.DataFrame()
         df['User'] = self.User
-        df['Type'] = self.Type
+        df['Module'] = self.Module
         df['StartTime'] = self.StartTime
         df['StopTime'] = self.StopTime
         df['Duration'] = self.Duration

@@ -43,11 +43,12 @@ class CaseEvaluator(Evaluator):
         Num_Of_Unlocks = None
         FRRConf = None
         predictions = data['Prediction'].to_list()
+        decisions = data['Decision'].to_list()
         if len(predictions) != 0:
             confidence = self.start_confidence
             false_rejections = 0
             Num_Of_Unlocks = 0
-            for sample in predictions:
+            for idx, sample in enumerate(predictions):
                 if confidence < self.threshold:
                     confidence = self.start_confidence
                     Num_Of_Unlocks += 1
@@ -55,7 +56,7 @@ class CaseEvaluator(Evaluator):
                 if sample != 1:
                     tp = 'outlier'
                     false_rejections += 1
-                confidence += self.dict_conf[tp][screen]
+                confidence += self.dict_conf[tp][screen] * abs(decisions[idx])
                 if confidence > 100:
                     confidence = 100
             FRR = false_rejections / len(predictions)
@@ -71,12 +72,13 @@ class CaseEvaluator(Evaluator):
             Mean_FAR = 0
             Mean_Num_Of_Acceptances_Till_Lock = 0
             for user in set(data['User']):
+                decisions = data.loc[data['User'] == user]['Decision'].to_list()
                 predictions = data.loc[data['User'] == user]['Prediction'].to_list()
                 confidence = self.start_confidence
                 false_acceptances = 0
                 Num_Of_Acceptances_Till_Lock = 0
                 flag = True
-                for sample in predictions:
+                for idx, sample in enumerate(predictions):
                     if confidence >= self.threshold:
                         Num_Of_Acceptances_Till_Lock += 1
                     else:
@@ -86,7 +88,7 @@ class CaseEvaluator(Evaluator):
                         tp = 'inlier'
                         false_acceptances += 1
                     if flag:
-                        confidence += self.dict_conf[tp][screen]
+                        confidence += self.dict_conf[tp][screen] * abs(decisions[idx])
                     if confidence > 100:
                         confidence = 100
                 FAR = false_acceptances / len(predictions)
@@ -112,7 +114,7 @@ class CaseEvaluator(Evaluator):
             sets_dict[sett].append(all_data)
 
         # Evaluate its module
-        for idx, module in enumerate(['acc', 'gyr', 'all']):
+        for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap', 'all']):
             trn = sets_dict['trn'][idx][['Decision', 'Prediction']]
             tst = sets_dict['tst'][idx][['Decision', 'Prediction']]
             att = sets_dict['att'][idx][['User', 'Decision', 'Prediction']]

@@ -105,19 +105,19 @@ class CaseEvaluator(Evaluator):
             for data in sets_dict[sett]:
                 # Short every data type by user and stop time
                 data = data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
-                data_to_append = data[['User', 'Type', 'StartTime', 'StopTime', 'Decision', 'Prediction']]
+                data_to_append = data[['User', 'Module', 'StartTime', 'StopTime', 'Decision', 'Prediction']]
                 all_data = all_data.append(data_to_append, ignore_index=True)
             # Short final dataframe
             all_data = all_data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
             sets_dict[sett].append(all_data)
 
         # Evaluate its module
-        for idx, data_type in enumerate(['acc', 'gyr', 'swp', 'tap', 'all']):
+        for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap', 'all']):
             trn = sets_dict['trn'][idx][['Decision', 'Prediction']]
             tst = sets_dict['tst'][idx][['Decision', 'Prediction']]
             att = sets_dict['att'][idx][['User', 'Decision', 'Prediction']]
             self.OriginalUser.append(original_user)
-            self.Module.append(data_type)
+            self.Module.append(module)
             self.NumOfTrnData.append(len(trn))
             self.NumOfTstData.append(len(tst))
             self.NumOfAttData.append(att.shape[0])

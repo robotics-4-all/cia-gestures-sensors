@@ -45,7 +45,7 @@ def calculate_features_sns(user: int, module: str, data: np.ndarray, group: int,
         stop_time = timestamp + (stop - 1) * sample_rate
 
         features_object.setUser(user)
-        features_object.setType(module)
+        features_object.setModule(module)
         features_object.setStartTime(start_time)
         features_object.setStopTime(stop_time)
         features_object.setGroup(group)
@@ -115,7 +115,7 @@ def extract_features_sns(case: str, screen_path: str, data: pd.DataFrame, module
             for idx, ts in enumerate(timestamps):
                 for feature in features:
                     data_to_window = user_data.loc[data['timestamp'] == ts][feature].to_numpy()
-                    features_objects[feature] = calculate_features_sns(user, module, data_to_window, idx, ts,
+                    features_objects[feature] = calculate_features_sns(user, module[0:3], data_to_window, idx, ts,
                                                                        features_objects[feature],
                                                                        window, overlap, sample_rate)
 
@@ -141,13 +141,13 @@ def calculate_features_ges(gesture: pd.Series, features_object: FeaturesGes,
                            normalize: bool, default_width: float, default_height: float):
 
     features_object.setUser(gesture['user'])
-    features_object.setType(gesture['type'])
     features_object.setStartTime(gesture['time_start'])
     features_object.setStopTime(gesture['time_stop'])
     features_object.setDuration(gesture['duration'])
 
     if gesture['type'] == 'swipe':
 
+        features_object.setModule('swp')
         if type(gesture['data']) == str:
             ges_data = ast.literal_eval(gesture['data'])
         else:
@@ -210,6 +210,7 @@ def calculate_features_ges(gesture: pd.Series, features_object: FeaturesGes,
 
     else:
 
+        features_object.setModule('tap')
         features_object.setMeanX()
         features_object.setMeanY()
         features_object.setTraceLength()
