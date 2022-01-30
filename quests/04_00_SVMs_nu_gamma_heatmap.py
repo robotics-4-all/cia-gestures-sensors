@@ -19,7 +19,7 @@ import plotly.graph_objects as go
 # ========== #
 if __name__ == '__main__':
 
-    cases = ['case08', 'case09']
+    cases = ['case08', 'case09', 'case17']
 
     # Parameters
     title = 'SVMs Nu & Gamma Selection - HeatMaps'

@@ -59,7 +59,7 @@ def main_thread(case: str, screen: str):
 if __name__ == "__main__":
 
     # Select case
-    for case in ['case16']:
+    for case in ['case24', 'case25']:
 
         print('=====')
         print(case)

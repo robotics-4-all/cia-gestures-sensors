@@ -13,8 +13,8 @@ from s0_cases_dictionaries import dict_cases
 #  =================== #
 #    Case Selection    #
 # ==================== #
-from cases.case09.subclasses_classifiers import dict_nu, dict_gamma
-case = 'case09'
+from cases.case17.subclasses_classifiers import dict_nu, dict_gamma
+case = 'case17'
 
 #  ========= #
 #    Main    #

@@ -30,6 +30,8 @@ class Evaluator:
         self.NumOfUnlocks_tst = []
         self.FAR = []
         self.NumOfAcceptTL = []
+        self.NumOfAcceptS = []
+        self.NumOfAcceptG = []
 
     def create_dataframe(self):
 
@@ -48,5 +50,7 @@ class Evaluator:
         df['NumOfUnlocks_tst'] = self.NumOfUnlocks_tst
         df['FAR'] = self.FAR
         df['NumOfAcceptTL'] = self.NumOfAcceptTL
+        df['NumOfAcceptS'] = self.NumOfAcceptS
+        df['NumOfAcceptG'] = self.NumOfAcceptG
 
         return df

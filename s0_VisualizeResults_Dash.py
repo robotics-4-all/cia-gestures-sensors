@@ -57,7 +57,7 @@ if __name__ == '__main__':
             options=[{'value': x, 'label': x} for x in ['NumOfTrnData', 'NumOfTstData', 'NumOfAttData', 'NumOfAtt',
                                                         'FRR_trn', 'FRRConf_trn', 'NumOfUnlocks_trn',
                                                         'FRR_tst', 'FRRConf_tst', 'NumOfUnlocks_tst',
-                                                        'FAR', 'NumOfAcceptTL']],
+                                                        'FAR', 'NumOfAcceptTL', 'NumOfAcceptS', 'NumOfAcceptG']],
             value='FRR_tst',
             labelStyle={'display': 'inline-block'}),
         dcc.Graph(id='box-plot1'),
@@ -80,7 +80,7 @@ if __name__ == '__main__':
             options=[{'value': x, 'label': x} for x in ['NumOfTrnData', 'NumOfTstData', 'NumOfAttData', 'NumOfAtt',
                                                         'FRR_trn', 'FRRConf_trn', 'NumOfUnlocks_trn',
                                                         'FRR_tst', 'FRRConf_tst', 'NumOfUnlocks_tst',
-                                                        'FAR', 'NumOfAcceptTL']],
+                                                        'FAR', 'NumOfAcceptTL', 'NumOfAcceptS', 'NumOfAcceptG']],
             value='FAR',
             labelStyle={'display': 'inline-block'}),
         dcc.Graph(id='box-plot2')
