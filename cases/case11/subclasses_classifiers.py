@@ -10,6 +10,43 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from s4_GetResults_ClassClassifier import Classifier
 
+# ==================== #
+#    Final Features    #
+# ==================== #
+features = {
+    'acc': ['Mean_x', 'Mean_y', 'Mean_magnitude',
+            'STD_x', 'STD_y', 'STD_magnitude',
+            'Max_x', 'Max_y', 'Max_magnitude',
+            'Min_x', 'Min_y', 'Min_magnitude',
+            'Percentile25_x', 'Percentile25_y', 'Percentile25_magnitude',
+            'Percentile50_x', 'Percentile50_y', 'Percentile50_magnitude',
+            'Percentile75_x', 'Percentile75_y', 'Percentile75_magnitude',
+            'Kurtosis_x', 'Kurtosis_y', 'Kurtosis_magnitude',
+            'Skewness_x', 'Skewness_y', 'Skewness_magnitude',
+            'Amplitude1_x', 'Amplitude1_y', 'Amplitude1_magnitude',
+            'Amplitude2_x',
+            'Frequency2_x', 'Frequency2_y', 'Frequency2_magnitude',
+            'MeanFrequency_x'],
+
+    'gyr': ['Mean_x', 'Mean_y', 'Mean_magnitude',
+            'STD_y',
+            'Max_x',
+            'Min_x', 'Min_y', 'Min_magnitude',
+            'Percentile75_x',
+            'Kurtosis_x', 'Kurtosis_y', 'Kurtosis_magnitude',
+            'Skewness_x', 'Skewness_y', 'Skewness_magnitude',
+            'Amplitude1_x',
+            'Frequency2_x', 'Frequency2_y', 'Frequency2_magnitude',
+            'MeanFrequency_x'],
+
+    'swp': ['Duration', 'MeanX', 'MeanY',
+            'TraceLength', 'TraceProjection',
+            'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
+            'Slope', 'MeanSquareError', 'CoefDetermination'],
+
+    'tap': ['Duration']
+}
+
 
 # ============= #
 #    Classes    #
@@ -19,20 +56,7 @@ class AccClassifier(Classifier):
 
     def __init__(self, param):
 
-        final_features = ['Mean_x', 'Mean_y', 'Mean_magnitude',
-                          'STD_x', 'STD_y', 'STD_magnitude',
-                          'Max_x', 'Max_y', 'Max_magnitude',
-                          'Min_x', 'Min_y', 'Min_magnitude',
-                          'Percentile25_x', 'Percentile25_y', 'Percentile25_magnitude',
-                          'Percentile50_x', 'Percentile50_y', 'Percentile50_magnitude',
-                          'Percentile75_x', 'Percentile75_y', 'Percentile75_magnitude',
-                          'Kurtosis_x', 'Kurtosis_y', 'Kurtosis_magnitude',
-                          'Skewness_x', 'Skewness_y', 'Skewness_magnitude',
-                          'Amplitude1_x', 'Amplitude1_y', 'Amplitude1_magnitude',
-                          'Amplitude2_x',
-                          'Frequency2_x', 'Frequency2_y', 'Frequency2_magnitude',
-                          'MeanFrequency_x']
-
+        final_features = features['acc']
         scalar = StandardScaler
         clf_name = 'OneClassSVM'
         parameters = []
@@ -47,17 +71,7 @@ class GyrClassifier(Classifier):
 
     def __init__(self, param):
 
-        final_features = ['Mean_x', 'Mean_y', 'Mean_magnitude',
-                          'STD_y',
-                          'Max_x',
-                          'Min_x', 'Min_y', 'Min_magnitude',
-                          'Percentile75_x',
-                          'Kurtosis_x', 'Kurtosis_y', 'Kurtosis_magnitude',
-                          'Skewness_x', 'Skewness_y', 'Skewness_magnitude',
-                          'Amplitude1_x',
-                          'Frequency2_x', 'Frequency2_y', 'Frequency2_magnitude',
-                          'MeanFrequency_x']
-
+        final_features = features['gyr']
         scalar = StandardScaler
         clf_name = 'OneClassSVM'
         parameters = []
@@ -72,11 +86,7 @@ class SwpClassifier(Classifier):
 
     def __init__(self, param):
 
-        final_features = ['Duration', 'MeanX', 'MeanY',
-                          'TraceLength', 'TraceProjection',
-                          'StartVelocity', 'StopVelocity', 'AccelerationHor', 'AccelerationVer',
-                          'Slope', 'MeanSquareError', 'CoefDetermination']
-
+        final_features = features['swp']
         scalar = StandardScaler
         clf_name = 'OneClassSVM'
         parameters = []
@@ -91,8 +101,7 @@ class TapClassifier(Classifier):
 
     def __init__(self, param):
 
-        final_features = ['Duration']
-
+        final_features = features['tap']
         scalar = StandardScaler
         clf_name = 'OneClassSVM'
         parameters = []

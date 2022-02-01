@@ -37,9 +37,7 @@ class AccClassifier(Classifier):
         clf_name = 'OneClassSVM'
         parameters = []
         for nu in np.arange(0.01, 0.16, 0.01).round(2).tolist():
-        # for nu in np.arange(0.03, 0.15, 0.01).round(2).tolist():
             for gamma in np.arange(0.00005, 0.015, 0.00075).round(5).tolist():
-            # for gamma in np.arange(0.00005, 0.0115, 0.00025).round(5).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
         super(AccClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=param)
@@ -64,9 +62,7 @@ class GyrClassifier(Classifier):
         clf_name = 'OneClassSVM'
         parameters = []
         for nu in np.arange(0.25, 0.39, 0.01).round(2).tolist():
-        # for nu in np.arange(0.25, 0.35, 0.01).round(2).tolist():
             for gamma in np.arange(0.00050, 0.070, 0.00350).round(4).tolist():
-            # for gamma in np.arange(0.00005, 0.565, 0.01125).round(5).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
         super(GyrClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=param)
@@ -85,9 +81,7 @@ class SwpClassifier(Classifier):
         clf_name = 'OneClassSVM'
         parameters = []
         for nu in np.arange(0.10, 0.25, 0.01).round(2).tolist():
-        # for nu in np.arange(0.11, 0.23, 0.01).round(2).tolist():
             for gamma in np.arange(0.00050, 0.070, 0.00350).round(4).tolist():
-            # for gamma in np.arange(0.00005, 0.053, 0.00105).round(5).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
         super(SwpClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=param)
@@ -103,9 +97,7 @@ class TapClassifier(Classifier):
         clf_name = 'OneClassSVM'
         parameters = []
         for nu in np.arange(0.40, 0.54, 0.01).round(2).tolist():
-        # for nu in np.arange(0.4, 0.49, 0.01).round(2).tolist():
             for gamma in np.arange(0.50000, 1.000, 0.02500).round(3).tolist():
-            # for gamma in np.arange(0.5, 0.9, 0.008).round(3).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
         super(TapClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=param)

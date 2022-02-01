@@ -7,6 +7,7 @@ author: eachrist
 #    Imports    #
 # ============= #
 import os
+import pandas as pd
 from s0_cases_dictionaries import dict_cases
 from s__Helpers_Functions import check_paths
 from s1_ExploreData_Functions import explore_sns_data, explore_ges_data, select_users
@@ -45,10 +46,20 @@ def main_thread(case: str, screen: str):
     ftr_ges = extract_features_ges(case, screen_path, df_ges)
     print('  ---\n')
 
-    # Get Results
-    print('-> GettingResults\n')
-    results = get_results(case, screen, screen_path, ftr_acc, ftr_gyr, ftr_ges)
-    print('  ---\n')
+    all_results = pd.DataFrame()
+    for nu in dict_cases[case]['GetResults']['Classifiers']['nus']:
+        for gamma in dict_cases[case]['GetResults']['Classifiers']['gammas']:
+
+            # Get Results
+            print('-> GettingResults\n')
+            results = get_results(case, screen, screen_path, ftr_acc, ftr_gyr, ftr_ges, nu, gamma)
+            print('  ---\n')
+
+            results['Nu'] = nu
+            results['Gamma'] = gamma
+            all_results = all_results.append(results, ignore_index=True)
+
+    all_results.to_csv(os.path.join(screen_path, 'results.csv'), index=False)
 
     return
 
@@ -59,7 +70,7 @@ def main_thread(case: str, screen: str):
 if __name__ == "__main__":
 
     # Select case
-    for case in ['case24', 'case25']:
+    for case in ['case17']:
 
         print('=====')
         print(case)

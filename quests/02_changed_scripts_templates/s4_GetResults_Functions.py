@@ -24,15 +24,6 @@ def get_results(case: str, screen: str, screen_path: str,
         # Split data to trn, tst, att
         acc_trn, acc_tst, acc_att = split_df_sns(original_user, df_acc, split_rate)
         gyr_trn, gyr_tst, gyr_att = split_df_sns(original_user, df_gyr, split_rate)
-        # ges_trn, ges_tst, ges_att = split_df_ges(original_user, df_ges, split_rate)
-
-        # Separate swipes & taps
-        # swp_trn = ges_trn.loc[ges_trn['Module'] == 'swp'].reset_index(drop=True)
-        # tap_trn = ges_trn.loc[ges_trn['Module'] == 'tap'].reset_index(drop=True)
-        # swp_tst = ges_tst.loc[ges_tst['Module'] == 'swp'].reset_index(drop=True)
-        # tap_tst = ges_tst.loc[ges_tst['Module'] == 'tap'].reset_index(drop=True)
-        # swp_att = ges_att.loc[ges_att['Module'] == 'swp'].reset_index(drop=True)
-        # tap_att = ges_att.loc[ges_att['Module'] == 'tap'].reset_index(drop=True)
 
         # Concentrate data
         sets_dict = {
@@ -50,8 +41,11 @@ def get_results(case: str, screen: str, screen_path: str,
             classifiers.append(dict_cases[case]['GetResults']['Classifiers'][data_type](lvl0_ftr))
 
         # Train Classifiers
-        for idx, clf in enumerate(classifiers):
-            clf.train_classifiers(sets_dict['trn'][idx])
+        for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap']):
+            trn_data = sets_dict['trn'][idx]
+            if dict_cases[case]['GetResults']['preprocess']:
+                trn_data = preprocess_dataset(trn_data, dict_cases[case]['GetResults']['features'][module])
+            classifiers[idx].train_classifiers(trn_data)
 
         # Get prediction for training, testing and attackers data
         for sett in sets_dict:

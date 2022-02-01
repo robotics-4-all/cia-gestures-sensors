@@ -44,15 +44,14 @@ def get_results(case: str, screen: str, screen_path: str,
         # Define Classifiers
         classifiers = []
         for data_type in ['acc', 'gyr', 'swp', 'tap']:
-            # lvl0_ftr = None
-            # if data_type in ['acc', 'gyr']:
-            #     lvl0_ftr = dict_cases[case]['FeatureExtraction']['sns']['lvl0_ftr'][data_type]
-            # classifiers.append(dict_cases[case]['GetResults']['Classifiers'][data_type](lvl0_ftr))
             classifiers.append(dict_cases[case]['GetResults']['Classifiers'][data_type](num_of_clf_that_decide))
 
         # Train Classifiers
-        for idx, clf in enumerate(classifiers):
-            clf.train_classifiers(sets_dict['trn'][idx])
+        for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap']):
+            trn_data = sets_dict['trn'][idx]
+            if dict_cases[case]['GetResults']['preprocess']:
+                trn_data = preprocess_dataset(trn_data, dict_cases[case]['GetResults']['features'][module])
+            classifiers[idx].train_classifiers(trn_data)
 
         # Get prediction for training, testing and attackers data
         for sett in sets_dict:

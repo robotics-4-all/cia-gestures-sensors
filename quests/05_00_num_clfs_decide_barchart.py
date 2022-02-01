@@ -19,7 +19,7 @@ import plotly.express as px
 # ========== #
 if __name__ == '__main__':
 
-    cases = ['case10']
+    cases = ['case10', 'case30']
 
     # Parameters
     title = 'Number of Classifiers Make the Decision - BarChart'
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         html.P('Metric:'),
         dcc.RadioItems(
             id='metric1',
-            options=[{'value': x, 'label': x} for x in ['FRR_trn', 'FRR_tst', 'FAR']],
+            options=[{'value': x, 'label': x} for x in ['FRR_tst', 'FRRConf_tst', 'FAR', 'NumOfAcceptTL']],
             value='FRR_tst',
             labelStyle={'display': 'inline-block'}),
         dcc.Graph(id='graph1'),
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         html.P('Metric:'),
         dcc.RadioItems(
             id='metric2',
-            options=[{'value': x, 'label': x} for x in ['FRR_trn', 'FRR_tst', 'FAR']],
+            options=[{'value': x, 'label': x} for x in ['FRR_tst', 'FRRConf_tst', 'FAR', 'NumOfAcceptTL']],
             value='FAR',
             labelStyle={'display': 'inline-block'}),
         dcc.Graph(id='graph2')
@@ -80,12 +80,14 @@ if __name__ == '__main__':
         fig1 = px.histogram(results, x='Module', y=met1, color='num_of_clf_that_decide',
                             barmode='group', histfunc='avg')
         fig1.update_layout(title_text='BarPlot')
-        fig1.update_yaxes(range=[0, 1])
+        if met1 != 'NumOfAcceptTL':
+            fig1.update_yaxes(range=[0, 1])
 
         fig2 = px.histogram(results, x='Module', y=met2, color='num_of_clf_that_decide',
                             barmode='group', histfunc='avg')
         fig2.update_layout(title_text='BarPlot')
-        fig2.update_yaxes(range=[0, 1])
+        if met2 != 'NumOfAcceptTL':
+            fig2.update_yaxes(range=[0, 1])
 
         return fig1, fig2
 

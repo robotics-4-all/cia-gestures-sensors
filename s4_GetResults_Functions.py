@@ -11,6 +11,7 @@ import pandas as pd
 from tqdm import tqdm
 from s0_cases_dictionaries import dict_cases
 from s4_GetResults_ClassClassifier import get_predictions
+from sklearn.neighbors import LocalOutlierFactor
 
 
 #  ============== #
@@ -50,6 +51,21 @@ def split_df_ges(original_user: str, df: pd.DataFrame, split_rate: float):
     df_att = df.loc[df['User'] != original_user].reset_index(drop=True)
 
     return df_trn, df_tst, df_att
+
+
+def preprocess_dataset(data: pd.DataFrame, features: list):
+
+    if data.shape[0] > 1:
+        features_data = data[features]
+        clf = LocalOutlierFactor(n_neighbors=10, contamination=0.2)
+        y_pred = clf.fit_predict(features_data)
+
+        for index, row in data.iterrows():
+            if y_pred[index] == -1:
+                data = data.drop(index)
+        data = data.reset_index()
+
+    return data
 
 
 def get_results(case: str, screen: str, screen_path: str,
@@ -96,8 +112,11 @@ def get_results(case: str, screen: str, screen_path: str,
             classifiers.append(dict_cases[case]['GetResults']['Classifiers'][data_type](lvl0_ftr))
 
         # Train Classifiers
-        for idx, clf in enumerate(classifiers):
-            clf.train_classifiers(sets_dict['trn'][idx])
+        for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap']):
+            trn_data = sets_dict['trn'][idx]
+            if dict_cases[case]['GetResults']['preprocess']:
+                trn_data = preprocess_dataset(trn_data, dict_cases[case]['GetResults']['features'][module])
+            classifiers[idx].train_classifiers(trn_data)
 
         # Get prediction for training, testing and attackers data
         for sett in sets_dict:
