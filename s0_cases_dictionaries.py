@@ -14,6 +14,11 @@ import cases.case09.subclasses_classifiers  # like case06 but modified for quest
 import cases.case10.subclasses_classifiers  # like case06 but modified for quest05
 import cases.case11.subclasses_classifiers  # like case06 but specified FRR~FAR regions according to case09
 import cases.case17.subclasses_classifiers  # like case08 but design for case16 (case15 eval + LOF) grid search
+import cases.case18.subclasses_classifiers  # like case17 but zoom in specific regions
+import cases.case19.subclasses_classifiers  # use case18 regions, find optimal num of classifiers
+import cases.case20.subclasses_classifiers  # use case18 regions and final num of optimal classifiers, FAR~FRR
+import cases.case21.subclasses_classifiers  # case20 but FRR < FAR
+import cases.case22.subclasses_classifiers  # case20 but FRR > FAR
 
 
 #  =============== #
@@ -291,6 +296,7 @@ dict_cases = {
     # 20220111: case08, grid search nu, gamma both in (0, 1) for all data, case08 evaluator
     # 20220113: case09, case08 but search in FRR~FAR regions for all modules
     # 20220131: case17, grid search nu, gamma both in (0, 1) for all data, like case16 (case15 evaluator + LOF)
+    # 20220201: case18, case17 but search in FRR~FAR regions for all modules
     'case08': {
         'comments': 'Grid search',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
@@ -364,7 +370,7 @@ dict_cases = {
                             'tap': cases.case09.subclasses_classifiers.TapClassifier},
             'Evaluator': cases.case08.subclasses_evaluator.CaseEvaluator}},
     'case17': {
-        'comments': 'combine case12 and case13',
+        'comments': 'grid search for case16',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
             'max_users': 15,
@@ -400,9 +406,47 @@ dict_cases = {
                             'swp': cases.case17.subclasses_classifiers.SwpClassifier,
                             'tap': cases.case17.subclasses_classifiers.TapClassifier},
             'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
+    'case18': {
+        'comments': 'grid search for case16 but in spesific regions',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 15,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case18.subclasses_classifiers.features,
+            'Classifiers': {'nus': list(range(20)),
+                            'gammas': list(range(20)),
+                            'acc': cases.case18.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case18.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case18.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case18.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
 
     # quest 05: Optimal number of classifiers that decide (Scripts modification needed!)
     # 20220117: case10, case09 evaluator & case08 evaluator => 50 classifiers to decide
+    # 20220204: case19, case15 evaluator + LOF (case16) & case21 regions
     'case10': {
         'comments': 'Search for optimal number of classifiers.',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
@@ -438,6 +482,42 @@ dict_cases = {
                             'swp': cases.case10.subclasses_classifiers.SwpClassifier,
                             'tap': cases.case10.subclasses_classifiers.TapClassifier},
             'Evaluator': cases.case08.subclasses_evaluator.CaseEvaluator}},
+    'case19': {
+        'comments': 'Search for optimal number of classifiers.',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 15,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case19.subclasses_classifiers.features,
+            'Classifiers': {'num_of_clf_that_decide': [1, 5, 15, 30, 60, 100, 200, 300],
+                            'acc': cases.case19.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case19.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case19.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case19.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
 
     # quest 06: Evaluator optimization methods
     # 20220117: case11, use case10 results, case01 evaluator & case09 regions
@@ -445,7 +525,7 @@ dict_cases = {
     # 20220118: case13, case11 classifier, in evaluator confidence_step *= FRR_trn => better FRR worse FAR
     # 20220118: case14, case11 classifier, in evaluator combine case12 and case13 => best FRR worst FAR
     # 20220131: case15, case11 classifier, in evaluator combine case14, new confidence_steps & add 2 new metrics
-    # 20220131: case16, case11 classifier & case32 evaluator but run LOF before training
+    # 20220131: case16, case11 classifier & case15 evaluator but run LOF before training
     'case11': {
         'comments': '',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
@@ -583,7 +663,7 @@ dict_cases = {
                             'tap': cases.case11.subclasses_classifiers.TapClassifier},
             'Evaluator': cases.case14.subclasses_evaluator.CaseEvaluator}},
     'case15': {
-        'comments': 'combine case12 and case13',
+        'comments': 'combine case14 with new conf steps',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
             'max_users': 15,
@@ -617,7 +697,7 @@ dict_cases = {
                             'tap': cases.case11.subclasses_classifiers.TapClassifier},
             'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
     'case16': {
-        'comments': 'combine case12 and case13',
+        'comments': 'combine case14 and LOF before training',
         'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
         'ExploreData': {
             'max_users': 15,
@@ -652,4 +732,223 @@ dict_cases = {
                             'tap': cases.case11.subclasses_classifiers.TapClassifier},
             'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
 
+    # 15 users
+    # 20220205: case20, final FRR~FAR
+    # 20220205: case21, final FRR < FAR
+    # 20220205: case22, final FRR > FAR
+    'case20': {
+        'comments': 'combine case14 and LOF before training',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 15,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case20.subclasses_classifiers.features,
+            'Classifiers': {'acc': cases.case20.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case20.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case20.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case20.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
+    'case21': {
+        'comments': 'combine case14 and LOF before training',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 15,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case21.subclasses_classifiers.features,
+            'Classifiers': {'acc': cases.case21.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case21.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case21.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case21.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
+    'case22': {
+        'comments': 'combine case14 and LOF before training',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 15,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case22.subclasses_classifiers.features,
+            'Classifiers': {'acc': cases.case22.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case22.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case22.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case22.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
+
+    # MORE users
+    # 20220205: case23, final FRR~FAR
+    # 20220205: case24, final FRR < FAR
+    # 20220205: case25, final FRR > FAR
+    'case23': {
+        'comments': 'combine case14 and LOF before training',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 60,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case20.subclasses_classifiers.features,
+            'Classifiers': {'acc': cases.case20.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case20.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case20.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case20.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
+    'case24': {
+        'comments': 'combine case14 and LOF before training',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 60,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case21.subclasses_classifiers.features,
+            'Classifiers': {'acc': cases.case21.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case21.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case21.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case21.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}},
+    'case25': {
+        'comments': 'combine case14 and LOF before training',
+        'screens': ['Mathisis', 'Focus', 'Reacton', 'Speedy', 'Memoria'],
+        'ExploreData': {
+            'max_users': 60,
+            'sns': {'min_nod_per_screen': 1,
+                    'min_nod_per_timestamp': 2,
+                    'min_nod_per_user': 3000,
+                    'max_nod_per_user': float('inf')},
+            'ges': {'device_max_width': 600,
+                    'device_max_height': 1000,
+                    'fake_swp_limit': 30,
+                    'swp_min_data_points': 4,
+                    'swp_max_data_points': 10,
+                    'min_nog_per_user': 300,
+                    'max_nog_per_user': float('inf')}},
+        'CreateDataframes': {'sns': {'max_user_data': 20000},
+                             'ges': {'max_user_data': 2000}},
+        'FeatureExtraction': {
+            'sns': {'lvl0_ftr': {'acc': ['x', 'y', 'magnitude'], 'gyr': ['x', 'y', 'magnitude']},
+                    'sample_rate': 20,  # 20ms, 50Hz
+                    'window': {'acc': 50, 'gyr': 50},  # 1 sec
+                    'overlap': {'acc': 0.6, 'gyr': 0.6}},
+            'ges': {'normalize': True,
+                    'default_width': 400,
+                    'default_height': 700}},
+        'GetResults': {
+            'split_rate': 0.3,
+            'preprocess': True,
+            'features': cases.case20.subclasses_classifiers.features,
+            'Classifiers': {'acc': cases.case22.subclasses_classifiers.AccClassifier,
+                            'gyr': cases.case22.subclasses_classifiers.GyrClassifier,
+                            'swp': cases.case22.subclasses_classifiers.SwpClassifier,
+                            'tap': cases.case22.subclasses_classifiers.TapClassifier},
+            'Evaluator': cases.case15.subclasses_evaluator.CaseEvaluator}}
 }

@@ -23,6 +23,8 @@ from s0_cases_dictionaries import dict_cases
 if __name__ == '__main__':
 
     cases = ['case05']
+    screens = ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']
+    modules = ['acc', 'gyr', 'swp']
 
     # Parameters
     title = 'Level 1 Feature Selection - Pearson Correlation'
@@ -32,32 +34,30 @@ if __name__ == '__main__':
     app.title = title
     app.layout = html.Div([
 
-        html.H1(title, style={'textAlign': 'center'}),
+        html.H1(title),
 
-        html.P('Case:'),
-        dcc.RadioItems(
-            id='case',
-            options=[{'value': x, 'label': x} for x in cases],
-            value=cases[0],
-            labelStyle={'display': 'inline-block'}),
-        html.P('Screen:'),
-        dcc.RadioItems(
-            id='screen',
-            options=[{'value': x, 'label': x} for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
-            value='Mathisis',
-            labelStyle={'display': 'inline-block'}),
-        html.P('Module:'),
-        dcc.RadioItems(
-            id='module',
-            options=[{'value': x, 'label': x} for x in ['acc', 'gyr', 'swp']],  # taps only has duration
-            value='acc',
-            labelStyle={'display': 'inline-block'}),
-        dcc.Graph(id='graph')
+        html.Div([
+            html.H2('Parameters'),
+            html.P('Case:'),
+            dcc.Dropdown(
+                id='case', options=[{'value': x, 'label': x} for x in cases], value=cases[0]),
+            html.P('Screen:'),
+            dcc.RadioItems(
+                id='screen', options=[{'value': x, 'label': x} for x in screens], value='Mathisis',
+                labelStyle={'display': 'inline-block'}),
+            html.P('Module:'),
+            dcc.RadioItems(
+                id='module', options=[{'value': x, 'label': x} for x in modules], value='acc',
+                labelStyle={'display': 'inline-block'}),
+            html.H2('Figure'),
+            dcc.Graph(id='plot')
+        ], style={'display': 'inline-block', 'vertical-align': 'top', 'margin-left': '3vw'})
+
     ])
 
 
     @app.callback(
-        Output('graph', 'figure'),
+        Output('plot', 'figure'),
         [Input('case', 'value'),
          Input('screen', 'value'),
          Input('module', 'value')]
@@ -146,11 +146,10 @@ if __name__ == '__main__':
                                         zmin=-1, zmax=1, xgap=1, ygap=1, colorscale='Viridis',
                                         hoverinfo='text', text=hovertext))
         fig.update_layout(
-            title_text='Corrplot', width=1000, height=1000,
+            title_text='Corrplot - ' + m, width=1000, height=1000,
             yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
 
         return fig
-
 
     # Run
     app.run_server(debug=True)

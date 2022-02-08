@@ -21,6 +21,8 @@ import plotly.graph_objects as go
 if __name__ == '__main__':
 
     cases = ['case01']
+    screens = ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']
+    modules = ['acc', 'gyr']
 
     # Parameters
     title = 'Sensors Level 0 Feature Selection - Pearson Correlation'
@@ -30,31 +32,29 @@ if __name__ == '__main__':
     app.title = title
     app.layout = html.Div([
 
-        html.H1(title, style={'textAlign': 'center'}),
+        html.H1(title),
 
-        html.P('Case:'),
-        dcc.RadioItems(
-            id='case',
-            options=[{'value': x, 'label': x} for x in cases],
-            value=cases[0],
-            labelStyle={'display': 'inline-block'}),
-        html.P('Screen:'),
-        dcc.RadioItems(
-            id='screen',
-            options=[{'value': x, 'label': x} for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
-            value='Mathisis',
-            labelStyle={'display': 'inline-block'}),
-        html.P('Module:'),
-        dcc.RadioItems(
-            id='module',
-            options=[{'value': x, 'label': x} for x in ['acc', 'gyr']],
-            value='acc',
-            labelStyle={'display': 'inline-block'}),
-        dcc.Graph(id='graph')
+        html.Div([
+            html.H2('Parameters'),
+            html.P('Case:'),
+            dcc.Dropdown(
+                id='case', options=[{'value': x, 'label': x} for x in cases], value=cases[0]),
+            html.P('Screen:'),
+            dcc.RadioItems(
+                id='screen', options=[{'value': x, 'label': x} for x in screens], value='Mathisis',
+                labelStyle={'display': 'inline-block'}),
+            html.P('Module:'),
+            dcc.RadioItems(
+                id='module', options=[{'value': x, 'label': x} for x in modules], value='acc',
+                labelStyle={'display': 'inline-block'}),
+            html.H2('Figure'),
+            dcc.Graph(id='plot')
+        ], style={'display': 'inline-block', 'vertical-align': 'top', 'margin-left': '3vw'})
+
     ])
 
     @app.callback(
-        Output('graph', 'figure'),
+        Output('plot', 'figure'),
         [Input('case', 'value'),
          Input('screen', 'value'),
          Input('module', 'value')]

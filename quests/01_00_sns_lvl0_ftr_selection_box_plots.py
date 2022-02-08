@@ -20,6 +20,9 @@ import plotly.express as px
 if __name__ == '__main__':
 
     cases = ['case01']
+    screens = ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']
+    modules = ['acc', 'gyr']
+    features = ['x', 'y', 'z', 'magnitude', 'combine_angle']
 
     # Parameters
     title = 'Sensors Level 0 Feature Selection - Box Plots'
@@ -29,55 +32,50 @@ if __name__ == '__main__':
     app.title = title
     app.layout = html.Div([
 
-        html.H1(title, style={'textAlign': 'center'}),
+        html.H1(title),
 
-        html.P('Case:'),
-        dcc.RadioItems(
-            id='case',
-            options=[{'value': x, 'label': x} for x in cases],
-            value=cases[0],
-            labelStyle={'display': 'inline-block'}),
-        html.P('Screen:'),
-        dcc.RadioItems(
-            id='screen',
-            options=[{'value': x, 'label': x} for x in ['Mathisis', 'Focus', 'Reacton', 'Memoria', 'Speedy']],
-            value='Mathisis',
-            labelStyle={'display': 'inline-block'}),
-        html.P('Module:'),
-        dcc.RadioItems(
-            id='module',
-            options=[{'value': x, 'label': x} for x in ['acc', 'gyr']],
-            value='acc',
-            labelStyle={'display': 'inline-block'}),
-        html.P('Y Axis:'),
-        dcc.RadioItems(
-            id='y',
-            options=[{'value': x, 'label': x} for x in ['None', 'user']],
-            value='user',
-            labelStyle={'display': 'inline-block'}),
+        html.Div([
+            html.H2('Overall Parameters'),
+            html.P('Case:'),
+            dcc.Dropdown(
+                id='case', options=[{'value': x, 'label': x} for x in cases], value=cases[0]),
+            html.P('Screen:'),
+            dcc.RadioItems(
+                id='screen', options=[{'value': x, 'label': x} for x in screens], value='Mathisis',
+                labelStyle={'display': 'inline-block'}),
+            html.P('Module:'),
+            dcc.RadioItems(
+                id='module', options=[{'value': x, 'label': x} for x in modules], value='acc',
+                labelStyle={'display': 'inline-block'}),
+            html.P('Y Axis:'),
+            dcc.RadioItems(
+                id='y', options=[{'value': x, 'label': x} for x in ['None', 'user']], value='user',
+                labelStyle={'display': 'inline-block'}),
+        ], style={'display': 'inline-block', 'vertical-align': 'top', 'margin-left': '3vw'}),
 
-        html.H2('Figure 1'),
-        html.P('Feature:'),
-        dcc.RadioItems(
-            id='feature1',
-            options=[{'value': x, 'label': x} for x in ['x', 'y', 'z', 'magnitude', 'combine_angle']],
-            value='magnitude',
-            labelStyle={'display': 'inline-block'}),
-        dcc.Graph(id='box-plot1'),
+        html.Br(),
 
-        html.H2('Figure 2'),
-        html.P('Feature:'),
-        dcc.RadioItems(
-            id='feature2',
-            options=[{'value': x, 'label': x} for x in ['x', 'y', 'z', 'magnitude', 'combine_angle']],
-            value='y',
-            labelStyle={'display': 'inline-block'}),
-        dcc.Graph(id='box-plot2')
+        html.Div([
+            html.H2('Figure 1'),
+            html.P('Feature:'),
+            dcc.Dropdown(
+                id='feature1', options=[{'value': x, 'label': x} for x in features], value='magnitude',),
+            dcc.Graph(id='plot1'),
+        ], style={'display': 'inline-block', 'vertical-align': 'top', 'margin-left': '3vw', 'margin-top': '2vw'}),
+
+        html.Div([
+            html.H2('Figure 2'),
+            html.P('Feature:'),
+            dcc.Dropdown(
+                id='feature2', options=[{'value': x, 'label': x} for x in features], value='y'),
+            dcc.Graph(id='plot2'),
+        ], style={'display': 'inline-block', 'vertical-align': 'top', 'margin-left': '3vw', 'margin-top': '2vw'})
+
     ])
 
     @app.callback(
-        [Output('box-plot1', 'figure'),
-         Output('box-plot2', 'figure')],
+        [Output('plot1', 'figure'),
+         Output('plot2', 'figure')],
         [Input('case', 'value'),
          Input('screen', 'value'),
          Input('module', 'value'),
@@ -93,9 +91,11 @@ if __name__ == '__main__':
 
         fig1 = px.box(df_data, x=f1, y=y, color=y)
         fig1.update_traces(boxmean='sd', boxpoints=False)
+        fig1.update_layout(title_text='BoxPlots - ' + f1, width=1000, height=500)
 
         fig2 = px.box(df_data, x=f2, y=y, color=y)
         fig2.update_traces(boxmean='sd', boxpoints=False)
+        fig2.update_layout(title_text='BoxPlots - ' + f2, width=1000, height=500)
 
         return fig1, fig2
 

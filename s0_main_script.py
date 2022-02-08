@@ -46,20 +46,10 @@ def main_thread(case: str, screen: str):
     ftr_ges = extract_features_ges(case, screen_path, df_ges)
     print('  ---\n')
 
-    all_results = pd.DataFrame()
-    for nu in dict_cases[case]['GetResults']['Classifiers']['nus']:
-        for gamma in dict_cases[case]['GetResults']['Classifiers']['gammas']:
-
-            # Get Results
-            print('-> GettingResults\n')
-            results = get_results(case, screen, screen_path, ftr_acc, ftr_gyr, ftr_ges, nu, gamma)
-            print('  ---\n')
-
-            results['Nu'] = nu
-            results['Gamma'] = gamma
-            all_results = all_results.append(results, ignore_index=True)
-
-    all_results.to_csv(os.path.join(screen_path, 'results.csv'), index=False)
+    # Get Results
+    print('-> GettingResults\n')
+    results = get_results(case, screen, screen_path, ftr_acc, ftr_gyr, ftr_ges)
+    print('  ---\n')
 
     return
 
@@ -70,7 +60,7 @@ def main_thread(case: str, screen: str):
 if __name__ == "__main__":
 
     # Select case
-    for case in ['case17']:
+    for case in ['case20']:
 
         print('=====')
         print(case)
@@ -80,4 +70,4 @@ if __name__ == "__main__":
         # Select screen
         for screen in dict_cases[case]['screens']:
             main_thread(case, screen)
-            # input('Press Enter to continue...\n')
+            input('Press Enter to continue...\n')
