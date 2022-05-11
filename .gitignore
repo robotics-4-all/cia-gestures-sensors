@@ -145,3 +145,4 @@ cython_debug/
 **/ftr_*.csv
 **/results_*.csv
 /~$results.xlsx
+/results.xlsx
