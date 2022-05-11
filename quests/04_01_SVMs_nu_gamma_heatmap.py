@@ -122,7 +122,8 @@ if __name__ == '__main__':
         fig1 = go.Figure(data=go.Heatmap(z=met_means1, x=gammas1, y=nus1, colorscale='Viridis',
                                          zmin=0 if b1 == 'Yes' else None,
                                          zmax=1 if b1 == 'Yes' else None))
-        fig1.update_layout(title_text='Heatmap ' + t1, width=4 * sz, height=3 * sz)
+        fig1.update_layout(title_text=t1[:3], width=4 * sz, height=3 * sz)
+        # fig1.update_layout(title_text='Heatmap - ' + s + ' - ' + m + ' - ' + t1, width=4 * sz, height=3 * sz)
         fig1.update_xaxes(title='Gamma')
         fig1.update_yaxes(title='Nu')
 
@@ -139,7 +140,8 @@ if __name__ == '__main__':
         fig2 = go.Figure(data=go.Heatmap(z=met_means2, x=gammas2, y=nus2, colorscale='Viridis',
                                          zmin=0 if b2 == 'Yes' else None,
                                          zmax=1 if b2 == 'Yes' else None))
-        fig2.update_layout(title_text='Heatmap ' + t2, width=4 * sz, height=3 * sz)
+        fig2.update_layout(title_text=t2, width=4 * sz, height=3 * sz)
+        # fig2.update_layout(title_text='Heatmap - ' + s + ' - ' + m + ' - ' + t2, width=4 * sz, height=3 * sz)
         fig2.update_xaxes(title='Gamma')
         fig2.update_yaxes(title='Nu')
 
@@ -148,8 +150,9 @@ if __name__ == '__main__':
         fig3 = go.Figure(data=go.Heatmap(z=dif_df, x=gammas1, y=nus1, colorscale='Viridis',
                                          zmin=0 if b3 == 'Yes' else None,
                                          zmax=1 if b3 == 'Yes' else None))
-        fig3.update_layout(title_text='Heatmap abs(' + t1 + ' - ' + t2 + ')',
-                           width=4 * sz, height=3 * sz)
+        fig3.update_layout(title_text='abs(' + t1[:3] + ' - ' + t2 + ')', width=4 * sz, height=3 * sz)
+        # fig3.update_layout(title_text='Heatmap - ' + s + ' - ' + m + ' - abs(' + t1 + ' - ' + t2 + ')',
+        #                    width=4 * sz, height=3 * sz)
         fig3.update_xaxes(title='Gamma')
         fig3.update_yaxes(title='Nu')
 

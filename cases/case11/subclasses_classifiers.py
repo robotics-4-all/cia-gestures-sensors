@@ -64,7 +64,7 @@ class AccClassifier(Classifier):
             for gamma in np.arange(0.00005, 0.015, 0.00075).round(5).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(AccClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)
+        super(AccClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
 class GyrClassifier(Classifier):
@@ -79,7 +79,7 @@ class GyrClassifier(Classifier):
             for gamma in np.arange(0.00050, 0.070, 0.00350).round(4).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(GyrClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)
+        super(GyrClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
 class SwpClassifier(Classifier):
@@ -94,7 +94,7 @@ class SwpClassifier(Classifier):
             for gamma in np.arange(0.00050, 0.070, 0.00350).round(4).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(SwpClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)
+        super(SwpClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)
 
 
 class TapClassifier(Classifier):
@@ -109,4 +109,4 @@ class TapClassifier(Classifier):
             for gamma in np.arange(0.50000, 1.000, 0.02500).round(3).tolist():
                 parameters.append([gamma, nu])
         clfs_parameters = {clf_name: parameters}
-        super(TapClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=50)
+        super(TapClassifier, self).__init__(final_features, scalar, clfs_parameters, num_of_clf_that_decide=1)

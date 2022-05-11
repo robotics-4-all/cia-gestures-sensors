@@ -105,8 +105,12 @@ if __name__ == '__main__':
         fig = go.Figure(data=go.Heatmap(z=corr, x=corr.columns, y=corr.columns,
                                         zmin=-1, zmax=1, xgap=1, ygap=1, colorscale='Viridis',
                                         hoverinfo='text', text=hovertext))
+        # fig.update_layout(
+        #     title_text='Correlation Matrix - ' + s + ' - ' + m, width=600, height=600,
+        #     yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
+
         fig.update_layout(
-            title_text='Corrplot', width=600, height=600,
+            width=400, height=400,
             yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
 
         return fig

@@ -76,17 +76,20 @@ if __name__ == '__main__':
 
         results_path = os.path.join('cases', c, s, 'results.csv')
         results = pd.read_csv(results_path)
+        results = results.dropna()
 
         fig1 = px.histogram(results, x='Module', y=met1, color='num_of_clf_that_decide',
                             barmode='group', histfunc='avg')
-        fig1.update_layout(title_text='BarPlots ' + met1, width=1000, height=500)
+        fig1.update_layout(title_text=met1[:3], width=1000, height=500)
+        # fig1.update_layout(title_text='BarPlots - ' + met1 + ' - ' + s, width=1000, height=500)
         fig1.update_xaxes()
         # if met1 != 'NumOfAcceptTL':
         #     fig1.update_yaxes(range=[0, 1])
 
         fig2 = px.histogram(results, x='Module', y=met2, color='num_of_clf_that_decide',
                             barmode='group', histfunc='avg')
-        fig2.update_layout(title_text='BarPlots ' + met2, width=1000, height=500)
+        fig2.update_layout(title_text=met2[:3], width=1000, height=500)
+        # fig2.update_layout(title_text='BarPlots - ' + met2 + ' - ' + s, width=1000, height=500)
         # if met2 != 'NumOfAcceptTL':
         #     fig2.update_yaxes(range=[0, 1])
 

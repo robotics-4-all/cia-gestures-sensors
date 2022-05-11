@@ -104,13 +104,19 @@ if __name__ == '__main__':
 
         fig1 = go.Figure(data=go.Heatmap(z=met_means1, zmin=zmin, zmid=zmid, zmax=zmax,
                                          x=overlaps, y=windows, xgap=1, ygap=1, colorscale='Viridis'))
-        fig1.update_layout(title_text='Corrplot', width=len(overlaps) * 70, height=len(windows) * 70)
+        # fig1.update_layout(title_text='Heatmap - ' + met1 + ' - ' + s + ' - ' + m,
+        #                    width=len(overlaps) * 70, height=len(windows) * 70)
+        fig1.update_layout(width=len(overlaps) * 70, height=len(windows) * 70)
+        fig1.update_layout(title_text=met1[0:3])
         fig1.update_xaxes(title='Overlap')
         fig1.update_yaxes(title='Window')
 
         fig2 = go.Figure(data=go.Heatmap(z=met_means2, zmin=zmin, zmid=zmid, zmax=zmax,
                                          x=overlaps, y=windows, xgap=1, ygap=1, colorscale='Viridis'))
-        fig2.update_layout(title_text='Corrplot', width=len(overlaps) * 70, height=len(windows) * 70)
+        # fig2.update_layout(title_text='Heatmap - ' + met2 + ' - ' + s + ' - ' + m,
+        #                    width=len(overlaps) * 70, height=len(windows) * 70)
+        fig2.update_layout(width=len(overlaps) * 70, height=len(windows) * 70)
+        fig2.update_layout(title_text=met2[0:3])
         fig2.update_xaxes(title='Overlap')
         fig2.update_yaxes(title='Window')
 

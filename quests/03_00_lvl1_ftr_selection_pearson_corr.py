@@ -103,7 +103,8 @@ if __name__ == '__main__':
         data_path = os.path.join('cases', c, s, 'ftr_' + m + '.csv')
         data = pd.read_csv(data_path)
         if m == 'ges':
-            data = data.loc[data['Type'] == 'swipe']
+            data = data.loc[data['Module'] == 'swp']
+            m = 'swp'
 
         # Compute correlation
         users = list(set(data['User']))
@@ -145,8 +146,11 @@ if __name__ == '__main__':
         fig = go.Figure(data=go.Heatmap(z=corr, x=corr.columns, y=corr.columns,
                                         zmin=-1, zmax=1, xgap=1, ygap=1, colorscale='Viridis',
                                         hoverinfo='text', text=hovertext))
+        # fig.update_layout(
+        #     title_text='Heatmap - ' + s + ' - ' + m, width=1000, height=1000,
+        #     yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
         fig.update_layout(
-            title_text='Corrplot - ' + m, width=1000, height=1000,
+            width=800, height=800,
             yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
 
         return fig

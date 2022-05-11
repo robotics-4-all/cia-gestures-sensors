@@ -105,7 +105,7 @@ class CaseEvaluator(Evaluator):
             for data in sets_dict[sett]:
                 # Short every data type by user and stop time
                 data = data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
-                data_to_append = data[['User', 'Module', 'StartTime', 'StopTime', 'Decision', 'Prediction']]
+                data_to_append = data[['User', 'Module', 'StartTime', 'StopTime', 'Probability', 'Prediction']]
                 all_data = all_data.append(data_to_append, ignore_index=True)
             # Short final dataframe
             all_data = all_data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
@@ -113,9 +113,9 @@ class CaseEvaluator(Evaluator):
 
         # Evaluate its module
         for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap', 'all']):
-            trn = sets_dict['trn'][idx][['Decision', 'Prediction']]
-            tst = sets_dict['tst'][idx][['Decision', 'Prediction']]
-            att = sets_dict['att'][idx][['User', 'Decision', 'Prediction']]
+            trn = sets_dict['trn'][idx][['Probability', 'Prediction']]
+            tst = sets_dict['tst'][idx][['Probability', 'Prediction']]
+            att = sets_dict['att'][idx][['User', 'Probability', 'Prediction']]
             self.OriginalUser.append(original_user)
             self.Module.append(module)
             self.NumOfTrnData.append(len(trn))

@@ -60,7 +60,7 @@ def main_thread(case: str, screen: str):
 if __name__ == "__main__":
 
     # Select case
-    for case in ['case20']:
+    for case in ['case23.2']:
 
         print('=====')
         print(case)
@@ -70,4 +70,4 @@ if __name__ == "__main__":
         # Select screen
         for screen in dict_cases[case]['screens']:
             main_thread(case, screen)
-            input('Press Enter to continue...\n')
+            # input('Press Enter to continue...\n')

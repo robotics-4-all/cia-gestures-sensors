@@ -43,7 +43,7 @@ class CaseEvaluator(Evaluator):
         Num_Of_Unlocks = None
         FRRConf = None
         predictions = data['Prediction'].to_list()
-        decisions = data['Decision'].to_list()
+        probabilities = data['Probability'].to_list()
         if len(predictions) != 0:
             confidence = self.start_confidence
             false_rejections = 0
@@ -56,7 +56,7 @@ class CaseEvaluator(Evaluator):
                 if sample != 1:
                     tp = 'outlier'
                     false_rejections += 1
-                confidence += self.dict_conf[tp][screen] * abs(decisions[idx])
+                confidence += self.dict_conf[tp][screen] * abs(probabilities[idx])
                 if confidence > 100:
                     confidence = 100
             FRR = false_rejections / len(predictions)
@@ -72,7 +72,7 @@ class CaseEvaluator(Evaluator):
             Mean_FAR = 0
             Mean_Num_Of_Acceptances_Till_Lock = 0
             for user in set(data['User']):
-                decisions = data.loc[data['User'] == user]['Decision'].to_list()
+                probabilities = data.loc[data['User'] == user]['Probability'].to_list()
                 predictions = data.loc[data['User'] == user]['Prediction'].to_list()
                 confidence = self.start_confidence
                 false_acceptances = 0
@@ -88,7 +88,7 @@ class CaseEvaluator(Evaluator):
                         tp = 'inlier'
                         false_acceptances += 1
                     if flag:
-                        confidence += self.dict_conf[tp][screen] * abs(decisions[idx])
+                        confidence += self.dict_conf[tp][screen] * abs(probabilities[idx])
                     if confidence > 100:
                         confidence = 100
                 FAR = false_acceptances / len(predictions)
@@ -107,7 +107,7 @@ class CaseEvaluator(Evaluator):
             for data in sets_dict[sett]:
                 # Short every data type by user and stop time
                 data = data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
-                data_to_append = data[['User', 'Module', 'StartTime', 'StopTime', 'Decision', 'Prediction']]
+                data_to_append = data[['User', 'Module', 'StartTime', 'StopTime', 'Probability', 'Prediction']]
                 all_data = all_data.append(data_to_append, ignore_index=True)
             # Short final dataframe
             all_data = all_data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
@@ -115,9 +115,9 @@ class CaseEvaluator(Evaluator):
 
         # Evaluate its module
         for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap', 'all']):
-            trn = sets_dict['trn'][idx][['Decision', 'Prediction']]
-            tst = sets_dict['tst'][idx][['Decision', 'Prediction']]
-            att = sets_dict['att'][idx][['User', 'Decision', 'Prediction']]
+            trn = sets_dict['trn'][idx][['Probability', 'Prediction']]
+            tst = sets_dict['tst'][idx][['Probability', 'Prediction']]
+            att = sets_dict['att'][idx][['User', 'Probability', 'Prediction']]
             self.OriginalUser.append(original_user)
             self.Module.append(module)
             self.NumOfTrnData.append(len(trn))

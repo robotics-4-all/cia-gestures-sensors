@@ -101,9 +101,9 @@ class CaseEvaluator(Evaluator):
 
         # Evaluate its module
         for idx, module in enumerate(['acc', 'gyr', 'swp', 'tap']):
-            trn = sets_dict['trn'][idx][['Decision', 'Prediction']]
-            tst = sets_dict['tst'][idx][['Decision', 'Prediction']]
-            att = sets_dict['att'][idx][['User', 'Decision', 'Prediction']]
+            trn = sets_dict['trn'][idx][['Probability', 'Prediction']]
+            tst = sets_dict['tst'][idx][['Probability', 'Prediction']]
+            att = sets_dict['att'][idx][['User', 'Probability', 'Prediction']]
             self.OriginalUser.append(original_user)
             self.Module.append(module)
             self.NumOfTrnData.append(len(trn))

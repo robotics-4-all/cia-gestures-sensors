@@ -43,7 +43,7 @@ class CaseEvaluator(Evaluator):
         Num_Of_Unlocks = None
         FRRConf = None
         modules = data['Module'].to_list()
-        decisions = data['Decision'].to_list()
+        probabilities = data['Probability'].to_list()
         predictions = data['Prediction'].to_list()
         if len(predictions) != 0:
             confidence = self.start_confidence
@@ -57,7 +57,7 @@ class CaseEvaluator(Evaluator):
                 if sample != 1:
                     tp = 'outlier'
                     false_rejections += 1
-                confidence += self.dict_conf[tp][screen] * (1 - weights[modules[idx]]) * abs(decisions[idx])
+                confidence += self.dict_conf[tp][screen] * (1 - weights[modules[idx]]) * abs(probabilities[idx])
                 if confidence > 100:
                     confidence = 100
             FRR = false_rejections / len(predictions)
@@ -74,7 +74,7 @@ class CaseEvaluator(Evaluator):
             Mean_Num_Of_Acceptances_Till_Lock = 0
             for user in set(data['User']):
                 modules = data.loc[data['User'] == user]['Module'].to_list()
-                decisions = data.loc[data['User'] == user]['Decision'].to_list()
+                probabilities = data.loc[data['User'] == user]['Probability'].to_list()
                 predictions = data.loc[data['User'] == user]['Prediction'].to_list()
                 confidence = self.start_confidence
                 false_acceptances = 0
@@ -90,7 +90,7 @@ class CaseEvaluator(Evaluator):
                         tp = 'inlier'
                         false_acceptances += 1
                     if flag:
-                        confidence += self.dict_conf[tp][screen] * (1 - weights[modules[idx]]) * abs(decisions[idx])
+                        confidence += self.dict_conf[tp][screen] * (1 - weights[modules[idx]]) * abs(probabilities[idx])
                     if confidence > 100:
                         confidence = 100
                 FAR = false_acceptances / len(predictions)
@@ -109,7 +109,7 @@ class CaseEvaluator(Evaluator):
             for data in sets_dict[sett]:
                 # Short every data type by user and stop time
                 data = data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
-                data_to_append = data[['User', 'Module', 'StartTime', 'StopTime', 'Decision', 'Prediction']]
+                data_to_append = data[['User', 'Module', 'StartTime', 'StopTime', 'Probability', 'Prediction']]
                 all_data = all_data.append(data_to_append, ignore_index=True)
             # Short final dataframe
             all_data = all_data.sort_values(by=['User', 'StopTime']).reset_index(drop=True)
@@ -123,7 +123,7 @@ class CaseEvaluator(Evaluator):
             self.Module.append(module)
 
             if module != 'all':
-                trn = sets_dict['trn'][idx][['Module', 'Decision', 'Prediction']]
+                trn = sets_dict['trn'][idx][['Module', 'Probability', 'Prediction']]
                 weights[module] = 0
                 FRR, NumOfUnlocks, FRRConf = self.evaluate_original_user(screen, trn, weights)
                 weights[module] = FRR
@@ -137,14 +137,14 @@ class CaseEvaluator(Evaluator):
                 self.FRRConf_trn.append(None)
                 self.NumOfUnlocks_trn.append(None)
 
-            tst = sets_dict['tst'][idx][['Module', 'Decision', 'Prediction']]
+            tst = sets_dict['tst'][idx][['Module', 'Probability', 'Prediction']]
             FRR, NumOfUnlocks, FRRConf = self.evaluate_original_user(screen, tst, weights)
             self.NumOfTstData.append(len(tst))
             self.FRR_tst.append(FRR)
             self.FRRConf_tst.append(FRRConf)
             self.NumOfUnlocks_tst.append(NumOfUnlocks)
 
-            att = sets_dict['att'][idx][['User', 'Module', 'Decision', 'Prediction']]
+            att = sets_dict['att'][idx][['User', 'Module', 'Probability', 'Prediction']]
             FAR, NumOfAcceptTL = self.evaluate_attackers(screen, att, weights)
             self.NumOfAttData.append(att.shape[0])
             self.NumOfAtt.append(len(set(att['User'])))

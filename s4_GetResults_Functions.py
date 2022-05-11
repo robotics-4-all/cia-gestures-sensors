@@ -121,8 +121,8 @@ def get_results(case: str, screen: str, screen_path: str,
         # Get prediction for training, testing and attackers data
         for sett in sets_dict:
             for idx, clf in enumerate(classifiers):
-                sets_dict[sett][idx]['Decision'] = clf.get_decisions(sets_dict[sett][idx])
-                sets_dict[sett][idx]['Prediction'] = get_predictions(sets_dict[sett][idx]['Decision'])
+                sets_dict[sett][idx]['Probability'] = clf.get_probabilities(sets_dict[sett][idx])
+                sets_dict[sett][idx]['Prediction'] = get_predictions(sets_dict[sett][idx]['Probability'])
 
         # Evaluate predictions of every module separately
         eval_obj.calculate_metrics(screen, original_user, sets_dict)

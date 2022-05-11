@@ -32,11 +32,11 @@ def define_classifiers(clf_name, parameters):
     return clf
 
 
-def get_predictions(decisions: np.ndarray):
+def get_predictions(probabilities: np.ndarray):
 
-    predictions = np.empty(decisions.shape[0])
-    for sample_idx in range(decisions.shape[0]):
-        predictions[sample_idx] = 1 if decisions[sample_idx] > 0 else -1
+    predictions = np.empty(probabilities.shape[0])
+    for sample_idx in range(probabilities.shape[0]):
+        predictions[sample_idx] = 1 if probabilities[sample_idx] > 0 else -1
 
     return predictions
 
@@ -74,22 +74,22 @@ class Classifier:
 
         return
 
-    def get_decisions(self, data: pd.DataFrame):
+    def get_probabilities(self, data: pd.DataFrame):
 
-        decision_total = np.zeros(data.shape[0])
+        probabilities_avg = np.zeros(data.shape[0])
         if data.shape[0] != 0:
             data = data[self.final_features].to_numpy()
             if self.scalar != None:
                 data = self.scalar.transform(data)
             for idx in np.argpartition(self.classifiers_median_distances, self.clfs_dec - 1)[:self.clfs_dec]:
                 clf = self.classifiers[idx]
-                decision = clf.decision_function(data) / self.classifiers_max_distances[idx]
+                probabilities = clf.decision_function(data) / self.classifiers_max_distances[idx]
                 for sample_idx in range(data.shape[0]):
-                    if decision[sample_idx] > 1:
-                        decision[sample_idx] = 1
-                    if decision[sample_idx] < -1:
-                        decision[sample_idx] = -1
-                decision_total += decision
-            decision_total /= self.clfs_dec
+                    if probabilities[sample_idx] > 1:
+                        probabilities[sample_idx] = 1
+                    if probabilities[sample_idx] < -1:
+                        probabilities[sample_idx] = -1
+                probabilities_avg += probabilities
+            probabilities_avg /= self.clfs_dec
 
-        return decision_total
+        return probabilities_avg

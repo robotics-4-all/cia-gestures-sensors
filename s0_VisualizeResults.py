@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 labelStyle={'display': 'inline-block'}),
             html.P('Metric:'),
             dcc.Dropdown(
-                id='metric1', options=[{'value': x, 'label': x} for x in metrics], value='FRR_tst'),
+                id='metric1', options=[{'value': x, 'label': x} for x in metrics], value='FAR'),
             dcc.Graph(id='plot1')
         ], style={'display': 'inline-block', 'vertical-align': 'top', 'margin-left': '3vw', 'margin-top': '3vw'}),
 
@@ -99,30 +99,43 @@ if __name__ == '__main__':
          Input('users2', 'value'),
          Input('metric2', 'value')])
     def generate_chart(s, i, c1, u1, m1, c2, u2, m2):
+        import plotly.graph_objects as go
 
         temp = ['FRR_trn', 'FRRConf_trn', 'FRR_tst', 'FRRConf_tst', 'FAR']
 
         results_name1 = 'results.csv' if u1 == 'No' else 'results_1.csv'
         results_path1 = os.path.join('cases', c1, s, results_name1)
         results1 = pd.read_csv(results_path1)
+        results1 = results1.dropna(subset=['FRR_tst', 'FAR'])
+
+        # fig1 = go.Figure()
+        # for met in m1:
+        #     data = results1[met]
+        #     # data = data.dropna()
+        #     fig1.add_trace(go.Box(x=data, y=results1['Module'], name=met))
+        # fig1.update_layout(boxmode='group')
+        # fig1.update_traces(orientation='h', boxmean=add_info_dict[i], boxpoints=False)
+
         fig1 = px.box(results1, x=m1, y='Module', color='Module')
         fig1.update_traces(boxmean=add_info_dict[i], boxpoints=False)
-        if m1 in temp:
-            fig1.update_xaxes(range=[0, 1])
+        # if m1 in temp:
+        #     fig1.update_xaxes(range=[0, 1])
         numb_of_users1 = len(list(set(results1['OriginalUser'].to_list())))
-        fig1.update_layout(title_text='BarPlots - ' + m1 + ' - ' + str(numb_of_users1) + ' Users')
-        fig1.update_layout(width=1000, height=500)
+        # fig1.update_layout(title_text='BarPlots - ' + m1 + ' - ' + str(numb_of_users1) + ' Users')
+        fig1.update_layout(width=400, height=400)
 
         results_name2 = 'results.csv' if u2 == 'No' else 'results_1.csv'
         results_path2 = os.path.join('cases', c2, s, results_name2)
         results2 = pd.read_csv(results_path2)
+        results2 = results2.dropna(subset=['FRR_tst', 'FAR'])
+
         fig2 = px.box(results2, x=m2, y='Module', color='Module')
         fig2.update_traces(boxmean=add_info_dict[i], boxpoints=False)
         if m2 in temp:
             fig2.update_xaxes(range=[0, 1])
         numb_of_users2 = len(list(set(results2['OriginalUser'].to_list())))
-        fig2.update_layout(title_text='BarPlots - ' + m2 + ' - ' + str(numb_of_users2) + ' Users')
-        fig2.update_layout(width=1000, height=500)
+        # fig2.update_layout(title_text='BarPlots - ' + m2 + ' - ' + str(numb_of_users2) + ' Users')
+        fig2.update_layout(width=800, height=400)
 
         return fig1, fig2
 
