@@ -144,7 +144,4 @@ cython_debug/
 **/df_*
 **/ftr_*.csv
 **/results_*.csv
-/mito-starter-notebook.ipynb
-/_temp.py
-/_temp1.py
 /~$results.xlsx
