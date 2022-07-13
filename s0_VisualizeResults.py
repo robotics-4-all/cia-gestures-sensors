@@ -122,7 +122,8 @@ if __name__ == '__main__':
         #     fig1.update_xaxes(range=[0, 1])
         numb_of_users1 = len(list(set(results1['OriginalUser'].to_list())))
         # fig1.update_layout(title_text='BarPlots - ' + m1 + ' - ' + str(numb_of_users1) + ' Users')
-        fig1.update_layout(width=400, height=400)
+        fig1.update_layout(width=500, height=500)
+        fig1.update_traces(showlegend=False)
 
         results_name2 = 'results.csv' if u2 == 'No' else 'results_1.csv'
         results_path2 = os.path.join('cases', c2, s, results_name2)

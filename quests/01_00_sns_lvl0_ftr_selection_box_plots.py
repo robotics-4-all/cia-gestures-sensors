@@ -89,11 +89,11 @@ if __name__ == '__main__':
         if y == 'None':
             y = None
 
-        fig1 = px.box(df_data, x=y, y=f1, color=y)
+        fig1 = px.box(df_data, x=f1, y=y, color=y)
         fig1.update_traces(boxmean='sd', boxpoints=False)
         # fig1.update_layout(title_text='BoxPlots - ' + s + ' - ' + m + ' - ' + f1, width=500, height=500)
         # fig1.update_layout(title_text=s + ' - ' + m + ' - ' + f1)
-        fig1.update_layout(width=450, height=300)
+        fig1.update_layout(width=450, height=500)
         # fig1.update_yaxes(visible=False, showticklabels=False)
         fig1.update_traces(showlegend=False)
 

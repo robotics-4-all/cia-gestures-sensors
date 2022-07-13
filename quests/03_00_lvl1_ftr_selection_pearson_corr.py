@@ -150,8 +150,10 @@ if __name__ == '__main__':
         #     title_text='Heatmap - ' + s + ' - ' + m, width=1000, height=1000,
         #     yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
         fig.update_layout(
-            width=800, height=800,
-            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False)
+            width=1500, height=2000,
+            yaxis_autorange='reversed', yaxis_showgrid=False, xaxis_showgrid=False,
+            font=dict(size=20)
+        )
 
         return fig
 
