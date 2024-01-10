@@ -13,5 +13,5 @@ Smartphones have become an important assistant to everyday life chores and the i
 
 ---
 
-The full report (GR) can be found [here]().  
-For a brief overview of the problem, methodology and results you can have a look at the presentations([GR](), [EN]()).
+The full report (GR) can be found [here](./docs/CIA_MotionSensors&Gestures.pdf).  
+For a brief overview of the problem, methodology and results you can have a look at the presentations([GR](./docs/CIA_MotionSensors&Gestures_presentationGR.pdf), [EN](./docs/CIA_MotionSensors&Gestures_presentationEN.pdf)).
